@@ -370,7 +370,6 @@ public class KitMaster extends JavaPlugin implements Listener{
 		vaultEnabled = Bukkit.getPluginManager().isPluginEnabled("Vault");
 		if(!vaultEnabled)
 			return;
-		
 		RegisteredServiceProvider<Permission> tempPerm = Bukkit.getServicesManager().getRegistration(Permission.class);
 		if(tempPerm != null){
 			perms = tempPerm.getProvider();

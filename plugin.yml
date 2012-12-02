@@ -42,13 +42,13 @@ commands:
     description: Save the held book to a file
     usage: /savebook <name>
     permission: kitmaster.books
-    permission-message: You don't have permission to save books
+    permission-message: You don't have permission to manage books
 
   loadbook:
     description: Loads the book with the given title
     usage: /loadbook <name>
     permission: kitmaster.books
-    permission-message: You don't have permission to load books
+    permission-message: You don't have permission to manage books
 
 permissions:
 
