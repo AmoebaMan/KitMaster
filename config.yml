@@ -1,0 +1,6 @@
+clearKits:
+  onDisable: true
+  onDeath: true
+  onDisconnect: true
+books:
+  lineBreakSequence: '|n' #This should be a sequence that NEVER appears in ordinary book text
