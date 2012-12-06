@@ -13,6 +13,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import com.amoebaman.kitmaster.enums.GiveKitContext;
 import com.amoebaman.kitmaster.enums.GiveKitResult;
@@ -26,6 +27,9 @@ public class KitMasterEventHandler implements Listener{
 		Bukkit.getPluginManager().registerEvents(new KitMasterEventHandler(), plugin);
 	}
 
+	/**
+	 * Listens for players taking kits from kit selection signs
+	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockDamage(BlockDamageEvent event){
 		Kit kit = SignHandler.getKitSign(event.getBlock().getLocation());
@@ -40,6 +44,9 @@ public class KitMasterEventHandler implements Listener{
 		}
 	}
 
+	/**
+	 * Listens for kit selection signs being created
+	 */
 	@EventHandler
 	public void onSignChange(SignChangeEvent event){
 		Player player = event.getPlayer();
@@ -65,6 +72,9 @@ public class KitMasterEventHandler implements Listener{
 		}
 	}
 
+	/**
+	 * Listens for kit selection signs being destroyed
+	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onBlockBreak(BlockBreakEvent event){
 		if(!event.isCancelled() && SignHandler.isKitSign(event.getBlock().getLocation())){
@@ -78,23 +88,51 @@ public class KitMasterEventHandler implements Listener{
 			event.getPlayer().sendMessage(ChatColor.ITALIC + "Kit select sign unregistered");
 		}
 	}
+	
+	/**
+	 * Listens for players respawning and handles respawn kits
+	 */
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent event){
+		final Player player = event.getPlayer();
+		Kit respawnKit = null;
+		for(Kit kit : KitHandler.getKits())
+			if(player.hasPermission("kitmaster.respawn." + kit.name)){
+				respawnKit = kit.applyParent();
+				break;
+			}
+		if(respawnKit != null){
+			final Kit fRespawnKit = respawnKit.clone();
+			Bukkit.getScheduler().scheduleSyncDelayedTask(KitMaster.plugin(), new Runnable(){ public void run(){
+				KitMaster.giveKit(player, fRespawnKit, GiveKitContext.PLUGIN_GIVEN_OVERRIDE);
+			}});
+		}
+	}
 
+	/**
+	 * Listens for players dying and clears their kits if configured as such
+	 */
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event){
 		if(KitMaster.config().getBoolean("clearKits.onDeath", true))
 			KitMaster.clearAll(event.getEntity());
 	}
 
+	/**
+	 * Listens for players disconnecting and clears their kits if configured as such
+	 */
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event){
 		if(KitMaster.config().getBoolean("clearKits.onDisconnect", true))
 			KitMaster.clearAll(event.getPlayer());
 	}
-
+	
+	/**
+	 * Passes players being kicked to be handled like players quitting
+	 */
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event){
-		if(KitMaster.config().getBoolean("clearKits.onDisconnect", true))
-			KitMaster.clearAll(event.getPlayer());
+		onPlayerQuit(new PlayerQuitEvent(event.getPlayer(), "simulated"));
 	}
 
 }

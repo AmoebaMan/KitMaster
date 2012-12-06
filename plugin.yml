@@ -73,6 +73,10 @@ permissions:
     description: Allows the player to take kits from signs
     default: true
     
+  kitmaster.respawn:
+    description: Allows the player to automatically take kits when then respawn
+    default: true
+    
   kitmaster.list:
     description: Allows the player to see the kits available to them
     default: true

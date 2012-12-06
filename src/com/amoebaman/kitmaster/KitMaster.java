@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -138,8 +139,9 @@ public class KitMaster extends JavaPlugin implements Listener{
 	
 	public static FileConfiguration config(){ return config; }
 	
+	public static Plugin plugin(){ return Bukkit.getPluginManager().getPlugin("KitMaster"); }
+	
 	public static boolean isVaultEnabled(){ return vaultEnabled; }
-
 	
 	/**
 	 * Gives a player a kit.  This method will consider and apply all attributes of the given kit, including timeouts, permissions, and inheritance.  If the kit has a parent kit, a recursive call will be made to this method <i>prior</i> to the application of <code>kit</code>, with <code>GiveKitContext.PARENT_GIVEN</code>..
