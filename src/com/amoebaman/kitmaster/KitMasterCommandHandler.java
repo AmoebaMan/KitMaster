@@ -1,14 +1,10 @@
 package com.amoebaman.kitmaster;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -19,94 +15,20 @@ import com.amoebaman.kitmaster.enums.GenericResult;
 import com.amoebaman.kitmaster.enums.GiveKitContext;
 import com.amoebaman.kitmaster.enums.GiveKitResult;
 import com.amoebaman.kitmaster.enums.PermsResult;
-import com.amoebaman.kitmaster.handlers.InventoryUtil;
+import com.amoebaman.kitmaster.handlers.BookHandler;
+import com.amoebaman.kitmaster.handlers.FireworkEffectHandler;
+import com.amoebaman.kitmaster.handlers.FireworkHandler;
+import com.amoebaman.kitmaster.handlers.InventoryHandler;
 import com.amoebaman.kitmaster.handlers.KitHandler;
-import com.amoebaman.kitmaster.objects.Book;
 import com.amoebaman.kitmaster.objects.Kit;
-import com.amoebaman.kitmaster.utilities.CommandHandler;
-import com.google.common.collect.Lists;
+import com.amoebaman.kitmaster.utilities.CommandController;
+import com.amoebaman.kitmaster.utilities.CommandController.CommandHandler;
 
-public class KitMasterCommandHandler implements CommandExecutor{
+public class KitMasterCommandHandler{
 
 	public static KitMaster plugin;
-	private static HashMap<Command, Method> commandMap;
-
-	protected static void registerCommands(KitMaster instance){
-		/*
-		 * Initialize the fields
-		 */
-		plugin = instance;
-		commandMap = new HashMap<Command, Method>();
-		/*
-		 * For every method in this class...
-		 */
-		for(Method method : KitMasterCommandHandler.class.getMethods()){
-			/*
-			 * Grab the CommandHandler annotation
-			 */
-			CommandHandler annotation = method.getAnnotation(CommandHandler.class);
-			/*
-			 * If the annotation is there and the method contains the correct configuration of parameters...
-			 */
-			Class<?>[] params = method.getParameterTypes();
-			if(annotation != null && instance.getCommand(annotation.name()) != null
-					&& CommandSender.class.isAssignableFrom(params[0])  //First parameter is a subclass of CommandSender
-					&& params[1].equals(String[].class)  //Second parameter is the argument list
-					){
-				/*
-				 * Make sure the command gets sent to this executor
-				 */
-				instance.getCommand(annotation.name()).setExecutor(new KitMasterCommandHandler());
-				/*
-				 * Adjust the command's properties according to the annotation
-				 */
-				if(!(annotation.aliases().equals(new String[]{""})))
-					instance.getCommand(annotation.name()).setAliases(Lists.newArrayList(annotation.aliases()));
-				if(!annotation.description().equals(""))
-					instance.getCommand(annotation.name()).setDescription(annotation.description());
-				if(!annotation.usage().equals(""))
-					instance.getCommand(annotation.name()).setUsage(annotation.usage());
-				if(!annotation.permission().equals(""))
-					instance.getCommand(annotation.name()).setPermission(annotation.permission());
-				if(!annotation.permissionMessage().equals(""))
-					instance.getCommand(annotation.name()).setPermissionMessage(annotation.permissionMessage());
-				/*
-				 * Finalize the command's registration
-				 */
-				commandMap.put(instance.getCommand(annotation.name()), method);
-			}
-		}
-	}
-
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
-		/*
-		 * Get the method that has been mapped to this command
-		 */
-		Method method = commandMap.get(command);
-		/*
-		 * If the method is there...
-		 */
-		if(method != null){
-			/*
-			 * We can't process the command if it has specified a player sender and the sender isn't a player
-			 */
-			if(method.getParameterTypes()[0].equals(Player.class) && !(sender instanceof Player)){
-				sender.sendMessage(ChatColor.RED + "This command requires a player context");
-				return true;
-			}
-			/*
-			 * Invoke the method that corresponds to the command, passing it the sender and the arguments
-			 */
-			try{ method.invoke(this, sender, args); }
-			catch(Exception e){ e.printStackTrace(); }
-		}
-		/*
-		 * Otherwise the method hasn't been defined, so tell the player the command doesn't exist
-		 */
-		else
-			sender.sendMessage("Unknown command. Type \"help\" for help.");
-		
-		return true;
+	public static void init(KitMaster instance){
+		CommandController.registerCommands(instance, new KitMasterCommandHandler());
 	}
 
 	@CommandHandler(name = "givekit")
@@ -180,10 +102,10 @@ public class KitMasterCommandHandler implements CommandExecutor{
 		sender.sendMessage(ChatColor.ITALIC + "Kit info for " + kit.name);
 		sender.sendMessage(ChatColor.ITALIC + "Items:");
 		for(ItemStack item : kit.items)
-			sender.sendMessage(ChatColor.ITALIC + "  - " + InventoryUtil.itemToString(item));
+			sender.sendMessage(ChatColor.ITALIC + "  - " + InventoryHandler.friendlyItemString(item));
 		sender.sendMessage(ChatColor.ITALIC + "Effects:");
 		for(PotionEffect effect : kit.effects)
-			sender.sendMessage(ChatColor.ITALIC + "  - " + InventoryUtil.effectToString(effect));
+			sender.sendMessage(ChatColor.ITALIC + "  - " + InventoryHandler.friendlyEffectString(effect));
 		sender.sendMessage(ChatColor.ITALIC + "Permissions:");
 		for(String perm : kit.permissions)
 			sender.sendMessage(ChatColor.ITALIC + "  - " + perm);
@@ -193,9 +115,13 @@ public class KitMasterCommandHandler implements CommandExecutor{
 
 	@CommandHandler(name = "reloadkits")
 	public void reloadkits(CommandSender sender, String[] args){
-		KitHandler.loadKits(new File(KitMaster.kitsDirectory));
-		KitMaster.logger().info("Loaded all kit files from " + KitMaster.kitsDirectory);
-		sender.sendMessage(ChatColor.ITALIC + "Kits have been reloaded");
+		try {
+			KitMaster.reloadKits();
+			sender.sendMessage(ChatColor.ITALIC + "Kits have been reloaded");
+		} catch (Exception e) {
+			e.printStackTrace();
+			sender.sendMessage(ChatColor.ITALIC + "An error occurred while reloading kits");
+		}
 	}
 
 	@CommandHandler(name = "savebook")
@@ -208,10 +134,16 @@ public class KitMasterCommandHandler implements CommandExecutor{
 			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("savebook").getUsage());
 			return;
 		}
-		Book book = new Book(player.getItemInHand());
-		File bookFile = new File(KitMaster.bookDirectory + "/" + args[0] + ".book");
-		book.saveToFile(bookFile);
-		player.sendMessage(ChatColor.ITALIC + "Successfully saved " + book.getTitle() + " to file");
+		BookHandler.saveBook(player.getItemInHand(), args[0]);
+		try {
+			BookHandler.save(KitMaster.booksFile);
+		}
+		catch (IOException ioe) { 
+			ioe.printStackTrace();
+			player.sendMessage(ChatColor.ITALIC + "An error occurred while saving the book");
+			return;
+		}
+		player.sendMessage(ChatColor.ITALIC + "Successfully saved the book under the name " + args[0]);
 	}
 
 	@CommandHandler(name = "loadbook")
@@ -220,14 +152,49 @@ public class KitMasterCommandHandler implements CommandExecutor{
 			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("loadbook").getUsage());
 			return;
 		}
-		File bookFile = new File(KitMaster.bookDirectory + "/" + args[0] + ".book");
-		if(!bookFile.exists()){
-			player.sendMessage(ChatColor.ITALIC + "There is no saved book by that name");
+		if(!BookHandler.isBook(args[0])){
+			player.sendMessage(ChatColor.ITALIC + "No book is saved under that name");
 			return;
 		}
-		Book book = new Book(bookFile);
-		player.getInventory().addItem(book.getItemStack());
-		player.sendMessage(ChatColor.ITALIC + "Successfully loaded " + book.getTitle() + " from file");
+		player.getInventory().addItem(BookHandler.getBook(args[0]));
+		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the book named " + args[0]);
+	}
+	
+	@CommandHandler(name = "savefirework")
+	public void savefirework(Player player, String[] args){
+		if(player.getItemInHand().getType() != Material.FIREWORK){
+			player.sendMessage(ChatColor.ITALIC + "You need to hold a firework before using this command");
+			return;
+		}
+		if(args.length == 0){
+			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("savefirework").getUsage());
+			return;
+		}
+		FireworkHandler.saveFirework(player.getItemInHand(), args[0]);
+		try {
+			FireworkEffectHandler.save(KitMaster.fireworkEffectsFile);
+			FireworkHandler.save(KitMaster.fireworksFile);
+		}
+		catch (IOException ioe) { 
+			ioe.printStackTrace();
+			player.sendMessage(ChatColor.ITALIC + "An error occurred while saving the firework");
+			return;
+		}
+		player.sendMessage(ChatColor.ITALIC + "Successfully saved the firework under the name " + args[0]);
+	}
+
+	@CommandHandler(name = "loadfirework")
+	public void loadfirework(Player player, String[] args){
+		if(args.length == 0){
+			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("loadfirework").getUsage());
+			return;
+		}
+		if(!FireworkHandler.isFirework(args[0])){
+			player.sendMessage(ChatColor.ITALIC + "No firework is saved under that name");
+			return;
+		}
+		player.getInventory().addItem(FireworkHandler.getFirework(args[0]));
+		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the firework named " + args[0]);
 	}
 	
 }

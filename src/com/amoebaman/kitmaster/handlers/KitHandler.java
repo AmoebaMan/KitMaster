@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -23,8 +24,6 @@ import com.google.common.collect.Lists;
 public class KitHandler {
 
 	private static final ArrayList<Kit> kits = new ArrayList<Kit>();
-	private static final FileNameComparator comparator = new FileNameComparator();
-	private static final FileFilter filter = new KitFileFilter();
 	
 	/**
 	 * Loads kits into the internal kit list from a file.  If the file is suffixed with .kit, the file will be immediately loaded.  If the file is a directory, all files within it suffixed with .kit will be automatically loaded.  If neither condition is met, nothing will happen.
@@ -32,34 +31,27 @@ public class KitHandler {
 	 */
 	public static void loadKits(File file){
 		if(file.isDirectory()){
-			ArrayList<File> children = Lists.newArrayList(file.listFiles(filter));
-			Collections.sort(children, comparator);
+			ArrayList<File> children = Lists.newArrayList(file.listFiles(new FileFilter(){ public boolean accept(File file){ return file.getName().endsWith(".kit") || file.getName().equals("kits.yml"); } }));
+			Collections.sort(children, new Comparator<File>(){ public int compare(File f1, File f2) { return f1.getName().compareTo(f2.getName()); }});
 			for(File child : children)
-				loadKit(child);
+				loadFromKitFile(child);
 		}
-		else if(filter.accept(file))
-			loadKit(file);
-	}
-	
-	private static class FileNameComparator implements Comparator<File>{
-		public int compare(File f1, File f2) {
-			return f1.getName().compareTo(f2.getName());
-		}
-	}
-	
-	private static class KitFileFilter implements FileFilter{
-		public boolean accept(File file) {
-			return file.getName().endsWith(".kit");
-		}
+		else if(file.getName().equals("kits.yml"))
+			loadFromKitsYaml(file);
+		else if(file.getName().endsWith(".kit"))
+			loadFromKitFile(file);
 	}
 
- 	private static void loadKit(File file) {
-		Kit kit = parseKit(file);
-		while(kits.contains(kit))
-			kits.remove(kit);
-		kits.add(kit);
-		if(!kit.booleanAttribute(Attribute.SUPPRESS_LOAD_NOTIFICATION))
-			KitMaster.logger().info("Successfully loaded the " + kit.name + " kit");
+	private static void loadFromKitFile(File file) {
+		String name = file.getName().replaceAll("\\.kit", "");
+		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		addKit(parseKit(name, yaml));
+	}
+	
+	private static void loadFromKitsYaml(File file){
+		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
+		for(String name : yaml.getKeys(false))
+			addKit(parseKit(name, yaml.getConfigurationSection(name)));
 	}
 
  	/**
@@ -67,9 +59,8 @@ public class KitHandler {
  	 * @param file The file to parse a kit from.
  	 * @return The kit parsed from the file.
  	 */
-	public static Kit parseKit(File file){
-		String kitName = file.getName().replaceAll("\\.kit", "");
-		YamlConfiguration kitSection = YamlConfiguration.loadConfiguration(file);
+	public static Kit parseKit(String name, ConfigurationSection yaml){
+		
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		List<PotionEffect> effects = new ArrayList<PotionEffect>();
 		List<String> permissions = new ArrayList<String>();
@@ -77,9 +68,9 @@ public class KitHandler {
 		/*
 		 * Parse the kit's items
 		 */
-		for(String str : kitSection.getStringList("items")){
+		for(String str : yaml.getStringList("items")){
 			try{
-				ItemStack stack = InventoryUtil.parseItem(str);
+				ItemStack stack = InventoryHandler.parseItem(str);
 				if(stack != null)
 					items.add(stack);
 			}
@@ -91,9 +82,9 @@ public class KitHandler {
 		/*
 		 * Parse the kit's effects
 		 */
-		for(String str : kitSection.getStringList("effects")){
+		for(String str : yaml.getStringList("effects")){
 			try{
-				PotionEffect effect = InventoryUtil.parseEffect(str);
+				PotionEffect effect = InventoryHandler.parseEffect(str);
 				if(effect != null)
 					effects.add(effect);
 			}catch(ParseItemException e){
@@ -104,29 +95,37 @@ public class KitHandler {
 		/*
 		 * Retrive the String list defining the kit's permissions
 		 */
-		permissions = kitSection.getStringList("permissions");
+		permissions = yaml.getStringList("permissions");
 		if(permissions == null)
 			permissions = new ArrayList<String>();
 		/*
 		 * For each defined attribute, retrive it from its designated YAML path
 		 */
 		for(Attribute type : Attribute.values()){
-			Object value = kitSection.get(type.path, null);
+			Object value = yaml.get(type.path, null);
 			if(type.clazz != null && value != null){
 				try{
 					attributes.put(type, type.clazz.cast(value));
 				}
 				catch(ClassCastException cce){
-					KitMaster.logger().severe("Failed to define attribute " + type.name() + " for kit " + kitName + ": the defined value was of the wrong type");
+					KitMaster.logger().severe("Failed to define attribute " + type.name() + " for kit " + name + ": the defined value was of the wrong type");
 				}
 			}
 		}
 
-		return new Kit(kitName, items, effects, permissions, attributes);
+		return new Kit(name, items, effects, permissions, attributes);
 	}
 
+	private static void addKit(Kit kit){
+		while(kits.contains(kit))
+			kits.remove(kit);
+		kits.add(kit);
+		if(!kit.booleanAttribute(Attribute.SUPPRESS_LOAD_NOTIFICATION))
+			KitMaster.logger().info("Successfully loaded the " + kit.name + " kit");
+	}
+	
 	/**
-	 * Gets a kit by its name.  This method will ignore case.  If no kit maches the argument precisely, it will consider abbreviations.  The <code>applyParentAttributes()</code> method will be used on the kit prior to returning.
+	 * Gets a kit by its name.  This method will ignore case.  If no kit maches the argument precisely, it will consider abbreviations.  The <code>applyParent()</code> method will be used on the kit prior to returning.
 	 * @param kitName The name of the desired kit.
 	 * @return The kit whose name matches the argument, or null if no kit was found.
 	 */
@@ -143,6 +142,24 @@ public class KitHandler {
 			if(kit == null || kit.name == null)
 				continue;
 			if(kit.name.toLowerCase().startsWith(kitName.toLowerCase()))
+				return kit.applyParent();
+		}
+		return null;
+	}
+	
+	public static Kit getKitByIdentifier(String identifier){
+		if(identifier == null || identifier.equals(""))
+			return null;
+		for(Kit kit : kits){
+			if(kit == null || kit.name == null)
+				continue;
+			if(kit.stringAttribute(Attribute.IDENTIFIER).equalsIgnoreCase(identifier))
+				return kit.applyParent();
+		}
+		for(Kit kit : kits){
+			if(kit == null || kit.name == null)
+				continue;
+			if(kit.stringAttribute(Attribute.IDENTIFIER).toLowerCase().startsWith(identifier.toLowerCase()))
 				return kit.applyParent();
 		}
 		return null;

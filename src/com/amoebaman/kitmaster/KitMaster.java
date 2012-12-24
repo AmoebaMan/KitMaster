@@ -1,15 +1,16 @@
 package com.amoebaman.kitmaster;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -20,22 +21,27 @@ import com.amoebaman.kitmaster.enums.Attribute;
 import com.amoebaman.kitmaster.enums.GiveKitContext;
 import com.amoebaman.kitmaster.enums.GiveKitResult;
 import com.amoebaman.kitmaster.enums.PermsResult;
+import com.amoebaman.kitmaster.handlers.BookHandler;
+import com.amoebaman.kitmaster.handlers.FireworkEffectHandler;
+import com.amoebaman.kitmaster.handlers.FireworkHandler;
 import com.amoebaman.kitmaster.handlers.HistoryHandler;
-import com.amoebaman.kitmaster.handlers.InventoryUtil;
+import com.amoebaman.kitmaster.handlers.InventoryHandler;
+import com.amoebaman.kitmaster.handlers.ItemHandler;
 import com.amoebaman.kitmaster.handlers.KitHandler;
+import com.amoebaman.kitmaster.handlers.PotionHandler;
 import com.amoebaman.kitmaster.handlers.SignHandler;
 import com.amoebaman.kitmaster.handlers.TimeStampHandler;
 import com.amoebaman.kitmaster.metrics.Metrics;
-import com.amoebaman.kitmaster.objects.Book;
 import com.amoebaman.kitmaster.objects.GiveKitEvent;
 import com.amoebaman.kitmaster.objects.Kit;
+import com.amoebaman.kitmaster.utilities.Updater;
+import com.amoebaman.kitmaster.utilities.Updater.UpdateType;
 
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 //TODO Javadoc for EVERYTHING
-//TODO Implement functionality for Attribute.UPGRADE_PARENT
 
 /**
  * 
@@ -49,17 +55,19 @@ public class KitMaster extends JavaPlugin implements Listener{
 	private static PluginLogger log;
 	private static FileConfiguration config;
 
-	protected static String mainDirectory, bookDirectory, kitsDirectory, dataDirectory;
-	protected static File configFile, signsFile, timestampsFile, historyFile;
+	protected static String mainDirectory, kitsDirectory, dataDirectory;
+	protected static File configFile, itemsFile, booksFile, potionsFile, fireworkEffectsFile, fireworksFile, kitsFile, signsFile, timestampsFile, historyFile;
 
 	protected static boolean vaultEnabled;
 	protected static Permission perms;
-	protected static Chat chat;
 	protected static Economy economy;
+	protected static Chat chat;
 	protected static Metrics metrics;
 	
 	public final static boolean DEBUG_PERMS = false;
 	public final static boolean DEBUG_KITS = false;
+	
+	private static int taskID;
 
 	@Override
 	public void onEnable(){
@@ -67,21 +75,27 @@ public class KitMaster extends JavaPlugin implements Listener{
 		config = getConfig();
 
 		mainDirectory = getDataFolder().getPath();
-		bookDirectory = mainDirectory + "/books";
 		kitsDirectory = mainDirectory + "/kits";
 		dataDirectory = mainDirectory + "/data";
-		
-		new File(mainDirectory).mkdir();
-		new File(bookDirectory).mkdir();
-		new File(kitsDirectory).mkdir();
-		new File(dataDirectory).mkdir();
+		new File(mainDirectory).mkdirs();
+		new File(kitsDirectory).mkdirs();
+		new File(dataDirectory).mkdirs();
 		
 		configFile = new File(mainDirectory + "/config.yml");
+		itemsFile = new File(mainDirectory + "/items.yml");
+		booksFile = new File(mainDirectory + "/books.yml");
+		potionsFile = new File(mainDirectory + "/potions.yml");
+		fireworkEffectsFile = new File(mainDirectory + "/firework_bursts.yml");
+		fireworksFile = new File(mainDirectory + "/fireworks.yml");
+		kitsFile = new File(mainDirectory + "/kits.yml");
 		signsFile = new File(dataDirectory + "/signs.yml");
 		timestampsFile = new File(dataDirectory + "/timestamps.yml");
 		historyFile = new File(dataDirectory + "/history.yml");
 
 		try{
+			/*
+			 * Configuration
+			 */
 			if(!configFile.exists())
 				configFile.createNewFile();
 			getConfig().load(configFile);
@@ -89,40 +103,70 @@ public class KitMaster extends JavaPlugin implements Listener{
 			getConfig().save(configFile);
 			log.info("Loaded configuration from " + configFile.getPath());
 			config = getConfig();
-			Book.setLineBreakSequence(config.getString("books.lineBreakChar", "|n|"));
-
-			KitHandler.loadKits(new File(kitsDirectory));
-			log.info("Loaded all kit files from " + kitsDirectory);
-			
+			/*
+			 * Kits and kit-related items
+			 */
+			reloadKits();
+			/*
+			 * Kit selection signs
+			 */
 			if(!signsFile.exists())
 				signsFile.createNewFile();
 			SignHandler.load(signsFile);
 			log.info("Loaded kit selection sign locations from " + signsFile.getPath());
-			log.info("Purged " + SignHandler.purgeAbsentees() + " absent kit signs");
-
+			/*
+			 * Kit selection timestamps
+			 */
 			if(!timestampsFile.exists())
 				timestampsFile.createNewFile();
 			TimeStampHandler.load(timestampsFile);
 			log.info("Loaded player kit timestamps from " + timestampsFile.getPath());
-			
+			/*
+			 * Kit selection history
+			 */
 			if(!historyFile.exists())
 				historyFile.createNewFile();
 			HistoryHandler.load(historyFile);
 			log.info("Loaded player kit history from " + historyFile.getPath());
-			
+			/*
+			 * Metrics
+			 */
 			metrics = new Metrics(this);
 			metrics.start();
 		}
 		catch(Exception e){e.printStackTrace();}
 		
-		setupVaultProviders();	
-		KitMasterEventHandler.registerEvents(this);
-		KitMasterCommandHandler.registerCommands(this);
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new InfiniteEffects(), 15, 15);
+		/*
+		 * If allowed, automatically update
+		 */
+		getLogger().info("Checking for updates...");
+		UpdateType type = getConfig().getBoolean("automaticallyUpdate") ? UpdateType.DEFAULT : UpdateType.NO_DOWNLOAD;
+		Updater update = new Updater(this, "kitmaster", this.getFile(), type, true);
+		switch(update.getResult()){
+		case FAIL_BADSLUG:
+		case FAIL_NOVERSION:
+			getLogger().severe("Failed to check for updates due to bad code.  Contact the developer: " + update.getResult().name());
+			break;
+		case FAIL_DBO:
+			getLogger().severe("An error occurred while checking for updates.");
+			break;
+		case FAIL_DOWNLOAD:
+			getLogger().severe("An error occurred downloading the update.");
+			break;
+		case UPDATE_AVAILABLE:
+			getLogger().warning("An update is available for download on BukkitDev.");
+			break;
+		default: }
+		
+		initVault();	
+		KitMasterEventHandler.init(this);
+		KitMasterCommandHandler.init(this);
+		taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new InfiniteEffects(), 15, 15);
 	}
 
 	@Override
 	public void onDisable() {
+		Bukkit.getScheduler().cancelTask(taskID);
 		if(getConfig().getBoolean("clearKits.onDisable", true))
 			for(OfflinePlayer player : HistoryHandler.getPlayers())
 				if(player instanceof Player)
@@ -134,10 +178,67 @@ public class KitMaster extends JavaPlugin implements Listener{
 		}
 		catch(Exception e){ e.printStackTrace(); }
 	}
-
-	public void reloadConfig(){
-		super.reloadConfig();
-		config = getConfig();
+	
+	public static void reloadKits() throws IOException, InvalidConfigurationException{
+		/*
+		 * Custom-defined items
+		 */
+		if(!itemsFile.exists()){
+			itemsFile.createNewFile();
+			ItemHandler.addSample();
+			ItemHandler.save(itemsFile);
+		}
+		ItemHandler.load(itemsFile);
+		log.info("Loaded saved books from " + itemsFile.getPath());
+		/*
+		 * Books
+		 */
+		if(!booksFile.exists()){
+			booksFile.createNewFile();
+			BookHandler.addSample();
+			BookHandler.save(booksFile);
+		}
+		BookHandler.load(booksFile);
+		log.info("Loaded saved books from " + booksFile.getPath());
+		/*
+		 * Potions
+		 */
+		if(!potionsFile.exists()){
+			potionsFile.createNewFile();
+			PotionHandler.addSample();
+			PotionHandler.save(potionsFile);
+		}
+		PotionHandler.load(potionsFile);
+		log.info("Loaded saved potions from " + potionsFile.getPath());
+		/*
+		 * Firework effects
+		 */
+		if(!fireworkEffectsFile.exists()){
+			fireworkEffectsFile.createNewFile();
+			FireworkEffectHandler.addSample();
+			FireworkEffectHandler.save(fireworkEffectsFile);
+		}
+		FireworkEffectHandler.load(fireworkEffectsFile);
+		log.info("Loaded saved firework effects from " + fireworkEffectsFile.getPath());
+		/*
+		 * Fireworks
+		 */
+		if(!fireworksFile.exists()){
+			fireworksFile.createNewFile();
+			FireworkHandler.addSample();
+			FireworkHandler.save(fireworksFile);
+		}
+		FireworkHandler.load(fireworksFile);
+		log.info("Loaded saved fireworks from " + fireworksFile.getPath());
+		/*
+		 * Kits
+		 */
+		if(!kitsFile.exists())
+			kitsFile.createNewFile();
+		KitHandler.loadKits(kitsFile);
+		log.info("Loaded all kit files from " + kitsFile.getPath());
+		KitHandler.loadKits(new File(kitsDirectory));
+		log.info("Loaded all kit files from " + kitsDirectory);
 	}
 	
 	public static PluginLogger logger(){ return log; }
@@ -272,7 +373,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 		/*
 		 * Add the kit's items to the player's inventory
 		 */
-		InventoryUtil.addItemsToInventory(player, kitEvent.getKit().items, parentKit != null && kit.booleanAttribute(Attribute.UPGRADE_PARENT));
+		InventoryHandler.addItemsToInventory(player, kitEvent.getKit().items, parentKit != null && kit.booleanAttribute(Attribute.UPGRADE));
 		/*
 		 * Apply the kit's potion effects to the player
 		 */
@@ -360,20 +461,9 @@ public class KitMaster extends JavaPlugin implements Listener{
 	}
 
 	/**
-	 * Gets the Book object saved to file with the given name.
-	 * @param name The name of the Book to retrieve.
-	 * @return The book that matches the given name, or a blank written book if no book matched.
-	 */
-	public static ItemStack getBook(String name){
-		File bookFile = new File(bookDirectory + "/" + name + ".book");
-		Book book = new Book(bookFile);
-		return book.getItemStack();
-	}
-
-	/**
 	 * Retrieves and stores service providers obtained using the <b>Vault</b> API.
 	 */
-	public static void setupVaultProviders(){
+	public static void initVault(){
 		vaultEnabled = Bukkit.getPluginManager().isPluginEnabled("Vault");
 		if(!vaultEnabled)
 			return;
@@ -383,17 +473,17 @@ public class KitMaster extends JavaPlugin implements Listener{
 			if(perms != null)
 				log.info("Hooked into Permissions manager: " + perms.getName());
 		}
-		RegisteredServiceProvider<Chat> tempChat = Bukkit.getServicesManager().getRegistration(Chat.class);
-		if(tempChat != null){
-			chat = tempChat.getProvider();
-			if(chat != null)
-				log.info("Hooked into Chat manager: " + chat.getName());
-		}
 		RegisteredServiceProvider<Economy> tempEcon = Bukkit.getServicesManager().getRegistration(Economy.class);
 		if(tempEcon != null){
 			economy = tempEcon.getProvider();
 			if(economy != null)
 				log.info("Hooked into Economy manager: " + economy.getName());
+		}
+		RegisteredServiceProvider<Chat> tempChat = Bukkit.getServicesManager().getRegistration(Chat.class);
+		if(tempChat != null){
+			chat = tempChat.getProvider();
+			if(chat != null)
+				log.info("Hooked into Chat manager: " + chat.getName());
 		}
 	}
 
@@ -402,7 +492,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 	 * @author Dennison
 	 */
 	private static class InfiniteEffects implements Runnable{
-		@Override
+		
 		public void run() {
 			for(World world : Bukkit.getWorlds())
 				for(Player player : world.getPlayers())

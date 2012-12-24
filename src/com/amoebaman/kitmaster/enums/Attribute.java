@@ -45,7 +45,7 @@ public enum Attribute{
 	/**
 	 * Attribute that determines whether the kit will attempt to blend its items and effects into those of its parents.
 	 */
-	UPGRADE_PARENT(Boolean.class, "inheritance.upgrade", true),
+	UPGRADE(Boolean.class, "inheritance.upgrade", false),
 	
 	/**
 	 * Attribute that determines whether the kit will require its parent's permissions as a supplement to its own.
@@ -97,6 +97,7 @@ public enum Attribute{
 	 * The default value of this attribute if it is not explicitly defined in the kit's YAML file
 	 */
 	public final Object def;
+	
 	private Attribute(Class<?> clazz, String path, Object def){
 		this.clazz = clazz;
 		this.path = path;

@@ -23,7 +23,7 @@ import com.amoebaman.kitmaster.objects.Kit;
 
 public class KitMasterEventHandler implements Listener{
 	
-	public static void registerEvents(KitMaster plugin){
+	public static void init(KitMaster plugin){
 		Bukkit.getPluginManager().registerEvents(new KitMasterEventHandler(), plugin);
 	}
 

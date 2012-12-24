@@ -2,5 +2,6 @@ clearKits:
   onDisable: true
   onDeath: true
   onDisconnect: true
-books:
-  lineBreakSequence: '|n' #This should be a sequence that NEVER appears in ordinary book text
+  
+#If this is not set to false, KitMaster will automatically update itself from the latest file on BukkitDev
+automaticallyUpdate: true

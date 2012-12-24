@@ -39,16 +39,29 @@ commands:
     permission-message: You don't have permission to reload kits
 
   savebook:
-    description: Save the held book to a file
+    description: Saves a book to books.yml under a given name
     usage: /savebook <name>
     permission: kitmaster.books
     permission-message: You don't have permission to manage books
 
   loadbook:
-    description: Loads the book with the given title
+    description: Loads the book from books.yml with the given name
     usage: /loadbook <name>
     permission: kitmaster.books
     permission-message: You don't have permission to manage books
+    
+  savefirework:
+    description: Saves a firework to fireworks.yml file under a given name
+    usage: /savefirework <name>
+    permission: kitmaster.fireworks
+    permission-message: You don't have permission to manage fireworks
+
+  loadfirework:
+    description: Loads the firework from fireworks.yml with the given name
+    usage: /loadfirework <name>
+    permission: kitmaster.fireworks
+    permission-message: You don't have permission to manage fireworks
+    
 
 permissions:
 
@@ -64,6 +77,8 @@ permissions:
       kitmaster.notimeout: true
       kitmaster.nocharge: true
       kitmaster.createsign: true
+      kitmaster.books: true
+      kitmaster.fireworks: true
     
   kitmaster.cmd:
     description: Allows the player to take kits by command
@@ -115,4 +130,8 @@ permissions:
     
   kitmaster.books:
     description: Allows the player to save and load books
+    default: op
+    
+  kitmaster.fireworks:
+    description: Allows the player to save and load fireworks
     default: op
