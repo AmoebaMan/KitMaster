@@ -30,7 +30,6 @@ import org.bukkit.plugin.Plugin;
  * @author H31IX
  */
 
-@SuppressWarnings("restriction")
 public class Updater 
 {
 	private Plugin plugin;

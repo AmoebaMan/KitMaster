@@ -139,6 +139,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 		/*
 		 * If allowed, automatically update
 		 */
+		try{
 		getLogger().info("Checking for updates...");
 		UpdateType type = getConfig().getBoolean("automaticallyUpdate") ? UpdateType.DEFAULT : UpdateType.NO_DOWNLOAD;
 		Updater update = new Updater(this, "kitmaster", this.getFile(), type, true);
@@ -157,6 +158,11 @@ public class KitMaster extends JavaPlugin implements Listener{
 			getLogger().warning("An update is available for download on BukkitDev.");
 			break;
 		default: }
+		}
+		catch(Exception e){
+			getLogger().severe("Error occurred while trying to update");
+			e.printStackTrace();
+		}
 		
 		initVault();	
 		KitMasterEventHandler.init(this);
