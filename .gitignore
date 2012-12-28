@@ -1,0 +1,6 @@
+*.class
+*.html
+.settings
+.classpath
+.project
+doc
