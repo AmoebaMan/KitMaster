@@ -530,9 +530,9 @@ public class InventoryHandler {
 				case LEATHER_CHESTPLATE:
 				case LEATHER_LEGGINGS:
 				case LEATHER_BOOTS:
-					if(tag.startsWith("0x")){
+					if(tag.startsWith("0x") || tag.startsWith("#")){
 						LeatherArmorMeta leatherMeta = (LeatherArmorMeta) stack.getItemMeta();
-						leatherMeta.setColor(Color.fromRGB(Integer.decode(tag)));
+						leatherMeta.setColor(Color.fromRGB(Integer.decode(tag.replace("#", "0x"))));
 						stack.setItemMeta(leatherMeta);
 					}
 					break;

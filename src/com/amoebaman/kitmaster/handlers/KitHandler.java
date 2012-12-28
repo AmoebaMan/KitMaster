@@ -112,7 +112,14 @@ public class KitHandler {
 				}
 			}
 		}
-
+		/*
+		 * SuperKits legacy compatibility for clear options
+		 */
+		if(yaml.getBoolean("clearInventory", false))
+			attributes.put(Attribute.CLEAR_ALL, true);
+		/*
+		 * Return the finished kit
+		 */
 		return new Kit(name, items, effects, permissions, attributes);
 	}
 
