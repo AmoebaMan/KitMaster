@@ -11,6 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -133,6 +134,26 @@ public class KitMasterEventHandler implements Listener{
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event){
 		onPlayerQuit(new PlayerQuitEvent(event.getPlayer(), "simulated"));
+	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event){
+		Player player = event.getPlayer();
+		if(player.hasPermission("kitmaster.*")){
+			switch(KitMaster.update.getResult()){
+			case FAIL_BADSLUG:
+			case FAIL_NOVERSION:
+				player.sendMessage(ChatColor.ITALIC + "KitMaster: Failed to check for updates due to bad code, contact the developer immediately"); break;
+			case FAIL_DBO:
+				player.sendMessage(ChatColor.ITALIC + "KitMaster: Failed to connect to BukkitDev while trying to check for updates"); break;
+			case FAIL_DOWNLOAD:
+				player.sendMessage(ChatColor.ITALIC + "KitMaster: Failed to download an update from BukkitDev"); break;
+			case SUCCESS:
+				player.sendMessage(ChatColor.ITALIC + ""); break;
+			case UPDATE_AVAILABLE:
+				player.sendMessage(ChatColor.ITALIC + "KitMaster: Version " + KitMaster.update.getLatestVersionString().replace("v", "") + " is available on BukkitDev, you currently have version " + KitMaster.plugin().getDescription().getVersion()); break;
+			default: }
+		}
 	}
 
 }
