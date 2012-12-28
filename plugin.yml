@@ -1,24 +1,24 @@
 main: com.amoebaman.kitmaster.KitMaster
 
 name: KitMaster
-version: 1.0 (1.4.5)
+version: 1.1
 author: AmoebaMan
 description: The complete kit plugin
 softdepend: [Vault]
 
 commands:
 
-  givekit:
-    description: Give a kit to a player
-    usage: /givekit <player> <kit-name>
-    permission: kitmaster.give
-    permission-message: You dont have permission to give kits
-
   kit:
     description: Get a kit
     usage: /kit <kit-name>
     permission: kitmaster.cmd
     permission-message: You don't have permission to take kits via command
+
+  givekit:
+    description: Give a kit to a player
+    usage: /givekit <player> <kit-name>
+    permission: kitmaster.give
+    permission-message: You dont have permission to give kits
 
   kitlist:
     description: List the available kits
