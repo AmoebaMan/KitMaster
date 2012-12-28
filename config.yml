@@ -1,7 +1,7 @@
 clearKits:
-  onDisable: true
   onDeath: true
-  onDisconnect: true
+  onDisable: false
+  onDisconnect: false
   
 #If this is not set to false, KitMaster will automatically update itself from the latest file on BukkitDev
 automaticallyUpdate: true
