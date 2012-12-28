@@ -63,10 +63,11 @@ public class KitMaster extends JavaPlugin implements Listener{
 	protected static Economy economy;
 	protected static Chat chat;
 	protected static Metrics metrics;
-	
+	protected static Updater update;
+
 	public final static boolean DEBUG_PERMS = false;
 	public final static boolean DEBUG_KITS = false;
-	
+
 	private static int taskID;
 
 	@Override
@@ -80,7 +81,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 		new File(mainDirectory).mkdirs();
 		new File(kitsDirectory).mkdirs();
 		new File(dataDirectory).mkdirs();
-		
+
 		configFile = new File(mainDirectory + "/config.yml");
 		itemsFile = new File(mainDirectory + "/items.yml");
 		booksFile = new File(mainDirectory + "/books.yml");
@@ -93,16 +94,6 @@ public class KitMaster extends JavaPlugin implements Listener{
 		historyFile = new File(dataDirectory + "/history.yml");
 
 		try{
-			/*
-			 * Configuration
-			 */
-			if(!configFile.exists())
-				configFile.createNewFile();
-			getConfig().load(configFile);
-			getConfig().options().copyDefaults(true);
-			getConfig().save(configFile);
-			log.info("Loaded configuration from " + configFile.getPath());
-			config = getConfig();
 			/*
 			 * Kits and kit-related items
 			 */
@@ -135,35 +126,35 @@ public class KitMaster extends JavaPlugin implements Listener{
 			metrics.start();
 		}
 		catch(Exception e){e.printStackTrace();}
-		
+
 		/*
 		 * If allowed, automatically update
 		 */
 		try{
-		getLogger().info("Checking for updates...");
-		UpdateType type = getConfig().getBoolean("automaticallyUpdate") ? UpdateType.DEFAULT : UpdateType.NO_DOWNLOAD;
-		Updater update = new Updater(this, "kitmaster", this.getFile(), type, true);
-		switch(update.getResult()){
-		case FAIL_BADSLUG:
-		case FAIL_NOVERSION:
-			getLogger().severe("Failed to check for updates due to bad code.  Contact the developer: " + update.getResult().name());
-			break;
-		case FAIL_DBO:
-			getLogger().severe("An error occurred while checking for updates.");
-			break;
-		case FAIL_DOWNLOAD:
-			getLogger().severe("An error occurred downloading the update.");
-			break;
-		case UPDATE_AVAILABLE:
-			getLogger().warning("An update is available for download on BukkitDev.");
-			break;
-		default: }
+			getLogger().info("Checking for updates...");
+			UpdateType type = getConfig().getBoolean("automaticallyUpdate") ? UpdateType.DEFAULT : UpdateType.NO_DOWNLOAD;
+			update = new Updater(this, "kitmaster", this.getFile(), type, true);
+			switch(update.getResult()){
+			case FAIL_BADSLUG:
+			case FAIL_NOVERSION:
+				getLogger().severe("Failed to check for updates due to bad code.  Contact the developer: " + update.getResult().name());
+				break;
+			case FAIL_DBO:
+				getLogger().severe("An error occurred while checking for updates.");
+				break;
+			case FAIL_DOWNLOAD:
+				getLogger().severe("An error occurred downloading the update.");
+				break;
+			case UPDATE_AVAILABLE:
+				getLogger().warning("An update is available for download on BukkitDev.");
+				break;
+			default: }
 		}
 		catch(Exception e){
 			getLogger().severe("Error occurred while trying to update");
 			e.printStackTrace();
 		}
-		
+
 		initVault();	
 		KitMasterEventHandler.init(this);
 		KitMasterCommandHandler.init(this);
@@ -184,8 +175,18 @@ public class KitMaster extends JavaPlugin implements Listener{
 		}
 		catch(Exception e){ e.printStackTrace(); }
 	}
-	
+
 	public static void reloadKits() throws IOException, InvalidConfigurationException{
+		/*
+		 * Configuration
+		 */
+		if(!configFile.exists())
+			configFile.createNewFile();
+		plugin().getConfig().load(configFile);
+		plugin().getConfig().options().copyDefaults(true);
+		plugin().getConfig().save(configFile);
+		log.info("Loaded configuration from " + configFile.getPath());
+		config = plugin().getConfig();
 		/*
 		 * Custom-defined items
 		 */
@@ -246,15 +247,15 @@ public class KitMaster extends JavaPlugin implements Listener{
 		KitHandler.loadKits(new File(kitsDirectory));
 		log.info("Loaded all kit files from " + kitsDirectory);
 	}
-	
+
 	public static PluginLogger logger(){ return log; }
-	
+
 	public static FileConfiguration config(){ return config; }
-	
+
 	public static Plugin plugin(){ return Bukkit.getPluginManager().getPlugin("KitMaster"); }
-	
+
 	public static boolean isVaultEnabled(){ return vaultEnabled; }
-	
+
 	/**
 	 * Gives a player a kit.  This method will consider and apply all attributes of the given kit, including timeouts, permissions, and inheritance.  If the kit has a parent kit, a recursive call will be made to this method <i>prior</i> to the application of <code>kit</code>, with <code>GiveKitContext.PARENT_GIVEN</code>..
 	 * @param player The player to give the kit to.
@@ -417,7 +418,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 		 */
 		return GiveKitResult.SUCCESS;
 	}
-	
+
 	/**
 	 * Applies clearing attributes of a kit to a player.
 	 * @param player The target player.
@@ -425,13 +426,13 @@ public class KitMaster extends JavaPlugin implements Listener{
 	 */
 	public static void applyKitClears(Player player, Kit kit){
 		boolean all = kit.booleanAttribute(Attribute.CLEAR_ALL);
-		
+
 		//Clear the player's inventory
 		if(kit.booleanAttribute(Attribute.CLEAR_INVENTORY) || all){
 			player.getInventory().clear();
 			player.getInventory().setArmorContents(null);
 		}
-		
+
 		//Clear the player's potion effects
 		if(kit.booleanAttribute(Attribute.CLEAR_EFFECTS) || all){
 			for(PotionEffect effect : player.getActivePotionEffects())
@@ -445,7 +446,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 					for(String node : last.permissions)
 						perms.playerRemove(player, node);
 			}
-		
+
 		if(all)
 			HistoryHandler.resetHistory(player);
 	}
@@ -498,7 +499,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 	 * @author Dennison
 	 */
 	private static class InfiniteEffects implements Runnable{
-		
+
 		public void run() {
 			for(World world : Bukkit.getWorlds())
 				for(Player player : world.getPlayers())
@@ -513,5 +514,5 @@ public class KitMaster extends JavaPlugin implements Listener{
 		}
 	}
 
-	
+
 }
