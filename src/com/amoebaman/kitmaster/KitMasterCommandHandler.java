@@ -23,6 +23,7 @@ import com.amoebaman.kitmaster.handlers.KitHandler;
 import com.amoebaman.kitmaster.objects.Kit;
 import com.amoebaman.kitmaster.utilities.CommandController;
 import com.amoebaman.kitmaster.utilities.CommandController.CommandHandler;
+import com.amoebaman.kitmaster.utilities.CommandController.SubCommandHandler;
 
 public class KitMasterCommandHandler{
 
@@ -31,7 +32,23 @@ public class KitMasterCommandHandler{
 		CommandController.registerCommands(instance, new KitMasterCommandHandler());
 	}
 
+	@CommandHandler(name = "kit")
+	public void kit(Player player, String[] args){
+		if (args.length < 1)
+			return;
+		if(!KitHandler.isKit(args[0])){
+			player.sendMessage(ChatColor.ITALIC + "That kit does not exist");
+			return;
+		}
+		Kit kit = KitHandler.getKit(args[0]);
+		GiveKitResult result = KitMaster.giveKit(player, kit, GiveKitContext.COMMAND_TAKEN);
+		if(KitMaster.DEBUG_KITS)
+			KitMaster.logger().info("Result: " + result.name());
+		return;
+	}
+
 	@CommandHandler(name = "givekit")
+	@SubCommandHandler(parent = "kit", name = "give")
 	public void givekit(CommandSender sender, String[] args){
 		if (args.length < 2){
 			sender.sendMessage(ChatColor.ITALIC + plugin.getCommand("givekit").getUsage());
@@ -51,22 +68,8 @@ public class KitMasterCommandHandler{
 		return;
 	}
 
-	@CommandHandler(name = "kit")
-	public void kit(Player player, String[] args){
-		if (args.length < 1)
-			return;
-		if(!KitHandler.isKit(args[0])){
-			player.sendMessage(ChatColor.ITALIC + "That kit does not exist");
-			return;
-		}
-		Kit kit = KitHandler.getKit(args[0]);
-		GiveKitResult result = KitMaster.giveKit(player, kit, GiveKitContext.COMMAND_TAKEN);
-		if(KitMaster.DEBUG_KITS)
-			KitMaster.logger().info("Result: " + result.name());
-		return;
-	}
-
 	@CommandHandler(name = "kitlist")
+	@SubCommandHandler(parent = "kit", name = "list")
 	public void kitlist(CommandSender sender, String[] args){
 		sender.sendMessage(ChatColor.GREEN + "Available kits:");
 		for(Kit kit : KitHandler.getKits()){
@@ -85,6 +88,7 @@ public class KitMasterCommandHandler{
 	}
 
 	@CommandHandler(name = "kitinfo")
+	@SubCommandHandler(parent = "kit", name = "info")
 	public void kitinfo(CommandSender sender, String[] args){
 		if(args.length < 1){
 			sender.sendMessage(ChatColor.ITALIC + "Specify a kit - /kitinfo <kitname>");
@@ -114,6 +118,7 @@ public class KitMasterCommandHandler{
 	}
 
 	@CommandHandler(name = "reloadkits")
+	@SubCommandHandler(parent = "kit", name = "reload")
 	public void reloadkits(CommandSender sender, String[] args){
 		try {
 			KitMaster.reloadKits();
@@ -125,6 +130,7 @@ public class KitMasterCommandHandler{
 	}
 
 	@CommandHandler(name = "savebook")
+	@SubCommandHandler(parent = "kit", name = "savebook")
 	public void savebook(Player player, String[] args){
 		if(player.getItemInHand().getType() != Material.WRITTEN_BOOK){
 			player.sendMessage(ChatColor.ITALIC + "You need to hold a written book before using this command");
@@ -147,6 +153,7 @@ public class KitMasterCommandHandler{
 	}
 
 	@CommandHandler(name = "loadbook")
+	@SubCommandHandler(parent = "kit", name = "loadbook")
 	public void loadbook(Player player, String[] args){
 		if(args.length == 0){
 			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("loadbook").getUsage());
@@ -161,6 +168,7 @@ public class KitMasterCommandHandler{
 	}
 	
 	@CommandHandler(name = "savefirework")
+	@SubCommandHandler(parent = "kit", name = "savefirework")
 	public void savefirework(Player player, String[] args){
 		if(player.getItemInHand().getType() != Material.FIREWORK){
 			player.sendMessage(ChatColor.ITALIC + "You need to hold a firework before using this command");
@@ -184,6 +192,7 @@ public class KitMasterCommandHandler{
 	}
 
 	@CommandHandler(name = "loadfirework")
+	@SubCommandHandler(parent = "kit", name = "loadfirework")
 	public void loadfirework(Player player, String[] args){
 		if(args.length == 0){
 			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("loadfirework").getUsage());
