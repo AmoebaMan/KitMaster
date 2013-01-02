@@ -32,6 +32,8 @@ import com.amoebaman.kitmaster.handlers.InventoryHandler.Weapon.WeaponType;
 public class InventoryHandler {
 
 	private static final int MAX_SLOT_INDEX = 35;
+	public static final HashMap<Material,Armor> armor = new HashMap<Material,Armor>();
+	public static final HashMap<Material,Weapon> weapons = new HashMap<Material,Weapon>();
 
 	/**
 	 * Represents a piece of armor,
@@ -73,10 +75,7 @@ public class InventoryHandler {
 		};
 	}
 	/** Stores the <code>Armor</code> that corresponds to each <code>Material</code>. */
-	public static final HashMap<Material,Armor> armor;
 	static {
-		armor = new HashMap<Material,Armor>();
-		
 		armor.put(Material.LEATHER_HELMET,new Armor(ArmorType.HAT, ArmorLevel.LEATHER));
 		armor.put(Material.GOLD_HELMET,new Armor(ArmorType.HAT, ArmorLevel.GOLD));
 		armor.put(Material.CHAINMAIL_HELMET,new Armor(ArmorType.HAT, ArmorLevel.CHAIN));
@@ -136,10 +135,7 @@ public class InventoryHandler {
 		};
 	}
 	/** Stores the <code>Weapon</code> that corresponds to each <code>Material</code>. */
-	public static final HashMap<Material,Weapon> weapons;
 	static {
-		weapons = new HashMap<Material,Weapon>();
-
 		weapons.put(Material.WOOD_SWORD,new Weapon(WeaponType.SWORD, WeaponLevel.WOOD));
 		weapons.put(Material.STONE_SWORD,new Weapon(WeaponType.SWORD, WeaponLevel.STONE));
 		weapons.put(Material.GOLD_SWORD,new Weapon(WeaponType.SWORD, WeaponLevel.GOLD));
