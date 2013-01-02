@@ -1,6 +1,10 @@
 package com.amoebaman.kitmaster;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -47,7 +51,9 @@ import net.milkbowl.vault.permission.Permission;
 
 /**
  * 
- * The main class for KitMaster
+ * The main class for KitMaster.
+ * 
+ * Contains static methods for generally managing kits.
  * 
  * @author Dennison
  *
@@ -284,8 +290,18 @@ public class KitMaster extends JavaPlugin implements Listener{
 		 * Kits
 		 */
 		try{
-			if(!kitsFile.exists())
+			if(!kitsFile.exists()){
 				kitsFile.createNewFile();
+				kitsFile.setWritable(true);
+				BufferedReader reader = new BufferedReader(new InputStreamReader(plugin().getClass().getResourceAsStream("/kits.yml")));
+				BufferedWriter writer = new BufferedWriter(new FileWriter(kitsFile));
+				while(reader.ready()){
+					writer.write(reader.readLine());
+					writer.newLine();
+				}
+				reader.close();
+				writer.close();
+			}
 			KitHandler.loadKits(kitsFile);
 			log.info("Loaded all kit files from " + kitsFile.getPath());
 			KitHandler.loadKits(new File(kitsDirectory));
@@ -514,10 +530,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 					perms.playerRemove(player, node);
 	}
 
-	/**
-	 * Retrieves and stores service providers obtained using the <b>Vault</b> API.
-	 */
-	public static void initVault(){
+	private static void initVault(){
 		vaultEnabled = Bukkit.getPluginManager().isPluginEnabled("Vault");
 		if(!vaultEnabled)
 			return;
