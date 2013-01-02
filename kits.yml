@@ -1,0 +1,31 @@
+SampleKit:
+  items:
+  - Iron_Sword:1 Sharpness:1
+  - Bow:1 Punch:1
+  - Arrow:64
+  - Iron_Helmet:1
+  - Iron_Chestplate:1 Protection:1
+  - Chainmail_Leggings:1
+  - Chainmail_Boots:1
+  effects:
+  - Strength:1
+  infiniteEffects: true
+  timeout:
+    duration: 30
+    global: false
+    singleUse: false
+    singleUsePerLife: false
+  clear:
+    all: true
+    inventory: true
+    effects: true
+    permissions: true
+  inheritance:
+    parent: ''
+    upgrade: true
+    inheritParentPerms: true
+    requireParentPerms: false
+  economy:
+    cost: 0.0
+    cash: 0.0
+  showInList: true

@@ -16,10 +16,13 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
+import com.amoebaman.kitmaster.enums.Attribute;
 import com.amoebaman.kitmaster.enums.GiveKitContext;
 import com.amoebaman.kitmaster.enums.GiveKitResult;
+import com.amoebaman.kitmaster.handlers.HistoryHandler;
 import com.amoebaman.kitmaster.handlers.KitHandler;
 import com.amoebaman.kitmaster.handlers.SignHandler;
+import com.amoebaman.kitmaster.handlers.TimeStampHandler;
 import com.amoebaman.kitmaster.objects.Kit;
 
 public class KitMasterEventHandler implements Listener{
@@ -115,6 +118,12 @@ public class KitMasterEventHandler implements Listener{
 	 */
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event){
+		for(Kit kit : HistoryHandler.getHistory(event.getEntity()))
+			if(kit.booleanAttribute(Attribute.SINGLE_USE_LIFE)){
+				TimeStampHandler.clearTimeStamp(event.getEntity(), kit);
+				if(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT))
+					TimeStampHandler.clearTimeStamp(null, kit);
+			}
 		if(KitMaster.config().getBoolean("clearKits.onDeath", true))
 			KitMaster.clearAll(event.getEntity());
 	}

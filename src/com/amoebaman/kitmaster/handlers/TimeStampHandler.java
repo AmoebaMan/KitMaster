@@ -40,25 +40,28 @@ public class TimeStampHandler {
 			playerSection = yamlConfig.createSection(sectionName);
 		playerSection.set(kit.name, System.currentTimeMillis());
 	}
+	
+	public static void clearTimeStamp(Player player, Kit kit){
+		String sectionName = player == null ? "global" : player.getName();
+		ConfigurationSection playerSection = yamlConfig.getConfigurationSection(sectionName);
+		if(playerSection == null)
+			playerSection = yamlConfig.createSection(sectionName);
+		playerSection.set(kit.name, null);
+	}
 
 	public static GiveKitResult timeoutCheck(Player player, Kit kit){
-		long timestamp = TimeStampHandler.getTimeStamp(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT) ? null : player, kit);
+		long timestamp = getTimeStamp(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT) ? null : player, kit);
 		long timeout = kit.integerAttribute(Attribute.TIMEOUT);
-		if(player.hasPermission("kitmaster.shorttimeout") && !kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT))
-			timeout /= 3;
-		
 		if(System.currentTimeMillis() < timestamp + (timeout * 1000))
 			return GiveKitResult.FAIL_TIMEOUT;	
-		if(kit.integerAttribute(Attribute.TIMEOUT) < 0)
+		if(timestamp > 0 && (kit.booleanAttribute(Attribute.SINGLE_USE) || kit.booleanAttribute(Attribute.SINGLE_USE_LIFE)))
 			return GiveKitResult.FAIL_SINGLE_USE;
 		return GiveKitResult.SUCCESS;
 	}
 
 	public static int timeoutLeft(Player player, Kit kit){
-		long timestamp = TimeStampHandler.getTimeStamp(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT) ? null : player, kit);
+		long timestamp = getTimeStamp(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT) ? null : player, kit);
 		long timeout = kit.integerAttribute(Attribute.TIMEOUT);
-		if(player.hasPermission("kitmaster.shorttimeout") && !kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT))
-			timeout /= 3;
 		return (int)(((timestamp + (timeout * 1000)) - System.currentTimeMillis()) / 1000);
 	}
 	
