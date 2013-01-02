@@ -396,13 +396,16 @@ public class InventoryHandler {
 			}
 		}
 		int maxStackSize = stack.getType().getMaxStackSize();
-		if(stack.getType() == Material.POTION)
-			maxStackSize = 16;
-		if(stack.getAmount() <= maxStackSize){
-			inv.setItem(getAddIndex(inv, reverse), stack);
-			return;
+		for(String key : KitMaster.config().getConfigurationSection("maxStacks").getKeys(false)){
+			try{
+				if(getBaseStack(key).getType() == stack.getType())
+					maxStackSize = KitMaster.config().getInt("maxStacks." + key);
+			}
+			catch(ParseItemException pie){}
 		}
-		if(maxStackSize != 64){
+		if(stack.getAmount() <= maxStackSize)
+			inv.setItem(getAddIndex(inv, reverse), stack);
+		else if(maxStackSize != 64){
 			ItemStack fullStack = stack.clone();
 			fullStack.setAmount(maxStackSize);
 			List<ItemStack> items = new ArrayList<ItemStack>();
@@ -798,11 +801,6 @@ public class InventoryHandler {
 			return oldWeapon.type.ordinal() < newWeapon.type.ordinal();
 	}
 
-	/**
-	 * Gets a user-friendly String that represents an <code>ItemStack</code>.
-	 * @param stack The item to read.
-	 * @return The string.
-	 */
 	public static String itemToString(ItemStack stack){
 		String str = stack.getType().name().toLowerCase();
 		if(getTag(stack) != null)
@@ -813,6 +811,11 @@ public class InventoryHandler {
 		return str;
 	}
 
+	/**
+	 * Gets a user-friendly String that represents an <code>ItemStack</code>.
+	 * @param stack The item to read.
+	 * @return The string.
+	 */
 	public static String friendlyItemString(ItemStack stack){
 		String str = capitalize((stack.getItemMeta().getDisplayName() == null) ? stack.getType().name().toLowerCase().replace("_", " ") : stack.getItemMeta().getDisplayName()) + (stack.getAmount() > 1 ? "s" : "");
 		if(stack.getItemMeta().getDisplayName() == null){
