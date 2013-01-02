@@ -13,6 +13,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 
+import com.amoebaman.kitmaster.KitMaster;
+
 public class FireworkHandler {
 
 	private static final YamlConfiguration yaml = new YamlConfiguration();
@@ -58,7 +60,7 @@ public class FireworkHandler {
 		for(int i = 0; i < meta.getEffectsSize(); i++){
 			FireworkEffect burst = meta.getEffects().get(i);
 			String burstName;
-			if(FireworkEffectHandler.getEffectName(burst) != null){
+			if(FireworkEffectHandler.getEffectName(burst) == null){
 				burstName =  name + "_burst_" + i;
 				FireworkEffectHandler.saveFirework(burst, burstName);
 			}
@@ -76,6 +78,8 @@ public class FireworkHandler {
 		if(fireworkYaml == null)
 			return firework;
 		FireworkMeta meta = (FireworkMeta) firework.getItemMeta();
+		if(KitMaster.config().getBoolean("inventory.renameFireworks", true))
+			meta.setDisplayName(fireworkYaml.getName());
 		meta.setPower(fireworkYaml.getInt("fuse"));
 		for(String burstName : fireworkYaml.getStringList("bursts"))
 			meta.addEffect(FireworkEffectHandler.getFirework(burstName));

@@ -58,6 +58,7 @@ public class PotionHandler {
 			effectYaml.set("type", effect.getType().getName().toLowerCase());
 			effectYaml.set("duration", effect.getDuration());
 			effectYaml.set("amplifier", effect.getAmplifier() + 1);
+			effectYaml.set("showParticles", effect.isAmbient());
 		}
 	}
 	
@@ -65,14 +66,17 @@ public class PotionHandler {
 		if(potion.getType() != Material.POTION)
 			return potion;
 		PotionMeta meta = (PotionMeta) potion.getItemMeta();
+		meta.clearCustomEffects();
 		ConfigurationSection potionYaml = getSection(name);
 		if(potionYaml == null)
 			return potion;
 		for(String index : potionYaml.getKeys(false)){
 			ConfigurationSection effectYaml = potionYaml.getConfigurationSection(index);
-			PotionEffect effect = new PotionEffect(InventoryHandler.getEffectByCommonName(effectYaml.getString("type")), effectYaml.getInt("duration"), effectYaml.getInt("amplifier"));
+			PotionEffect effect = new PotionEffect(InventoryHandler.getEffectByCommonName(effectYaml.getString("type")), effectYaml.getInt("duration"), effectYaml.getInt("amplifier") - 1, effectYaml.getBoolean("showParticles"));
 			meta.addCustomEffect(effect, true);
 		}
+		if(!meta.getCustomEffects().isEmpty())
+			meta.setMainEffect(meta.getCustomEffects().get(0).getType());
 		potion.setItemMeta(meta);
 		return potion;
 	}

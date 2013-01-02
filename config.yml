@@ -2,6 +2,12 @@ clearKits:
   onDeath: true
   onDisable: false
   onDisconnect: false
-  
-#If this is not set to false, KitMaster will automatically update itself from the latest file on BukkitDev
+inventory:
+  autoEquipWeapon: true
+  autoEquipArmor: true
+  woolHats: false
+  skullHats: false
+  renameFireworks: true
+maxStacks:
+  Potion: 16
 automaticallyUpdate: true

@@ -42,14 +42,16 @@ public class InventoryHandler {
 		public ArmorLevel lvl;
 		/** The type of the armor. */
 		public ArmorType type;
-		protected Armor(ArmorType type, ArmorLevel lvl){this.lvl=lvl; this.type=type;}
+		public Armor(ArmorType type, ArmorLevel lvl){this.lvl=lvl; this.type=type;}
 		/** The levels of armor.  Higher ordinals correspond to more powerful armor. */
 		public enum ArmorLevel{
 			/** Mob heads, not yet implemented */
 			MOB_HEAD,
+			/** Wool hats, optional */
+			WOOL,
 			/** Leather armor */
 			LEATHER,
-			/** Golden (butter_ armor */
+			/** Golden (butter) armor */
 			GOLD,
 			/** Chainmail armor */
 			CHAIN,
@@ -74,7 +76,7 @@ public class InventoryHandler {
 	public static final HashMap<Material,Armor> armor;
 	static {
 		armor = new HashMap<Material,Armor>();
-
+		
 		armor.put(Material.LEATHER_HELMET,new Armor(ArmorType.HAT, ArmorLevel.LEATHER));
 		armor.put(Material.GOLD_HELMET,new Armor(ArmorType.HAT, ArmorLevel.GOLD));
 		armor.put(Material.CHAINMAIL_HELMET,new Armor(ArmorType.HAT, ArmorLevel.CHAIN));
@@ -277,6 +279,52 @@ public class InventoryHandler {
 		return null;
 	}
 
+	public static short getPotionDataByCommonName(String name){
+		name = name.toLowerCase();
+		if(isInt(name))
+			return Short.parseShort(name);
+		short data = 0;
+		if(name.contains("water")) data = 0;
+		if(name.contains("awkward")) data = 16;
+		if(name.contains("thick")) data = 32;
+		if(name.contains("mundane")) data = 8192;
+		if(name.contains("clear")) data = 7;
+		if(name.contains("diffuse")) data = 11;
+		if(name.contains("artless")) data = 13;
+		if(name.contains("thin")) data = 15;
+		if(name.contains("bungling")) data = 23;
+		if(name.contains("smooth")) data = 27;
+		if(name.contains("suave")) data = 29;
+		if(name.contains("debonair")) data = 31;
+		if(name.contains("charming")) data = 39;
+		if(name.contains("refined")) data = 43;
+		if(name.contains("cordial")) data = 45;
+		if(name.contains("sparkling")) data = 47;
+		if(name.contains("potent")) data = 48;
+		if(name.contains("rank")) data = 55;
+		if(name.contains("acrid")) data = 59;
+		if(name.contains("gross")) data = 61;
+		if(name.contains("stinky")) data = 63;
+		
+		if(name.contains("regen")) data = 1;
+		if(name.contains("speed") || name.contains("swift")) data = 2;
+		if(name.contains("fire")) data = 3;
+		if(name.contains("poison")) data = 4;
+		if(name.contains("heal")) data = 5;
+		if(name.contains("night")) data = 6;
+		if(name.contains("weak")) data = 8;
+		if(name.contains("strength")) data = 9;
+		if(name.contains("slow")) data = 10;
+		if(name.contains("harm") || name.contains("damage")) data = 12;
+		if(name.contains("invis")) data = 14;
+
+		if(name.contains("power") || name.contains("level")) data += 32;
+		if(name.contains("ext") || name.contains("long")) data += 64;
+		if(name.contains("splash") || name.contains("throw")) data += 16384; else data += 8192;
+		
+		return data;
+	}
+	
 	/**
 	 * Adds a list of <code>ItemStack</code> to a player's inventory.
 	 * @param player The player to give the items to.
@@ -295,7 +343,7 @@ public class InventoryHandler {
 	public static void giveItemToPlayer(Player player, ItemStack stack, boolean upgrade, boolean reverse) {
 		PlayerInventory inv = player.getInventory();
 		Material mat = stack.getType();
-		if(armor.containsKey(mat)){
+		if(armor.containsKey(mat) && KitMaster.config().getBoolean("inventory.autoEquipArmor", true)){
 			/*
 			 * If the new armor is better, equip it and put the old armor in the inventory
 			 * If the old armor is better, put the new armor in the inventory
@@ -318,7 +366,7 @@ public class InventoryHandler {
 					addItemToInventory(inv, stack, upgrade, reverse);
 			}		
 		}
-		else if(weapons.containsKey(mat)){
+		else if(weapons.containsKey(mat) && KitMaster.config().getBoolean("inventory.autoEquipWeapon", true)){
 			ItemStack oldWeapon = inv.getItemInHand();
 			boolean empty = oldWeapon == null || oldWeapon.getType() == Material.AIR;
 			boolean better = empty ? true : weaponSlotBetter(weapons.get(oldWeapon.getType()), weapons.get(mat));
@@ -562,6 +610,7 @@ public class InventoryHandler {
 					stack = FireworkHandler.loadFirework(stack, tag);
 					break;
 				case POTION:
+					stack.setDurability(getPotionDataByCommonName(tag));
 					stack = PotionHandler.loadPotion(stack, tag);
 					break;
 				case LOG:
@@ -581,7 +630,7 @@ public class InventoryHandler {
 					break;
 				case WOOL:
 				case INK_SACK:
-					if(DyeColor.valueOf(tag.toUpperCase()) != null)
+					if(!isInt(tag) && DyeColor.valueOf(tag.toUpperCase()) != null)
 						stack.setDurability(DyeColor.valueOf(tag.toUpperCase()).getData());
 					break;
 				case STEP:
@@ -769,10 +818,12 @@ public class InventoryHandler {
 	}
 
 	public static String friendlyItemString(ItemStack stack){
-		String str = capitalize((stack.getItemMeta().getDisplayName() == null) ? stack.getType().name().toLowerCase().replace("_", " ") : stack.getItemMeta().getDisplayName());
-		String tag = getTag(stack);
-		if(tag != null)
-			str = capitalize(tag) + " " + str;
+		String str = capitalize((stack.getItemMeta().getDisplayName() == null) ? stack.getType().name().toLowerCase().replace("_", " ") : stack.getItemMeta().getDisplayName()) + (stack.getAmount() > 1 ? "s" : "");
+		if(stack.getItemMeta().getDisplayName() == null){
+			String tag = getTag(stack);
+			if(tag != null)
+				str = capitalize(tag) + " " + str;
+		}
 		str = stack.getAmount() + " " + str;
 		if(!stack.getEnchantments().isEmpty())
 			str += " with ";

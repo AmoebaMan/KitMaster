@@ -1,13 +1,12 @@
 package com.amoebaman.kitmaster;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -31,6 +30,9 @@ import com.amoebaman.kitmaster.handlers.KitHandler;
 import com.amoebaman.kitmaster.handlers.PotionHandler;
 import com.amoebaman.kitmaster.handlers.SignHandler;
 import com.amoebaman.kitmaster.handlers.TimeStampHandler;
+import com.amoebaman.kitmaster.handlers.InventoryHandler.Armor;
+import com.amoebaman.kitmaster.handlers.InventoryHandler.Armor.ArmorLevel;
+import com.amoebaman.kitmaster.handlers.InventoryHandler.Armor.ArmorType;
 import com.amoebaman.kitmaster.metrics.Metrics;
 import com.amoebaman.kitmaster.objects.GiveKitEvent;
 import com.amoebaman.kitmaster.objects.Kit;
@@ -53,7 +55,6 @@ import net.milkbowl.vault.permission.Permission;
 public class KitMaster extends JavaPlugin implements Listener{
 
 	private static PluginLogger log;
-	private static FileConfiguration config;
 
 	protected static String mainDirectory, kitsDirectory, dataDirectory;
 	protected static File configFile, itemsFile, booksFile, potionsFile, fireworkEffectsFile, fireworksFile, kitsFile, signsFile, timestampsFile, historyFile;
@@ -73,7 +74,6 @@ public class KitMaster extends JavaPlugin implements Listener{
 	@Override
 	public void onEnable(){
 		log = new PluginLogger(this);
-		config = getConfig();
 
 		mainDirectory = getDataFolder().getPath();
 		kitsDirectory = mainDirectory + "/kits";
@@ -176,81 +176,130 @@ public class KitMaster extends JavaPlugin implements Listener{
 		catch(Exception e){ e.printStackTrace(); }
 	}
 
-	public static void reloadKits() throws IOException, InvalidConfigurationException{
+	public static void reloadKits(){
 		/*
 		 * Configuration
 		 */
-		if(!configFile.exists())
-			configFile.createNewFile();
-		plugin().getConfig().load(configFile);
-		plugin().getConfig().options().copyDefaults(true);
-		plugin().getConfig().save(configFile);
-		log.info("Loaded configuration from " + configFile.getPath());
-		config = plugin().getConfig();
+		try {
+			if(!configFile.exists())
+				configFile.createNewFile();
+			plugin().getConfig().load(configFile);
+			plugin().getConfig().options().copyDefaults(true);
+			plugin().getConfig().save(configFile);
+			log.info("Loaded configuration from " + configFile.getPath());
+			if(config().getBoolean("inventory.woolHats", false))
+				InventoryHandler.armor.put(Material.WOOL, new Armor(ArmorType.HAT, ArmorLevel.WOOL));
+			else
+				InventoryHandler.armor.remove(Material.WOOL);
+			if(config().getBoolean("inventory.skullHats", false))
+				InventoryHandler.armor.put(Material.SKULL_ITEM, new Armor(ArmorType.HAT, ArmorLevel.MOB_HEAD));
+			else
+				InventoryHandler.armor.remove(Material.SKULL_ITEM);
+		}
+		catch (Exception e) {
+			log.severe("Error while loading configuration from " + configFile.getPath());
+			e.printStackTrace();
+		}
 		/*
 		 * Custom-defined items
 		 */
-		if(!itemsFile.exists()){
-			itemsFile.createNewFile();
-			ItemHandler.addSample();
-			ItemHandler.save(itemsFile);
+		try {
+			if(!itemsFile.exists()){
+				itemsFile.createNewFile();
+				ItemHandler.addSample();
+				ItemHandler.save(itemsFile);
+			}
+			ItemHandler.load(itemsFile);
+			log.info("Loaded saved items from " + itemsFile.getPath());
 		}
-		ItemHandler.load(itemsFile);
-		log.info("Loaded saved books from " + itemsFile.getPath());
+		catch (Exception e) {
+			log.severe("Error while loading saved items from " + itemsFile.getPath());
+			e.printStackTrace();
+		}
 		/*
 		 * Books
 		 */
-		if(!booksFile.exists()){
-			booksFile.createNewFile();
-			BookHandler.addSample();
-			BookHandler.save(booksFile);
+		try {
+			if(!booksFile.exists()){
+				booksFile.createNewFile();
+				BookHandler.addSample();
+				BookHandler.save(booksFile);
+			}
+			BookHandler.load(booksFile);
+			log.info("Loaded saved books from " + booksFile.getPath());
 		}
-		BookHandler.load(booksFile);
-		log.info("Loaded saved books from " + booksFile.getPath());
+		catch (Exception e) {
+			log.severe("Error while loading saved books from " + booksFile.getPath());
+			e.printStackTrace();
+		}
 		/*
 		 * Potions
 		 */
-		if(!potionsFile.exists()){
-			potionsFile.createNewFile();
-			PotionHandler.addSample();
-			PotionHandler.save(potionsFile);
+		try{
+			if(!potionsFile.exists()){
+				potionsFile.createNewFile();
+				PotionHandler.addSample();
+				PotionHandler.save(potionsFile);
+			}
+			PotionHandler.load(potionsFile);
+			log.info("Loaded saved potions from " + potionsFile.getPath());
 		}
-		PotionHandler.load(potionsFile);
-		log.info("Loaded saved potions from " + potionsFile.getPath());
+		catch (Exception e) {
+			log.severe("Error while loading saved potions from " + potionsFile.getPath());
+			e.printStackTrace();
+		}
 		/*
 		 * Firework effects
 		 */
-		if(!fireworkEffectsFile.exists()){
-			fireworkEffectsFile.createNewFile();
-			FireworkEffectHandler.addSample();
-			FireworkEffectHandler.save(fireworkEffectsFile);
+		try{
+			if(!fireworkEffectsFile.exists()){
+				fireworkEffectsFile.createNewFile();
+				FireworkEffectHandler.addSample();
+				FireworkEffectHandler.save(fireworkEffectsFile);
+			}
+			FireworkEffectHandler.load(fireworkEffectsFile);
+			log.info("Loaded saved firework effects from " + fireworkEffectsFile.getPath());
 		}
-		FireworkEffectHandler.load(fireworkEffectsFile);
-		log.info("Loaded saved firework effects from " + fireworkEffectsFile.getPath());
+		catch (Exception e) {
+			log.severe("Error while loading saved firework effects from " + fireworkEffectsFile.getPath());
+			e.printStackTrace();
+		}
 		/*
 		 * Fireworks
 		 */
-		if(!fireworksFile.exists()){
-			fireworksFile.createNewFile();
-			FireworkHandler.addSample();
-			FireworkHandler.save(fireworksFile);
+		try{
+			if(!fireworksFile.exists()){
+				fireworksFile.createNewFile();
+				FireworkHandler.addSample();
+				FireworkHandler.save(fireworksFile);
+			}
+			FireworkHandler.load(fireworksFile);
+			log.info("Loaded saved fireworks from " + fireworksFile.getPath());
 		}
-		FireworkHandler.load(fireworksFile);
-		log.info("Loaded saved fireworks from " + fireworksFile.getPath());
+		catch (Exception e) {
+			log.severe("Error while loading saved fireworks from " + fireworksFile.getPath());
+			e.printStackTrace();
+		}
 		/*
 		 * Kits
 		 */
-		if(!kitsFile.exists())
-			kitsFile.createNewFile();
-		KitHandler.loadKits(kitsFile);
-		log.info("Loaded all kit files from " + kitsFile.getPath());
-		KitHandler.loadKits(new File(kitsDirectory));
-		log.info("Loaded all kit files from " + kitsDirectory);
+		try{
+			if(!kitsFile.exists())
+				kitsFile.createNewFile();
+			KitHandler.loadKits(kitsFile);
+			log.info("Loaded all kit files from " + kitsFile.getPath());
+			KitHandler.loadKits(new File(kitsDirectory));
+			log.info("Loaded all kit files from " + kitsDirectory);
+		}
+		catch (Exception e) {
+			log.severe("Error while loading kits");
+			e.printStackTrace();
+		}
 	}
 
 	public static PluginLogger logger(){ return log; }
 
-	public static FileConfiguration config(){ return config; }
+	public static FileConfiguration config(){ return plugin().getConfig(); }
 
 	public static Plugin plugin(){ return Bukkit.getPluginManager().getPlugin("KitMaster"); }
 
@@ -426,27 +475,13 @@ public class KitMaster extends JavaPlugin implements Listener{
 	 */
 	public static void applyKitClears(Player player, Kit kit){
 		boolean all = kit.booleanAttribute(Attribute.CLEAR_ALL);
-
-		//Clear the player's inventory
-		if(kit.booleanAttribute(Attribute.CLEAR_INVENTORY) || all){
-			player.getInventory().clear();
-			player.getInventory().setArmorContents(null);
-		}
-
-		//Clear the player's potion effects
-		if(kit.booleanAttribute(Attribute.CLEAR_EFFECTS) || all){
-			for(PotionEffect effect : player.getActivePotionEffects())
-				player.removePotionEffect(effect.getType());
-		}
-
-		//Clear the player's kit-applied permissions
+		if(kit.booleanAttribute(Attribute.CLEAR_INVENTORY) || all)
+			clearInventory(player);
+		if(kit.booleanAttribute(Attribute.CLEAR_EFFECTS) || all)
+			clearInventory(player);
 		if(perms != null)
-			if(kit.booleanAttribute(Attribute.CLEAR_PERMISSIONS) || all){
-				for(Kit last : HistoryHandler.getHistory(player))
-					for(String node : last.permissions)
-						perms.playerRemove(player, node);
-			}
-
+			if(kit.booleanAttribute(Attribute.CLEAR_PERMISSIONS) || all)
+				clearPermissions(player);
 		if(all)
 			HistoryHandler.resetHistory(player);
 	}
@@ -456,15 +491,27 @@ public class KitMaster extends JavaPlugin implements Listener{
 	 * @param player The target player.
 	 */
 	public static void clearAll(Player player){
+		clearInventory(player);
+		clearEffects(player);
+		clearPermissions(player);
+		HistoryHandler.resetHistory(player);
+	}
+
+	private static void clearInventory(Player player){
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
+	}
+
+	private static void clearEffects(Player player){
 		for(PotionEffect effect : player.getActivePotionEffects())
 			player.removePotionEffect(effect.getType());
+	}
+
+	private static void clearPermissions(Player player){
 		if(perms != null)
 			for(Kit last : HistoryHandler.getHistory(player))
 				for(String node : last.permissions)
 					perms.playerRemove(player, node);
-		HistoryHandler.resetHistory(player);
 	}
 
 	/**
