@@ -25,12 +25,12 @@ public enum Attribute{
 	/**
 	 * Whether or not the kit will infinitely renew its potion effects (until cleared).
 	 */
-	INFINITE_EFFECTS(Boolean.class, "infiniteEffects", true),
+	INFINITE_EFFECTS(Boolean.class, "infiniteEffects", false),
 	
 	/**
 	 * Encompasses all other clear options.
 	 */
-	CLEAR_ALL(Boolean.class, "clear.all", true),
+	CLEAR_ALL(Boolean.class, "clear.all", false),
 	
 	/**
 	 * Whether or not the kit should clear the player's inventory when taken.
