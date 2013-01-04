@@ -1,4 +1,61 @@
 ==KitMaster==
-The definitive CraftBukkit plugin for creating, managing, and handling kits
+====The definitive CraftBukkit plugin for creating and managing kits====
+KitMaster has one simple and attainable goal: to be the simplest, best, and most efficient CraftBukkit plugin for creating and managing kits.
 
-{{https://mcstats.org/signature/KitMaster.png|MCStats}}
+[[https://mcstats.org/plugin/KitMaster/|{{https://mcstats.org/signature/KitMaster.png|MCStats}}]]
+
+===Features===
+* **Many ways to give or obtain kits**
+**Execute a command
+**Punch a kit selection sign
+**Can be automatically given on respawn
+
+* **Simple and easy formatting for including items in kits**
+
+* **Add potion effects and permission nodes to kits as well as items**
+**Effects can be permanent, or limited to a certain duration
+**Effects and permissions are automatically revoked when the kit is lost
+
+* **Define a timeout between consecutive kit selections**
+**Specify a timeout in seconds, or make the kit single-use only
+**Optionally make the same timer apply to **all** players online
+
+* **Prevent kits from clearing items, effects, and permissions when they are taken**
+
+* **Define kits that will automatically upgrade existing items in the player's inventory**
+
+* **Hook into economies to charge for kits or grant money with them**
+
+* **Dynamic and powerful inheritance system**
+**Kits will inherit all attributes that are not explicitly defined from their parents, which inherit from //their// parents...
+**Tell a kit how it should interact with its parent's permissions
+
+* **Simple, intuitive permissions system**
+**All kit permissions are denied unless explicitly granted
+**Kit permissions can be granted on a per-scenario basis
+
+* **Simple, clean kit list by command**
+**Only displays kits for which the user has permission
+**Includes notifier for kits which can only be taken through certain methods
+**Define kits that will never display in the kit list
+
+* **Easy to hook into**
+**Kits can be defined with plugin-friendly identifiers so they won't break if their names are changed
+**Easy-to-handle event when kits are given/taken
+
+* **Item metadata support**
+**Write and save books that can be loaded as parts of kits
+**Include colors for leather armor
+**Dynamically define which effects are applied by potion items
+**Define the owner of skull items
+
+* **Custom item names/lore
+**Define custom items in a configuration by specifying a material, a name, and any amount of lore
+**Add custom items to a kit simply by calling their name
+
+* **Custom potions**
+**Define custom potions effects that combine any number and amount of standard potion effects
+**Give players custom potions as inventory items
+**Pair custom potions effects with custom item names/lore to create completely new Potions
+
+[[https://mcstats.org/plugin/KitMaster/|{{https://mcstats.org/signature/KitMaster.png|MCStats}}]]
