@@ -28,4 +28,10 @@ SampleKit:
   economy:
     cost: 0.0
     cash: 0.0
+  restrictions:
+    armor: false
+    drops: false
+    deathDrops: false
+    pickups: false
+    otherKits: false
   showInList: true
