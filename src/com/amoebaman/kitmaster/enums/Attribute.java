@@ -78,6 +78,31 @@ public enum Attribute{
 	CASH(Double.class, "economy.cash", 0.0),
 	
 	/**
+	 * Whether or not the kit should restrict armor removal
+	 */
+	RESTRICT_ARMOR(Boolean.class, "restrictions.armor", false),
+	
+	/**
+	 * Whether or not the kit should restrict item dropping
+	 */
+	RESTRICT_DROPS(Boolean.class, "restrictions.drops", false),
+	
+	/**
+	 * Whether or not the kit should restrict item drops on death
+	 */
+	RESTRICT_DEATH_DROPS(Boolean.class, "restrictions.deathDrops", false),
+	
+	/**
+	 * Whether or not the kit should restrict item pickups
+	 */
+	RESTRICT_PICKUPS(Boolean.class, "restrictions.pickups", false),
+	
+	/**
+	 * Whether or not the kit should restrict players taking additional kits after this one
+	 */
+	RESTRICT_KITS(Boolean.class, "restrictions.otherKits", false),
+	
+	/**
 	 * Whether or not the kit will show in the /kitlist list.
 	 */
 	SHOW_IN_LIST(Boolean.class, "showInList", true),

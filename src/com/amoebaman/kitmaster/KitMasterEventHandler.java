@@ -11,8 +11,12 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType.SlotType;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -118,12 +122,15 @@ public class KitMasterEventHandler implements Listener{
 	 */
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event){
-		for(Kit kit : HistoryHandler.getHistory(event.getEntity()))
+		for(Kit kit : HistoryHandler.getHistory(event.getEntity())){
 			if(kit.booleanAttribute(Attribute.SINGLE_USE_LIFE)){
 				TimeStampHandler.clearTimeStamp(event.getEntity(), kit);
 				if(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT))
 					TimeStampHandler.clearTimeStamp(null, kit);
 			}
+			if(kit.booleanAttribute(Attribute.RESTRICT_DEATH_DROPS))
+				event.getDrops().clear();
+		}
 		if(KitMaster.config().getBoolean("clearKits.onDeath", true))
 			KitMaster.clearAll(event.getEntity());
 	}
@@ -163,6 +170,27 @@ public class KitMasterEventHandler implements Listener{
 				player.sendMessage(ChatColor.ITALIC + "KitMaster: Version " + KitMaster.update.getLatestVersionString().replace("v", "") + " is available on BukkitDev, you currently have version " + KitMaster.plugin().getDescription().getVersion()); break;
 			default: }
 		}
+	}
+	
+	@EventHandler
+	public void onPlayerInventory(InventoryClickEvent event){
+		for(Kit kit : HistoryHandler.getHistory((Player) event.getWhoClicked()))
+			if(event.getSlotType() == SlotType.ARMOR && kit.booleanAttribute(Attribute.RESTRICT_ARMOR))
+				event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onPlayerDropItem(PlayerDropItemEvent event){
+		for(Kit kit : HistoryHandler.getHistory(event.getPlayer()))
+			if(kit.booleanAttribute(Attribute.RESTRICT_DROPS))
+				event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onItemPickup(PlayerPickupItemEvent event){
+		for(Kit kit : HistoryHandler.getHistory(event.getPlayer()))
+			if(kit.booleanAttribute(Attribute.RESTRICT_PICKUPS))
+				event.setCancelled(true);
 	}
 
 }

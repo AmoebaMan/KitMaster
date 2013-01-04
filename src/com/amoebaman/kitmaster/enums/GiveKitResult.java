@@ -33,6 +33,11 @@ public enum GiveKitResult {
 	FAIL_COST,
 	
 	/**
+	 * The kit was not given because another kit restricts further kits.
+	 */
+	FAIL_RESTRICTED,
+	
+	/**
 	 * The kit was not given because it was null.
 	 */
 	FAIL_NULL_KIT,

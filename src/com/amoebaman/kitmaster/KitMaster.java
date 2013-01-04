@@ -424,6 +424,14 @@ public class KitMaster extends JavaPlugin implements Listener{
 				return GiveKitResult.FAIL_COST;
 			}
 		/*
+		 * Check if the player has taken any kits that restrict further kit usage
+		 */
+		for(Kit other : HistoryHandler.getHistory(player))
+			if(other.booleanAttribute(Attribute.RESTRICT_KITS)){
+				player.sendMessage(ChatColor.ITALIC + "You've already taken a kit that doesn't allow you to take further kits");
+				return GiveKitResult.FAIL_RESTRICTED;
+			}
+		/*
 		 * Create and call a GiveKitEvent so that other plugins can modify or attempt to cancel the kit
 		 * If the event comes back cancelled and the context doesn't override it, end here
 		 */
@@ -494,7 +502,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 		if(kit.booleanAttribute(Attribute.CLEAR_INVENTORY) || all)
 			clearInventory(player);
 		if(kit.booleanAttribute(Attribute.CLEAR_EFFECTS) || all)
-			clearInventory(player);
+			clearEffects(player);
 		if(perms != null)
 			if(kit.booleanAttribute(Attribute.CLEAR_PERMISSIONS) || all)
 				clearPermissions(player);
