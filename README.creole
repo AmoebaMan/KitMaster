@@ -59,5 +59,3 @@ KitMaster has one simple and attainable goal: to be the simplest, best, and most
 **Define custom potions effects that combine any number and amount of standard potion effects
 **Give players custom potions as inventory items
 **Pair custom potions effects with custom item names/lore to create completely new Potions
-
-[[https://mcstats.org/plugin/KitMaster/|{{https://mcstats.org/signature/KitMaster.png|MCStats}}]]
