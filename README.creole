@@ -2,7 +2,8 @@
 ====The definitive CraftBukkit plugin for creating and managing kits====
 KitMaster has one simple and attainable goal: to be the simplest, best, and most efficient CraftBukkit plugin for creating and managing kits.
 
-[[https://mcstats.org/plugin/KitMaster/|{{https://mcstats.org/signature/KitMaster.png|MCStats}}]]
+{{https://mcstats.org/signature/KitMaster.png|MCStats}}
+[[https://mcstats.org/plugin/KitMaster|MCStats page]]
 
 ===Features===
 * **Many ways to give or obtain kits**
