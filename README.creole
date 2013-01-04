@@ -1,0 +1,4 @@
+==KitMaster==
+The definitive CraftBukkit plugin for creating, managing, and handling kits
+
+{{https://mcstats.org/signature/KitMaster.png|MCStats}}
