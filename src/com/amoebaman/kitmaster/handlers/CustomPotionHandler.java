@@ -74,7 +74,7 @@ public class CustomPotionHandler {
 			return potion;
 		for(String index : potionYaml.getKeys(false)){
 			ConfigurationSection effectYaml = potionYaml.getConfigurationSection(index);
-			PotionEffect effect = new PotionEffect(ItemController.getEffectByCommonName(effectYaml.getString("type")), effectYaml.getInt("duration"), effectYaml.getInt("amplifier") - 1, effectYaml.getBoolean("showParticles"));
+			PotionEffect effect = new PotionEffect(ItemController.matchPotionEffect(effectYaml.getString("type")), effectYaml.getInt("duration"), effectYaml.getInt("amplifier") - 1, effectYaml.getBoolean("showParticles"));
 			meta.addCustomEffect(effect, true);
 		}
 		if(!meta.getCustomEffects().isEmpty())

@@ -27,10 +27,10 @@ import com.amoebaman.kitmaster.utilities.ParseItemException;
 public class ItemController {
 
 	/**
-	 * Parses an <code>ItemStack</code> from a String.
-	 * @param str The String to parse from.
-	 * @return The item parsed.
-	 * @throws ParseItemException If <code>str</code> is not formatted properly.
+	 * Parses an ItemStack from a String.  The proper format of the String is [item name](:[tag]):[amount] ([enchantment name]:[level]...).
+	 * @param str the string
+	 * @return the result
+	 * @throws ParseItemException if the argument was not formatted properly
 	 */
 	public static ItemStack parseItem(String str) throws ParseItemException{
 		try{
@@ -70,17 +70,17 @@ public class ItemController {
 	}
 	
 	/**
-	 * Parses a <code>PotionEffect</code> from a String.
-	 * @param str The String to parse from.
-	 * @return The effect parsed.
-	 * @throws ParseItemException If <code>str</code> is not formatted properly.
+	 * Parses a PotionEffect from a String.  The proper format of the String is [effect name]:[level](:[duration in seconds]).
+	 * @param str the string
+	 * @return the result
+	 * @throws ParseItemException if the argument was not formatted properly
 	 */
 	public static PotionEffect parseEffect(String str) throws ParseItemException{
 		try{
 			String[] split = str.split(":");
 			PotionEffectType type = PotionEffectType.getByName(split[0]);
 			if(type == null)
-				type = getEffectByCommonName(split[0]);
+				type = matchPotionEffect(split[0]);
 			if(type == null && isInt(split[0])){
 				type = PotionEffectType.getById(Integer.parseInt(split[0]));
 			}
@@ -96,16 +96,16 @@ public class ItemController {
 	}
 	
 	/**
-	 * Parses an <code>EnchantmentWithLevel</code> from a String.
-	 * @param str The String to parse from.
-	 * @return The enchantment parsed.
+	 * Parses an Enchant from a String.  The proper format of the String is [enchantment name]:[level].
+	 * @param str the String
+	 * @return the result
 	 */
 	public static Enchant parseEnchantment(String str) {
 		str = str.toLowerCase();
 		String[] split = str.split(":");
 		Enchantment enc = Enchantment.getByName(split[0]);
 		if(enc == null)
-			enc = getEnchantmentByCommonName(split[0]);
+			enc = matchEnchantment(split[0]);
 		if(enc == null)
 			return null;
 		int lvl = 1;
@@ -115,9 +115,9 @@ public class ItemController {
 	}
 	
 	/**
-	 * Gets a material by its enumerated name, common name, or type ID.
-	 * @param name The name to search for.
-	 * @return The item matched
+	 * Retrives a base ItemStack by its name.  If Vault is enabled, this will also attempt to use Vault's item matching methods.  Unless a custom item is found, the result will always have no data, no metadata, no enchantments, and a quantity of 1.
+	 * @param name the name of the desired ItemStack.  This can be the name of a saved custom item, the name of a material, or an integer item ID value.
+	 * @return the item
 	 */
 	public static ItemStack getBaseStack(String name) throws ParseItemException{
 		if(CustomItemHandler.isCustomItem(name))
@@ -146,6 +146,13 @@ public class ItemController {
 		return new ItemStack(type);
 	}
 
+	/**
+	 * Applys a String tag to an item.  Depending on the Material of the item, this may be handled different ways.
+	 * @param stack the item
+	 * @param tag the tag
+	 * @return a copy of the item with the tag applied
+	 * @throws ParseItemException if the tag is improperly formatted
+	 */
 	public static ItemStack applyTag(ItemStack stack, String tag) throws ParseItemException{
 		if(!tag.isEmpty()){
 			try{
@@ -196,7 +203,7 @@ public class ItemController {
 					stack = FireworkHandler.loadFirework(stack, tag);
 					break;
 				case POTION:
-					stack.setDurability(getPotionDataByCommonName(tag));
+					stack.setDurability(parsePotionData(tag));
 					stack = CustomPotionHandler.loadPotion(stack, tag);
 					break;
 				case LOG:
@@ -269,6 +276,11 @@ public class ItemController {
 		return stack;
 	}
 
+	/**
+	 * Gets the reader- and parser-friendly tag that represents an ItemStack's data value or metadata set.
+	 * @param stack the item
+	 * @return the result
+	 */
 	public static String getTag(ItemStack stack){
 		String name = null;
 		switch(stack.getType()){
@@ -363,6 +375,11 @@ public class ItemController {
 			return null;
 	}
 
+	/**
+	 * Gets a parser-friendly String that represents and ItemStack.
+	 * @param stack the item
+	 * @return the result
+	 */
 	public static String itemToString(ItemStack stack){
 		String str = stack.getType().name().toLowerCase();
 		if(getTag(stack) != null)
@@ -374,9 +391,9 @@ public class ItemController {
 	}
 
 	/**
-	 * Gets a user-friendly String that represents an <code>ItemStack</code>.
-	 * @param stack The item to read.
-	 * @return The string.
+	 * Gets a reader-friendly String that represents an ItemStack.
+	 * @param stack the item
+	 * @return the result
 	 */
 	public static String friendlyItemString(ItemStack stack){
 		String str = capitalize((stack.getItemMeta().getDisplayName() == null) ? stack.getType().name().toLowerCase().replace("_", " ") : stack.getItemMeta().getDisplayName()) + (stack.getAmount() > 1 ? "s" : "");
@@ -390,21 +407,26 @@ public class ItemController {
 			str += " with ";
 		boolean first = true;
 		for(Enchantment enc : stack.getEnchantments().keySet()){
-			str += capitalize((first ? " " : ", ") + getCommonNameByEnchantment(enc)) + " " + romanNumerals(stack.getEnchantmentLevel(enc));
+			str += capitalize((first ? " " : ", ") + getEnchantmentName(enc)) + " " + romanNumerals(stack.getEnchantmentLevel(enc));
 			first = false;
 		}
 		return str;
 	}
 
 	/**
-	 * Gets a user-friendly String that represents an <code>PotionEffect</code>.
-	 * @param stack The effect to read.
-	 * @return The string.
+	 * Gets a reader-friendly String that represents a PotionEffect.
+	 * @param effect the effect
+	 * @return the result
 	 */
 	public static String friendlyEffectString(PotionEffect effect){
-		return capitalize(getCommonNameByEffect(effect.getType())) + " " + romanNumerals(effect.getAmplifier() + 1) + " for " + effect.getDuration()/20 + " seconds";
+		return capitalize(getPotionEffectName(effect.getType())) + " " + romanNumerals(effect.getAmplifier() + 1) + " for " + effect.getDuration()/20 + " seconds";
 	}
 	
+	/**
+	 * Captializes every word in a String, regardless of grammar rules.
+	 * @param str the String to capitalize
+	 * @return a capitalized copy of the String
+	 */
 	public static String capitalize(String str){
 		String[] words = str.split(" ");
 		String result = "";
@@ -419,6 +441,11 @@ public class ItemController {
 
 	private static final String[] romanNumerals = new String[]{"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
 	private static final int[] ints = new int[]{1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+	/**
+	 * Gets a roman numeral value for any number less than 4000.
+	 * @param number the number to convert
+	 * @return the roman numeral in String form
+	 */
 	public static String romanNumerals(int number){
 		if(number <= 0 || number > 4000)
 			return String.valueOf(number);
@@ -434,11 +461,11 @@ public class ItemController {
 	private static boolean isInt(String str){ try{ Integer.parseInt(str); return true; }catch(Exception e){ return false; } }
 	
 	/**
-	 * Gets an <code>Enchantment</code> by it's more common name.
-	 * @param name The common name of the desired enchantment.
-	 * @return The enchantment whose common name matches the given name.
+	 * Matches an Enchantment from a more common name.
+	 * @param name the common name of an Enchantment
+	 * @return the Enchantment matched, or null if no match was found
 	 */
-	public static Enchantment getEnchantmentByCommonName(String name){
+	public static Enchantment matchEnchantment(String name){
 		name = name.toLowerCase();
 		if(name.toLowerCase().contains("fire") && name.toLowerCase().contains("prot")) return Enchantment.PROTECTION_FIRE;
 		if((name.toLowerCase().contains("exp") || name.toLowerCase().contains("blast")) && name.toLowerCase().contains("prot")) return Enchantment.PROTECTION_EXPLOSIONS;
@@ -465,7 +492,12 @@ public class ItemController {
 		return null;
 	}
 	
-	public static String getCommonNameByEnchantment(Enchantment enc){
+	/**
+	 * Gets the more common name of an Enchantment.
+	 * @param enc the Enchantment
+	 * @return the common name
+	 */
+	public static String getEnchantmentName(Enchantment enc){
 		if(enc.equals(Enchantment.ARROW_DAMAGE)) return "power";
 		if(enc.equals(Enchantment.ARROW_FIRE)) return "flame";
 		if(enc.equals(Enchantment.ARROW_INFINITE)) return "infinity";
@@ -492,11 +524,11 @@ public class ItemController {
 	}
 
 	/**
-	 * Gets a <code>PotionEffectType</code> by it's more common name.
-	 * @param name The common name of the desired effect.
-	 * @return The effect whose common name matches the given name.
+	 * Matches a PotionEffectType from a more common name.
+	 * @param name the common name of a PotionEffectType
+	 * @return the PotionEffectType matched, or null if none was found
 	 */
-	public static PotionEffectType getEffectByCommonName(String name){
+	public static PotionEffectType matchPotionEffect(String name){
 		name = name.toLowerCase();
 		if(name.toLowerCase().contains("regen")) return PotionEffectType.REGENERATION;
 		if(name.toLowerCase().contains("poison")) return PotionEffectType.POISON;
@@ -520,8 +552,14 @@ public class ItemController {
 		if(name.toLowerCase().contains("wither")) return PotionEffectType.WITHER;
 		return null;
 	}
+
 	
-	public static String getCommonNameByEffect(PotionEffectType effect){
+	/**
+	 * Gets the more common name of a PotionEffectType.
+	 * @param effect the PotionEffectType
+	 * @return the common name
+	 */
+	public static String getPotionEffectName(PotionEffectType effect){
 		if(effect.equals(PotionEffectType.BLINDNESS)) return "blindness";
 		if(effect.equals(PotionEffectType.CONFUSION)) return "nausea";
 		if(effect.equals(PotionEffectType.DAMAGE_RESISTANCE)) return "resistance";
@@ -545,7 +583,12 @@ public class ItemController {
 		return null;
 	}
 
-	public static short getPotionDataByCommonName(String name){
+	/**
+	 * Attempts to generate potion data based on a common name.
+	 * @param name the common name of the desired potion
+	 * @return the corresponding item data value
+	 */
+	public static short parsePotionData(String name){
 		name = name.toLowerCase();
 		if(isInt(name))
 			return Short.parseShort(name);
