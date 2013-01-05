@@ -1,4 +1,4 @@
-package com.amoebaman.kitmaster.objects;
+package com.amoebaman.kitmaster.utilities;
 
 import java.util.logging.Logger;
 

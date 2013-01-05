@@ -23,8 +23,8 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.amoebaman.kitmaster.objects.Armor;
 import com.amoebaman.kitmaster.objects.EnchantmentWithLevel;
-import com.amoebaman.kitmaster.objects.ParseItemException;
 import com.amoebaman.kitmaster.objects.Weapon;
+import com.amoebaman.kitmaster.utilities.ParseItemException;
 import com.amoebaman.kitmaster.KitMaster;
 
 public class InventoryHandler {
@@ -715,6 +715,6 @@ public class InventoryHandler {
 		return roman;
 	}
 
-	private static boolean isInt(String str){try{Integer.parseInt(str);return true;}catch(Exception e){return false;}}
+	private static boolean isInt(String str){ try{ Integer.parseInt(str); return true; }catch(Exception e){ return false; } }
 
 }
