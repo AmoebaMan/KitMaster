@@ -52,6 +52,8 @@ public class BookHandler {
 		ConfigurationSection bookYaml = yaml.createSection(name);
 		bookYaml.set("title", meta.getTitle());
 		bookYaml.set("author", meta.getAuthor());
+		for(int i = 0; i < meta.getPageCount(); i++)
+			meta.setPage(i, meta.getPage(i).replace("\n", "|n").replace("\r", "|r"));
 		bookYaml.set("pages", meta.getPages());
 	}
 	
@@ -65,6 +67,8 @@ public class BookHandler {
 		meta.setTitle(bookYaml.getString("title"));
 		meta.setAuthor(bookYaml.getString("author"));
 		meta.setPages(bookYaml.getStringList("pages"));
+		for(int i = 0; i < meta.getPageCount(); i++)
+			meta.setPage(i, meta.getPage(i).replace("|n", "\n").replace("|r", "\r"));
 		book.setItemMeta(meta);
 		return book;
 	}
