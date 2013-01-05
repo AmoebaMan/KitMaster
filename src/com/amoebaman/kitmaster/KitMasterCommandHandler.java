@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+import com.amoebaman.kitmaster.controllers.InventoryController;
 import com.amoebaman.kitmaster.enums.Attribute;
 import com.amoebaman.kitmaster.enums.GenericResult;
 import com.amoebaman.kitmaster.enums.GiveKitContext;
@@ -18,7 +19,6 @@ import com.amoebaman.kitmaster.enums.PermsResult;
 import com.amoebaman.kitmaster.handlers.BookHandler;
 import com.amoebaman.kitmaster.handlers.FireworkEffectHandler;
 import com.amoebaman.kitmaster.handlers.FireworkHandler;
-import com.amoebaman.kitmaster.handlers.InventoryHandler;
 import com.amoebaman.kitmaster.handlers.KitHandler;
 import com.amoebaman.kitmaster.objects.Kit;
 import com.amoebaman.kitmaster.utilities.CommandController;
@@ -106,10 +106,10 @@ public class KitMasterCommandHandler{
 		sender.sendMessage(ChatColor.ITALIC + "Kit info for " + kit.name);
 		sender.sendMessage(ChatColor.ITALIC + "Items:");
 		for(ItemStack item : kit.items)
-			sender.sendMessage(ChatColor.ITALIC + "  - " + InventoryHandler.friendlyItemString(item));
+			sender.sendMessage(ChatColor.ITALIC + "  - " + InventoryController.friendlyItemString(item));
 		sender.sendMessage(ChatColor.ITALIC + "Effects:");
 		for(PotionEffect effect : kit.effects)
-			sender.sendMessage(ChatColor.ITALIC + "  - " + InventoryHandler.friendlyEffectString(effect));
+			sender.sendMessage(ChatColor.ITALIC + "  - " + InventoryController.friendlyEffectString(effect));
 		sender.sendMessage(ChatColor.ITALIC + "Permissions:");
 		for(String perm : kit.permissions)
 			sender.sendMessage(ChatColor.ITALIC + "  - " + perm);

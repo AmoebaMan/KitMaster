@@ -19,6 +19,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 
+import com.amoebaman.kitmaster.controllers.InventoryController;
 import com.amoebaman.kitmaster.enums.Attribute;
 import com.amoebaman.kitmaster.enums.GiveKitContext;
 import com.amoebaman.kitmaster.enums.GiveKitResult;
@@ -27,10 +28,9 @@ import com.amoebaman.kitmaster.handlers.BookHandler;
 import com.amoebaman.kitmaster.handlers.FireworkEffectHandler;
 import com.amoebaman.kitmaster.handlers.FireworkHandler;
 import com.amoebaman.kitmaster.handlers.HistoryHandler;
-import com.amoebaman.kitmaster.handlers.InventoryHandler;
-import com.amoebaman.kitmaster.handlers.ItemHandler;
+import com.amoebaman.kitmaster.handlers.CustomItemHandler;
 import com.amoebaman.kitmaster.handlers.KitHandler;
-import com.amoebaman.kitmaster.handlers.PotionHandler;
+import com.amoebaman.kitmaster.handlers.CustomPotionHandler;
 import com.amoebaman.kitmaster.handlers.SignHandler;
 import com.amoebaman.kitmaster.handlers.TimeStampHandler;
 import com.amoebaman.kitmaster.objects.Kit;
@@ -200,10 +200,10 @@ public class KitMaster extends JavaPlugin implements Listener{
 		try {
 			if(!itemsFile.exists()){
 				itemsFile.createNewFile();
-				ItemHandler.addSample();
-				ItemHandler.save(itemsFile);
+				CustomItemHandler.addSample();
+				CustomItemHandler.save(itemsFile);
 			}
-			ItemHandler.load(itemsFile);
+			CustomItemHandler.load(itemsFile);
 			log.info("Loaded saved items from " + itemsFile.getPath());
 		}
 		catch (Exception e) {
@@ -232,10 +232,10 @@ public class KitMaster extends JavaPlugin implements Listener{
 		try{
 			if(!potionsFile.exists()){
 				potionsFile.createNewFile();
-				PotionHandler.addSample();
-				PotionHandler.save(potionsFile);
+				CustomPotionHandler.addSample();
+				CustomPotionHandler.save(potionsFile);
 			}
-			PotionHandler.load(potionsFile);
+			CustomPotionHandler.load(potionsFile);
 			log.info("Loaded saved potions from " + potionsFile.getPath());
 		}
 		catch (Exception e) {
@@ -441,7 +441,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 		/*
 		 * Add the kit's items to the player's inventory
 		 */
-		InventoryHandler.addItemsToInventory(player, kitEvent.getKit().items, parentKit != null && kit.booleanAttribute(Attribute.UPGRADE));
+		InventoryController.addItemsToInventory(player, kitEvent.getKit().items, parentKit != null && kit.booleanAttribute(Attribute.UPGRADE));
 		/*
 		 * Apply the kit's potion effects to the player
 		 */
