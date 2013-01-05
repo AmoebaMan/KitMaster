@@ -21,7 +21,7 @@ import com.amoebaman.kitmaster.handlers.CustomItemHandler;
 import com.amoebaman.kitmaster.handlers.CustomPotionHandler;
 import com.amoebaman.kitmaster.handlers.FireworkEffectHandler;
 import com.amoebaman.kitmaster.handlers.FireworkHandler;
-import com.amoebaman.kitmaster.objects.EnchantmentWithLevel;
+import com.amoebaman.kitmaster.objects.Enchant;
 import com.amoebaman.kitmaster.utilities.ParseItemException;
 
 public class ItemController {
@@ -55,7 +55,7 @@ public class ItemController {
 				}
 
 			for (int i = 1; i < alphaSplit.length;i++){
-				EnchantmentWithLevel ewl = parseEnchantment(alphaSplit[i].trim());
+				Enchant ewl = parseEnchantment(alphaSplit[i].trim());
 				if(ewl == null)
 					throw new ParseItemException("invalid enchantment specified", str);
 				stack.addUnsafeEnchantment(ewl.enc, ewl.lvl);
@@ -100,7 +100,7 @@ public class ItemController {
 	 * @param str The String to parse from.
 	 * @return The enchantment parsed.
 	 */
-	public static EnchantmentWithLevel parseEnchantment(String str) {
+	public static Enchant parseEnchantment(String str) {
 		str = str.toLowerCase();
 		String[] split = str.split(":");
 		Enchantment enc = Enchantment.getByName(split[0]);
@@ -111,7 +111,7 @@ public class ItemController {
 		int lvl = 1;
 		if(split.length > 1)
 			lvl = isInt(split[1]) ? Integer.parseInt(split[1]) : 1;
-			return new EnchantmentWithLevel(enc, lvl);
+			return new Enchant(enc, lvl);
 	}
 	
 	/**

@@ -9,7 +9,7 @@ import org.bukkit.enchantments.Enchantment;
  * @author Dennison
  *
  */
-public class EnchantmentWithLevel {
+public class Enchant {
 	
 	/** The enchantment type. */
 	public Enchantment enc;
@@ -22,7 +22,7 @@ public class EnchantmentWithLevel {
 	 * @param enc the Enchantment
 	 * @param lvl the level of the Enchantment
 	 */
-	public EnchantmentWithLevel(Enchantment enc, int lvl){
+	public Enchant(Enchantment enc, int lvl){
 		this.enc = enc;
 		this.lvl = lvl;
 	}
