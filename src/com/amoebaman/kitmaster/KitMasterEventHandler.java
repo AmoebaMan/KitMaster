@@ -35,11 +35,8 @@ public class KitMasterEventHandler implements Listener{
 		Bukkit.getPluginManager().registerEvents(new KitMasterEventHandler(), plugin);
 	}
 
-	/**
-	 * Listens for players taking kits from kit selection signs
-	 */
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onBlockDamage(BlockDamageEvent event){
+	public void kitSelectionFromSigns(BlockDamageEvent event){
 		Kit kit = SignHandler.getKitSign(event.getBlock().getLocation());
 		if(kit != null){
 			if(event.getPlayer().hasPermission("kitmaster.sign")){
@@ -52,11 +49,8 @@ public class KitMasterEventHandler implements Listener{
 		}
 	}
 
-	/**
-	 * Listens for kit selection signs being created
-	 */
 	@EventHandler
-	public void onSignChange(SignChangeEvent event){
+	public void createKitSelectionSigns(SignChangeEvent event){
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
 		if(event.getLine(0).equalsIgnoreCase("kit")){
@@ -80,11 +74,8 @@ public class KitMasterEventHandler implements Listener{
 		}
 	}
 
-	/**
-	 * Listens for kit selection signs being destroyed
-	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onBlockBreak(BlockBreakEvent event){
+	public void breakKitSelectionSigns(BlockBreakEvent event){
 		if(!event.isCancelled() && SignHandler.isKitSign(event.getBlock().getLocation())){
 			Player player = event.getPlayer();
 			if(!player.hasPermission("kitmaster.createsign")){
@@ -97,11 +88,8 @@ public class KitMasterEventHandler implements Listener{
 		}
 	}
 	
-	/**
-	 * Listens for players respawning and handles respawn kits
-	 */
 	@EventHandler
-	public void onPlayerRespawn(PlayerRespawnEvent event){
+	public void giveKitsOnRespawn(PlayerRespawnEvent event){
 		final Player player = event.getPlayer();
 		Kit respawnKit = null;
 		for(Kit kit : KitHandler.getKits())
@@ -117,43 +105,38 @@ public class KitMasterEventHandler implements Listener{
 		}
 	}
 
-	/**
-	 * Listens for players dying and clears their kits if configured as such
-	 */
 	@EventHandler
-	public void onPlayerDeath(PlayerDeathEvent event){
-		for(Kit kit : HistoryHandler.getHistory(event.getEntity())){
+	public void clearKitsWhenPlayerDies(PlayerDeathEvent event){
+		for(Kit kit : HistoryHandler.getHistory(event.getEntity()))
 			if(kit.booleanAttribute(Attribute.SINGLE_USE_LIFE)){
 				TimeStampHandler.clearTimeStamp(event.getEntity(), kit);
 				if(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT))
 					TimeStampHandler.clearTimeStamp(null, kit);
 			}
-			if(kit.booleanAttribute(Attribute.RESTRICT_DEATH_DROPS))
-				event.getDrops().clear();
-		}
 		if(KitMaster.config().getBoolean("clearKits.onDeath", true))
 			KitMaster.clearAll(event.getEntity());
 	}
-
-	/**
-	 * Listens for players disconnecting and clears their kits if configured as such
-	 */
+	
 	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event){
+	public void removeItemDropsOnDeath(PlayerDeathEvent event){
+		for(Kit kit : HistoryHandler.getHistory(event.getEntity()))
+			if(kit.booleanAttribute(Attribute.RESTRICT_DEATH_DROPS))
+				event.getDrops().clear();
+	}
+	
+	@EventHandler
+	public void clearKitsWhenPlayerQuits(PlayerQuitEvent event){
 		if(KitMaster.config().getBoolean("clearKits.onDisconnect", true))
 			KitMaster.clearAll(event.getPlayer());
 	}
 	
-	/**
-	 * Passes players being kicked to be handled like players quitting
-	 */
 	@EventHandler
-	public void onPlayerKick(PlayerKickEvent event){
-		onPlayerQuit(new PlayerQuitEvent(event.getPlayer(), "simulated"));
+	public void clearKitsWhenPlayerIsKicked(PlayerKickEvent event){
+		clearKitsWhenPlayerQuits(new PlayerQuitEvent(event.getPlayer(), "simulated"));
 	}
 	
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event){
+	public void sendUpdateMessages(PlayerJoinEvent event){
 		Player player = event.getPlayer();
 		if(player.hasPermission("kitmaster.*")){
 			switch(KitMaster.update.getResult()){
@@ -173,21 +156,21 @@ public class KitMasterEventHandler implements Listener{
 	}
 	
 	@EventHandler
-	public void onPlayerInventory(InventoryClickEvent event){
+	public void restrictArmorRemoval(InventoryClickEvent event){
 		for(Kit kit : HistoryHandler.getHistory((Player) event.getWhoClicked()))
 			if(event.getSlotType() == SlotType.ARMOR && kit.booleanAttribute(Attribute.RESTRICT_ARMOR))
 				event.setCancelled(true);
 	}
 	
 	@EventHandler
-	public void onPlayerDropItem(PlayerDropItemEvent event){
+	public void restrictItemDrops(PlayerDropItemEvent event){
 		for(Kit kit : HistoryHandler.getHistory(event.getPlayer()))
 			if(kit.booleanAttribute(Attribute.RESTRICT_DROPS))
 				event.setCancelled(true);
 	}
 	
 	@EventHandler
-	public void onItemPickup(PlayerPickupItemEvent event){
+	public void restrictItemPickups(PlayerPickupItemEvent event){
 		for(Kit kit : HistoryHandler.getHistory(event.getPlayer()))
 			if(kit.booleanAttribute(Attribute.RESTRICT_PICKUPS))
 				event.setCancelled(true);

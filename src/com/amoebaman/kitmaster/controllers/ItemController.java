@@ -423,44 +423,6 @@ public class ItemController {
 	}
 	
 	/**
-	 * Captializes every word in a String, regardless of grammar rules.
-	 * @param str the String to capitalize
-	 * @return a capitalized copy of the String
-	 */
-	public static String capitalize(String str){
-		String[] words = str.split(" ");
-		String result = "";
-		for(String word : words){
-			if(word.length() <= 1)
-				result += word.toUpperCase() + " ";
-			else
-				result += word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase() + " ";
-		}
-		return result.trim();
-	}
-
-	private static final String[] romanNumerals = new String[]{"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
-	private static final int[] ints = new int[]{1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
-	/**
-	 * Gets a roman numeral value for any number less than 4000.
-	 * @param number the number to convert
-	 * @return the roman numeral in String form
-	 */
-	public static String romanNumerals(int number){
-		if(number <= 0 || number > 4000)
-			return String.valueOf(number);
-		String roman = "";
-		for(int i = 0; i < romanNumerals.length; i++)
-			while(number >= ints[i]){
-				number -= ints[i];
-				roman += romanNumerals[i];
-			}
-		return roman;
-	}
-
-	private static boolean isInt(String str){ try{ Integer.parseInt(str); return true; }catch(Exception e){ return false; } }
-	
-	/**
 	 * Matches an Enchantment from a more common name.
 	 * @param name the common name of an Enchantment
 	 * @return the Enchantment matched, or null if no match was found
@@ -553,7 +515,6 @@ public class ItemController {
 		return null;
 	}
 
-	
 	/**
 	 * Gets the more common name of a PotionEffectType.
 	 * @param effect the PotionEffectType
@@ -633,5 +594,44 @@ public class ItemController {
 		
 		return data;
 	}
+
+	private static final String[] romanNumerals = new String[]{"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+	private static final int[] ints = new int[]{1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+	
+	/**
+	 * Gets a roman numeral value for any number less than 4000.
+	 * @param number the number to convert
+	 * @return the roman numeral in String form
+	 */
+	public static String romanNumerals(int number){
+		if(number <= 0 || number > 4000)
+			return String.valueOf(number);
+		String roman = "";
+		for(int i = 0; i < romanNumerals.length; i++)
+			while(number >= ints[i]){
+				number -= ints[i];
+				roman += romanNumerals[i];
+			}
+		return roman;
+	}
+
+	/**
+	 * Captializes every word in a String, regardless of grammar rules.
+	 * @param str the String to capitalize
+	 * @return a capitalized copy of the String
+	 */
+	public static String capitalize(String str){
+		String[] words = str.split(" ");
+		String result = "";
+		for(String word : words){
+			if(word.length() <= 1)
+				result += word.toUpperCase() + " ";
+			else
+				result += word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase() + " ";
+		}
+		return result.trim();
+	}
+
+	private static boolean isInt(String str){ try{ Integer.parseInt(str); return true; }catch(Exception e){ return false; } }
 
 }

@@ -18,9 +18,9 @@ import com.amoebaman.kitmaster.KitMaster;
 public class InventoryController {
 	
 	/**
-	 * Adds a list of <code>ItemStack</code> to a player's inventory.
-	 * @param player The player to give the items to.
-	 * @param items The items to give.
+	 * Adds a List of ItemStacks to a Player's inventory.
+	 * @param player the Player to give the items to
+	 * @param items the list of items to give
 	 */
 	public static void addItemsToInventory(Player player, List<ItemStack> items, boolean upgrade) {
 		for (ItemStack stack : items)
@@ -28,9 +28,9 @@ public class InventoryController {
 	}
 
 	/**
-	 * Adds an <code>ItemStack</code> to a player's inventory.
-	 * @param player The player to give the item to.
-	 * @param items The item to give.
+	 * Adds an ItemStack to a Player's inventory.
+	 * @param player the Player to give the item to
+	 * @param items the item to give
 	 */
 	public static void giveItemToPlayer(Player player, ItemStack stack, boolean upgrade, boolean reverse) {
 		PlayerInventory inv = player.getInventory();
@@ -124,6 +124,7 @@ public class InventoryController {
 	}
 
 	private static final int MAX_SLOT_INDEX = 35;
+	
 	private static int getAddIndex(Inventory inv, boolean reverse){
 		int addIndex;
 		if(reverse){
