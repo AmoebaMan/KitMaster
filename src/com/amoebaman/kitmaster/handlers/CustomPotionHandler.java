@@ -12,7 +12,9 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class PotionHandler {
+import com.amoebaman.kitmaster.controllers.InventoryController;
+
+public class CustomPotionHandler {
 
 	private static final YamlConfiguration yaml = new YamlConfiguration();
 	
@@ -54,7 +56,7 @@ public class PotionHandler {
 		ConfigurationSection potionYaml = yaml.createSection(name);
 		for(int i = 0; i < meta.getCustomEffects().size(); i++){
 			PotionEffect effect = meta.getCustomEffects().get(i);
-			ConfigurationSection effectYaml = potionYaml.createSection(String.valueOf(i));
+			ConfigurationSection effectYaml = potionYaml.createSection("effect_" + i);
 			effectYaml.set("type", effect.getType().getName().toLowerCase());
 			effectYaml.set("duration", effect.getDuration());
 			effectYaml.set("amplifier", effect.getAmplifier() + 1);
@@ -72,7 +74,7 @@ public class PotionHandler {
 			return potion;
 		for(String index : potionYaml.getKeys(false)){
 			ConfigurationSection effectYaml = potionYaml.getConfigurationSection(index);
-			PotionEffect effect = new PotionEffect(InventoryHandler.getEffectByCommonName(effectYaml.getString("type")), effectYaml.getInt("duration"), effectYaml.getInt("amplifier") - 1, effectYaml.getBoolean("showParticles"));
+			PotionEffect effect = new PotionEffect(InventoryController.getEffectByCommonName(effectYaml.getString("type")), effectYaml.getInt("duration"), effectYaml.getInt("amplifier") - 1, effectYaml.getBoolean("showParticles"));
 			meta.addCustomEffect(effect, true);
 		}
 		if(!meta.getCustomEffects().isEmpty())
