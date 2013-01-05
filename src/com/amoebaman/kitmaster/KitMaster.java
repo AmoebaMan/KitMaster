@@ -34,9 +34,6 @@ import com.amoebaman.kitmaster.handlers.KitHandler;
 import com.amoebaman.kitmaster.handlers.PotionHandler;
 import com.amoebaman.kitmaster.handlers.SignHandler;
 import com.amoebaman.kitmaster.handlers.TimeStampHandler;
-import com.amoebaman.kitmaster.handlers.InventoryHandler.Armor;
-import com.amoebaman.kitmaster.handlers.InventoryHandler.Armor.ArmorLevel;
-import com.amoebaman.kitmaster.handlers.InventoryHandler.Armor.ArmorType;
 import com.amoebaman.kitmaster.objects.Kit;
 import com.amoebaman.kitmaster.utilities.GiveKitEvent;
 import com.amoebaman.kitmaster.utilities.Metrics;
@@ -193,14 +190,6 @@ public class KitMaster extends JavaPlugin implements Listener{
 			plugin().getConfig().options().copyDefaults(true);
 			plugin().getConfig().save(configFile);
 			log.info("Loaded configuration from " + configFile.getPath());
-			if(config().getBoolean("inventory.woolHats", false))
-				InventoryHandler.armor.put(Material.WOOL, new Armor(ArmorType.HAT, ArmorLevel.WOOL));
-			else
-				InventoryHandler.armor.remove(Material.WOOL);
-			if(config().getBoolean("inventory.skullHats", false))
-				InventoryHandler.armor.put(Material.SKULL_ITEM, new Armor(ArmorType.HAT, ArmorLevel.MOB_HEAD));
-			else
-				InventoryHandler.armor.remove(Material.SKULL_ITEM);
 		}
 		catch (Exception e) {
 			log.severe("Error while loading configuration from " + configFile.getPath());
