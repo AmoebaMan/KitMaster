@@ -14,7 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import com.amoebaman.kitmaster.controllers.InventoryController;
+import com.amoebaman.kitmaster.controllers.ItemController;
 import com.amoebaman.kitmaster.enums.Attribute;
 import com.amoebaman.kitmaster.enums.PermsResult;
 import com.amoebaman.kitmaster.objects.Kit;
@@ -71,7 +71,7 @@ public class KitHandler {
 		 */
 		for(String str : yaml.getStringList("items")){
 			try{
-				ItemStack stack = InventoryController.parseItem(str);
+				ItemStack stack = ItemController.parseItem(str);
 				if(stack != null)
 					items.add(stack);
 			}
@@ -85,7 +85,7 @@ public class KitHandler {
 		 */
 		for(String str : yaml.getStringList("effects")){
 			try{
-				PotionEffect effect = InventoryController.parseEffect(str);
+				PotionEffect effect = ItemController.parseEffect(str);
 				if(effect != null)
 					effects.add(effect);
 			}catch(ParseItemException e){

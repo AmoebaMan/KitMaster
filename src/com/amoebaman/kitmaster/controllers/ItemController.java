@@ -550,18 +550,18 @@ public class ItemController {
 		if(isInt(name))
 			return Short.parseShort(name);
 		short data = 0;
-		if(name.contains("water")) data = 0;
-		if(name.contains("awkward")) data = 16;
-		if(name.contains("thick")) data = 32;
-		if(name.contains("mundane")) data = 8192;
+		if(name.contains("water")) return 0;
+		if(name.contains("mundane")) data = 0;
 		if(name.contains("clear")) data = 7;
 		if(name.contains("diffuse")) data = 11;
 		if(name.contains("artless")) data = 13;
 		if(name.contains("thin")) data = 15;
+		if(name.contains("awkward")) data = 16;
 		if(name.contains("bungling")) data = 23;
 		if(name.contains("smooth")) data = 27;
 		if(name.contains("suave")) data = 29;
 		if(name.contains("debonair")) data = 31;
+		if(name.contains("thick")) data = 32;
 		if(name.contains("charming")) data = 39;
 		if(name.contains("refined")) data = 43;
 		if(name.contains("cordial")) data = 45;

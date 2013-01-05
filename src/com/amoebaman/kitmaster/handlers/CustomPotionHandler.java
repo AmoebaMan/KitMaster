@@ -12,7 +12,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.amoebaman.kitmaster.controllers.InventoryController;
+import com.amoebaman.kitmaster.controllers.ItemController;
 
 public class CustomPotionHandler {
 
@@ -74,7 +74,7 @@ public class CustomPotionHandler {
 			return potion;
 		for(String index : potionYaml.getKeys(false)){
 			ConfigurationSection effectYaml = potionYaml.getConfigurationSection(index);
-			PotionEffect effect = new PotionEffect(InventoryController.getEffectByCommonName(effectYaml.getString("type")), effectYaml.getInt("duration"), effectYaml.getInt("amplifier") - 1, effectYaml.getBoolean("showParticles"));
+			PotionEffect effect = new PotionEffect(ItemController.getEffectByCommonName(effectYaml.getString("type")), effectYaml.getInt("duration"), effectYaml.getInt("amplifier") - 1, effectYaml.getBoolean("showParticles"));
 			meta.addCustomEffect(effect, true);
 		}
 		if(!meta.getCustomEffects().isEmpty())

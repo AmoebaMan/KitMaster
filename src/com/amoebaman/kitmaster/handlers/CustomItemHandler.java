@@ -10,7 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.amoebaman.kitmaster.controllers.InventoryController;
+import com.amoebaman.kitmaster.controllers.ItemController;
 import com.amoebaman.kitmaster.utilities.ParseItemException;
 import com.google.common.collect.Lists;
 
@@ -33,7 +33,7 @@ public class CustomItemHandler {
 		meta.setLore(Lists.newArrayList("Strikes down daisies by the hundreds", "Forged by the mighty AmoebaMan"));
 		stack.setItemMeta(meta);
 		saveCustomItem(stack, "Daisy_Cutter");
-		yaml.set("auto-rename." + InventoryController.itemToString(new ItemStack(Material.WOOD_SWORD)), "Beat Stick");
+		yaml.set("auto-rename." + ItemController.itemToString(new ItemStack(Material.WOOD_SWORD)), "Beat Stick");
 	}
 	
 	private static ConfigurationSection getSection(String name){
@@ -51,7 +51,7 @@ public class CustomItemHandler {
 	
 	public static void saveCustomItem(ItemStack stack, String name){
 		ConfigurationSection section = yaml.createSection(name);
-		section.set("item", InventoryController.itemToString(stack));
+		section.set("item", ItemController.itemToString(stack));
 		section.set("data", stack.getData().getData());
 		ItemMeta meta = stack.getItemMeta();
 		section.set("name", meta.getDisplayName());
@@ -64,7 +64,7 @@ public class CustomItemHandler {
 			return null;
 		if(isCustomItem(section.getString("item").split(":")[0]))
 			return null;
-		ItemStack stack = InventoryController.parseItem(section.getString("item"));
+		ItemStack stack = ItemController.parseItem(section.getString("item"));
 		ItemMeta meta = stack.getItemMeta();
 		meta.setDisplayName(section.getString("name", null));
 		meta.setLore(section.getStringList("lore"));
