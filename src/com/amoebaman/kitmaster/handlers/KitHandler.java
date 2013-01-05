@@ -17,7 +17,7 @@ import org.bukkit.potion.PotionEffect;
 import com.amoebaman.kitmaster.enums.Attribute;
 import com.amoebaman.kitmaster.enums.PermsResult;
 import com.amoebaman.kitmaster.objects.Kit;
-import com.amoebaman.kitmaster.utilities.ParseItemException;
+import com.amoebaman.kitmaster.objects.ParseItemException;
 import com.amoebaman.kitmaster.KitMaster;
 import com.google.common.collect.Lists;
 

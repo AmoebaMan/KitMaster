@@ -26,7 +26,7 @@
  * either expressed or implied, of anybody else.
  */
 
-package com.amoebaman.kitmaster.metrics;
+package com.amoebaman.kitmaster.utilities;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;

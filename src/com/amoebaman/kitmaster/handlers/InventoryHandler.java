@@ -2,7 +2,6 @@ package com.amoebaman.kitmaster.handlers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
 
 import net.milkbowl.vault.item.Items;
 import net.milkbowl.vault.item.ItemInfo;
@@ -22,146 +21,15 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.amoebaman.kitmaster.utilities.ParseItemException;
+import com.amoebaman.kitmaster.objects.Armor;
+import com.amoebaman.kitmaster.objects.EnchantmentWithLevel;
+import com.amoebaman.kitmaster.objects.ParseItemException;
+import com.amoebaman.kitmaster.objects.Weapon;
 import com.amoebaman.kitmaster.KitMaster;
-import com.amoebaman.kitmaster.handlers.InventoryHandler.Armor.ArmorLevel;
-import com.amoebaman.kitmaster.handlers.InventoryHandler.Armor.ArmorType;
-import com.amoebaman.kitmaster.handlers.InventoryHandler.Weapon.WeaponLevel;
-import com.amoebaman.kitmaster.handlers.InventoryHandler.Weapon.WeaponType;
 
 public class InventoryHandler {
 
 	private static final int MAX_SLOT_INDEX = 35;
-	public static final HashMap<Material,Armor> armor = new HashMap<Material,Armor>();
-	public static final HashMap<Material,Weapon> weapons = new HashMap<Material,Weapon>();
-
-	/**
-	 * Represents a piece of armor,
-	 * @author Dennison
-	 */
-	public static class Armor{
-		/** The level of the armor. */
-		public ArmorLevel lvl;
-		/** The type of the armor. */
-		public ArmorType type;
-		public Armor(ArmorType type, ArmorLevel lvl){this.lvl=lvl; this.type=type;}
-		/** The levels of armor.  Higher ordinals correspond to more powerful armor. */
-		public enum ArmorLevel{
-			/** Mob heads, not yet implemented */
-			MOB_HEAD,
-			/** Wool hats, optional */
-			WOOL,
-			/** Leather armor */
-			LEATHER,
-			/** Golden (butter) armor */
-			GOLD,
-			/** Chainmail armor */
-			CHAIN,
-			/** Iron armor */
-			IRON,
-			/** Diamond armor */
-			DIAMOND
-		};
-		/** The types of armor. */
-		public enum ArmorType{
-			/** Helmet armor */
-			HAT,
-			/** Chestplate armor */
-			SHIRT,
-			/** Leggings armor */
-			PANTS,
-			/** Boots armor */
-			BOOTS
-		};
-	}
-	/** Stores the <code>Armor</code> that corresponds to each <code>Material</code>. */
-	static {
-		armor.put(Material.LEATHER_HELMET,new Armor(ArmorType.HAT, ArmorLevel.LEATHER));
-		armor.put(Material.GOLD_HELMET,new Armor(ArmorType.HAT, ArmorLevel.GOLD));
-		armor.put(Material.CHAINMAIL_HELMET,new Armor(ArmorType.HAT, ArmorLevel.CHAIN));
-		armor.put(Material.IRON_HELMET,new Armor(ArmorType.HAT, ArmorLevel.IRON));
-		armor.put(Material.DIAMOND_HELMET,new Armor(ArmorType.HAT, ArmorLevel.DIAMOND));
-
-		armor.put(Material.LEATHER_CHESTPLATE,new Armor(ArmorType.SHIRT,ArmorLevel.LEATHER));
-		armor.put(Material.GOLD_CHESTPLATE,new Armor(ArmorType.SHIRT,ArmorLevel.GOLD));
-		armor.put(Material.CHAINMAIL_CHESTPLATE,new Armor(ArmorType.SHIRT,ArmorLevel.CHAIN));
-		armor.put(Material.IRON_CHESTPLATE,new Armor(ArmorType.SHIRT,ArmorLevel.IRON));
-		armor.put(Material.DIAMOND_CHESTPLATE,new Armor(ArmorType.SHIRT,ArmorLevel.DIAMOND));
-
-		armor.put(Material.LEATHER_LEGGINGS,new Armor(ArmorType.PANTS,ArmorLevel.LEATHER));
-		armor.put(Material.GOLD_LEGGINGS,new Armor(ArmorType.PANTS,ArmorLevel.GOLD));
-		armor.put(Material.CHAINMAIL_LEGGINGS,new Armor(ArmorType.PANTS,ArmorLevel.CHAIN));
-		armor.put(Material.IRON_LEGGINGS,new Armor(ArmorType.PANTS,ArmorLevel.IRON));
-		armor.put(Material.DIAMOND_LEGGINGS,new Armor(ArmorType.PANTS,ArmorLevel.DIAMOND));
-
-		armor.put(Material.LEATHER_BOOTS,new Armor(ArmorType.BOOTS,ArmorLevel.LEATHER));
-		armor.put(Material.GOLD_BOOTS,new Armor(ArmorType.BOOTS,ArmorLevel.GOLD));
-		armor.put(Material.CHAINMAIL_BOOTS,new Armor(ArmorType.BOOTS,ArmorLevel.CHAIN));
-		armor.put(Material.IRON_BOOTS,new Armor(ArmorType.BOOTS,ArmorLevel.IRON));
-		armor.put(Material.DIAMOND_BOOTS,new Armor(ArmorType.BOOTS,ArmorLevel.DIAMOND));
-	}
-
-	/**
-	 * Represents a weapon
-	 * @author Dennison
-	 */
-	public static class Weapon{
-		/** The level of the weapon. */
-		public WeaponLevel lvl;
-		/** The type of the weapon. */
-		public WeaponType type;
-		Weapon(WeaponType type, WeaponLevel lvl){this.lvl=lvl; this.type=type;}
-		/** The levels of weapon.  Higher ordinals correspond to more powerful weapons. */
-		public enum WeaponLevel{
-			/** Wooden weapons */
-			WOOD,
-			/** Stone weapons */
-			STONE,
-			/** Golden (butter) weapons */
-			GOLD,
-			/** Iron weapons */
-			IRON,
-			/** Diamond weapons */
-			DIAMOND
-		};
-		/** The types of weapon.  Higher ordinals correspond to more powerful weapons. */
-		public enum WeaponType{
-			/** Axes */
-			AXE,
-			/** Bows */
-			BOW,
-			/** Swords */
-			SWORD
-		};
-	}
-	/** Stores the <code>Weapon</code> that corresponds to each <code>Material</code>. */
-	static {
-		weapons.put(Material.WOOD_SWORD,new Weapon(WeaponType.SWORD, WeaponLevel.WOOD));
-		weapons.put(Material.STONE_SWORD,new Weapon(WeaponType.SWORD, WeaponLevel.STONE));
-		weapons.put(Material.GOLD_SWORD,new Weapon(WeaponType.SWORD, WeaponLevel.GOLD));
-		weapons.put(Material.IRON_SWORD,new Weapon(WeaponType.SWORD, WeaponLevel.IRON));
-		weapons.put(Material.DIAMOND_SWORD,new Weapon(WeaponType.SWORD, WeaponLevel.DIAMOND));
-
-		weapons.put(Material.WOOD_AXE,new Weapon(WeaponType.AXE, WeaponLevel.WOOD));
-		weapons.put(Material.STONE_AXE,new Weapon(WeaponType.AXE, WeaponLevel.STONE));
-		weapons.put(Material.GOLD_AXE,new Weapon(WeaponType.AXE, WeaponLevel.GOLD));
-		weapons.put(Material.IRON_AXE,new Weapon(WeaponType.AXE, WeaponLevel.IRON));
-		weapons.put(Material.DIAMOND_AXE,new Weapon(WeaponType.AXE, WeaponLevel.DIAMOND));
-
-		weapons.put(Material.BOW,new Weapon(WeaponType.BOW, WeaponLevel.WOOD));
-	}
-
-	/**
-	 * Stores both the type and level of an enchantment.
-	 * @author Dennison
-	 */
-	public static class EnchantmentWithLevel{
-		/** The enchantment type. */
-		public Enchantment enc;
-		/** The enchantment level. */
-		public Integer lvl;
-		public String toString(){return(enc!=null?enc.getName():"null")+":"+lvl;}
-	}
 
 	/**
 	 * Gets an <code>Enchantment</code> by it's more common name.
@@ -339,38 +207,44 @@ public class InventoryHandler {
 	public static void giveItemToPlayer(Player player, ItemStack stack, boolean upgrade, boolean reverse) {
 		PlayerInventory inv = player.getInventory();
 		Material mat = stack.getType();
-		if(armor.containsKey(mat) && KitMaster.config().getBoolean("inventory.autoEquipArmor", true)){
+		/*
+		 * If the material is armor and KitMaster is configured to auto-equip armor...
+		 */
+		if(Armor.isValid(mat) && KitMaster.config().getBoolean("inventory.autoEquipArmor", true)){
 			/*
 			 * If the new armor is better, equip it and put the old armor in the inventory
 			 * If the old armor is better, put the new armor in the inventory
 			 */
-			ItemStack oldArmor = getArmorSlot(inv,armor.get(mat));
-			boolean empty = (oldArmor == null || oldArmor.getType() == Material.AIR);
-			boolean better = empty ? true : armorSlotBetter(armor.get(oldArmor.getType()),armor.get(mat));
-			if (empty || better){
-				switch (armor.get(mat).type){
-				case HAT: inv.setHelmet(stack); break;
-				case SHIRT: inv.setChestplate(stack); break;
-				case PANTS: inv.setLeggings(stack); break;
-				case BOOTS: inv.setBoots(stack); break;
-				}
-			} 
+			Armor newArmor = new Armor(mat);
+			Armor oldArmor = new Armor(Armor.getExisting(player, newArmor.type));
+			boolean empty = !oldArmor.isValid();
+			boolean better = empty ? true : newArmor.isBetterThan(oldArmor);
+			if (empty || better)
+				newArmor.putInSlot(player);
 			if(!empty){
 				if(better)
-					addItemToInventory(inv, oldArmor, upgrade, true);
+					addItemToInventory(inv, oldArmor.getItem(), upgrade, true);
 				else
 					addItemToInventory(inv, stack, upgrade, reverse);
 			}		
 		}
-		else if(weapons.containsKey(mat) && KitMaster.config().getBoolean("inventory.autoEquipWeapon", true)){
-			ItemStack oldWeapon = inv.getItemInHand();
-			boolean empty = oldWeapon == null || oldWeapon.getType() == Material.AIR;
-			boolean better = empty ? true : weaponSlotBetter(weapons.get(oldWeapon.getType()), weapons.get(mat));
+		/*
+		 * If the material is a weapon and KitMaster is configured to auto-equip weapons...
+		 */
+		else if(Weapon.isValid(mat) && KitMaster.config().getBoolean("inventory.autoEquipWeapon", true)){
+			/*
+			 * If the new weapon is better, equip it and put the old weapon in the inventory
+			 * If the old weapon is better, put the new weapon in the inventory
+			 */
+			Weapon newWeapon = new Weapon(mat);
+			Weapon oldWeapon = new Weapon(Weapon.getExisting(player));
+			boolean empty = !oldWeapon.isValid();
+			boolean better = empty ? true : newWeapon.isBetterThan(oldWeapon);
 			if(empty || better)
-				inv.setItemInHand(stack);
+				newWeapon.putInSlot(player);
 			if(!empty){
 				if(better)
-					addItemToInventory(inv, oldWeapon, upgrade, true);
+					addItemToInventory(inv, oldWeapon.getItem(), upgrade, true);
 				else
 					addItemToInventory(inv, stack, upgrade, reverse);
 			}
@@ -521,10 +395,7 @@ public class InventoryHandler {
 		int lvl = 1;
 		if(split.length > 1)
 			lvl = isInt(split[1]) ? Integer.parseInt(split[1]) : 1;
-			EnchantmentWithLevel ewl = new EnchantmentWithLevel();
-			ewl.enc = enc;
-			ewl.lvl = lvl;
-			return ewl;
+			return new EnchantmentWithLevel(enc, lvl);
 	}
 
 	/**
@@ -774,31 +645,6 @@ public class InventoryHandler {
 			return String.valueOf(stack.getDurability());
 		else
 			return null;
-	}
-
-	private static ItemStack getArmorSlot(PlayerInventory inv, Armor armor) {
-		switch (armor.type){
-		case HAT: return inv.getHelmet();
-		case SHIRT: return inv.getChestplate();
-		case PANTS: return inv.getLeggings();
-		case BOOTS:return inv.getBoots();
-		}
-		return null;
-	}
-
-	private static boolean armorSlotBetter(Armor oldArmor, Armor newArmor) {
-		if (oldArmor == null || newArmor == null)
-			return false;
-		return oldArmor.lvl.ordinal() < newArmor.lvl.ordinal();
-	}
-
-	private static boolean weaponSlotBetter(Weapon oldWeapon, Weapon newWeapon) {
-		if (oldWeapon == null || newWeapon == null)
-			return false;
-		if(oldWeapon.type == newWeapon.type)
-			return oldWeapon.lvl.ordinal() < newWeapon.lvl.ordinal();
-		else
-			return oldWeapon.type.ordinal() < newWeapon.type.ordinal();
 	}
 
 	public static String itemToString(ItemStack stack){

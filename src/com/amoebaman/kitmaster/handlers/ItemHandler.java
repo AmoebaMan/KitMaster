@@ -10,7 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.amoebaman.kitmaster.utilities.ParseItemException;
+import com.amoebaman.kitmaster.objects.ParseItemException;
 import com.google.common.collect.Lists;
 
 public class ItemHandler {
