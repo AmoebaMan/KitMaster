@@ -11,7 +11,6 @@ commands:
   kit:
     description: Get a kit
     usage: /kit <kit-name>
-    permission: kitmaster.cmd
     permission-message: You don't have permission to take kits via command
 
   givekit:
@@ -69,7 +68,6 @@ permissions:
     description: Gives access to all SuperKits permissions
     children:
       kitmaster.give: true
-      kitmaster.cmd: true
       kitmaster.list: true
       kitmaster.info: true
       kitmaster.reload: true
@@ -79,10 +77,6 @@ permissions:
       kitmaster.createsign: true
       kitmaster.books: true
       kitmaster.fireworks: true
-    
-  kitmaster.cmd:
-    description: Allows the player to take kits by command
-    default: true
     
   kitmaster.sign:
     description: Allows the player to take kits from signs
