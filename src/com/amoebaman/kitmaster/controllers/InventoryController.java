@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.amoebaman.kitmaster.objects.Armor;
 import com.amoebaman.kitmaster.objects.Weapon;
@@ -35,6 +36,21 @@ public class InventoryController {
 		if(stack == null)
 			return;
 		PlayerInventory inv = player.getInventory();
+		/*
+		 * Apply item personalization text macros
+		 * %player% is replaced with the player's name
+		 * %disaply% is replaced with the player's display name
+		 */
+		ItemMeta meta = stack.getItemMeta();
+		if(meta.hasDisplayName())
+			meta.setDisplayName(meta.getDisplayName().replace("%player%", player.getName()).replace("%display%", player.getDisplayName()));
+		if(meta.hasLore()){
+			List<String> lore = meta.getLore();
+			for(int i = 0; i < lore.size(); i++)
+				lore.set(i, lore.get(i).replace("%player%", player.getName()).replace("%display%", player.getDisplayName()));
+			meta.setLore(lore);
+		}
+		stack.setItemMeta(meta);
 		/*
 		 * If the material is armor and KitMaster is configured to auto-equip armor...
 		 */
