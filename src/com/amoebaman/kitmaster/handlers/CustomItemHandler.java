@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -28,6 +29,7 @@ public class CustomItemHandler {
 	
 	public static void addSample(){
 		ItemStack stack = new ItemStack(Material.IRON_SWORD);
+		stack.addEnchantment(Enchantment.DAMAGE_ALL, 10);
 		ItemMeta meta = stack.getItemMeta();
 		meta.setDisplayName("The Daisy Cutter");
 		meta.setLore(Lists.newArrayList("Strikes down daisies by the hundreds", "Forged by the mighty AmoebaMan"));
@@ -52,7 +54,6 @@ public class CustomItemHandler {
 	public static void saveCustomItem(ItemStack stack, String name){
 		ConfigurationSection section = yaml.createSection(name);
 		section.set("item", ItemController.itemToString(stack));
-		section.set("data", stack.getData().getData());
 		ItemMeta meta = stack.getItemMeta();
 		section.set("name", meta.getDisplayName());
 		section.set("lore", meta.getLore());
