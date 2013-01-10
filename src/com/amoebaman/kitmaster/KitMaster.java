@@ -466,7 +466,8 @@ public class KitMaster extends JavaPlugin implements Listener{
 		 * Stamp the time, and add the kit to the player's history
 		 */
 		TimeStampHandler.setTimeStamp(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT) ? null : player, kit);
-		HistoryHandler.addToHistory(player, kit);
+		if(context != GiveKitContext.PARENT_GIVEN)
+			HistoryHandler.addToHistory(player, kit);
 		/*
 		 * Notify the player of their good fortune
 		 */
