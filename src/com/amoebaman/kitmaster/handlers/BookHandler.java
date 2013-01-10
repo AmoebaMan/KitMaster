@@ -2,6 +2,7 @@ package com.amoebaman.kitmaster.handlers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -52,9 +53,10 @@ public class BookHandler {
 		ConfigurationSection bookYaml = yaml.createSection(name);
 		bookYaml.set("title", meta.getTitle());
 		bookYaml.set("author", meta.getAuthor());
-		for(int i = 0; i < meta.getPageCount(); i++)
-			meta.setPage(i, meta.getPage(i).replace("\n", "|n").replace("\r", "|r"));
-		bookYaml.set("pages", meta.getPages());
+		List<String> pages = meta.getPages();
+		for(int i = 0; i < pages.size(); i++)
+			pages.set(i, pages.get(i).replace("\n", "|n").replace("\r", "|r"));
+		bookYaml.set("pages", pages);
 	}
 	
 	public static ItemStack loadBook(ItemStack book, String name){
@@ -66,9 +68,10 @@ public class BookHandler {
 		BookMeta meta = (BookMeta) book.getItemMeta();
 		meta.setTitle(bookYaml.getString("title"));
 		meta.setAuthor(bookYaml.getString("author"));
+		List<String> pages = bookYaml.getStringList("pages");
+		for(int i = 0; i < pages.size(); i++)
+			pages.set(i, pages.get(i).replace("|n", "\n").replace("|r", "\r"));
 		meta.setPages(bookYaml.getStringList("pages"));
-		for(int i = 0; i < meta.getPageCount(); i++)
-			meta.setPage(i, meta.getPage(i).replace("|n", "\n").replace("|r", "\r"));
 		book.setItemMeta(meta);
 		return book;
 	}
