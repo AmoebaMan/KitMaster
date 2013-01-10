@@ -19,6 +19,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.amoebaman.kitmaster.enums.Attribute;
 import com.amoebaman.kitmaster.enums.GiveKitContext;
@@ -172,8 +173,12 @@ public class KitMasterEventHandler implements Listener{
 	@EventHandler
 	public void restrictItemPickups(PlayerPickupItemEvent event){
 		for(Kit kit : HistoryHandler.getHistory(event.getPlayer()))
-			if(kit.booleanAttribute(Attribute.RESTRICT_PICKUPS))
+			if(kit.booleanAttribute(Attribute.RESTRICT_PICKUPS)){
 				event.setCancelled(true);
+				for(ItemStack item : kit.items)
+					if(item != null && item.isSimilar(event.getItem().getItemStack()))
+						event.setCancelled(false);
+			}
 	}
 
 }
