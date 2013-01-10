@@ -3,7 +3,6 @@ package com.amoebaman.kitmaster.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -33,23 +32,24 @@ public class InventoryController {
 	 * @param items the item to give
 	 */
 	public static void giveItemToPlayer(Player player, ItemStack stack, boolean upgrade, boolean reverse) {
+		if(stack == null)
+			return;
 		PlayerInventory inv = player.getInventory();
-		Material mat = stack.getType();
 		/*
 		 * If the material is armor and KitMaster is configured to auto-equip armor...
 		 */
-		if(Armor.isValid(mat) && KitMaster.config().getBoolean("inventory.autoEquipArmor", true)){
+		if(Armor.isValid(stack.getType()) && KitMaster.config().getBoolean("inventory.autoEquipArmor", true)){
 			/*
 			 * If the new armor is better, equip it and put the old armor in the inventory
 			 * If the old armor is better, put the new armor in the inventory
 			 */
-			Armor newArmor = new Armor(mat);
-			Armor oldArmor = new Armor(Armor.getExisting(player, newArmor.type));
+			Armor newArmor = new Armor(stack);
+			Armor oldArmor = new Armor(Armor.getExisting(player, newArmor.getType()));
 			boolean empty = !oldArmor.isValid();
 			boolean better = empty ? true : newArmor.isBetterThan(oldArmor);
 			if (empty || better)
 				newArmor.putInSlot(player);
-			if(!empty){
+			else if(!empty){
 				if(better)
 					addItemToInventory(inv, oldArmor.getItem(), upgrade, true);
 				else
@@ -59,18 +59,18 @@ public class InventoryController {
 		/*
 		 * If the material is a weapon and KitMaster is configured to auto-equip weapons...
 		 */
-		else if(Weapon.isValid(mat) && KitMaster.config().getBoolean("inventory.autoEquipWeapon", true)){
+		else if(Weapon.isValid(stack.getType()) && KitMaster.config().getBoolean("inventory.autoEquipWeapon", true)){
 			/*
 			 * If the new weapon is better, equip it and put the old weapon in the inventory
 			 * If the old weapon is better, put the new weapon in the inventory
 			 */
-			Weapon newWeapon = new Weapon(mat);
+			Weapon newWeapon = new Weapon(stack);
 			Weapon oldWeapon = new Weapon(Weapon.getExisting(player));
 			boolean empty = !oldWeapon.isValid();
 			boolean better = empty ? true : newWeapon.isBetterThan(oldWeapon);
 			if(empty || better)
 				newWeapon.putInSlot(player);
-			if(!empty){
+			else if(!empty){
 				if(better)
 					addItemToInventory(inv, oldWeapon.getItem(), upgrade, true);
 				else

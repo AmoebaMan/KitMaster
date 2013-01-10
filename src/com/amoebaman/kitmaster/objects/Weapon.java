@@ -12,13 +12,16 @@ import org.bukkit.inventory.ItemStack;
  *
  */
 public class Weapon{
-	
+
 	/** The type of the weapon. */
 	public WeaponType type;
-	
+
 	/** The level of the weapon. */
 	public WeaponLevel lvl;
-	
+
+	/** The interally saved ItemStack. */
+	private ItemStack item;
+
 	/**
 	 * Constructs a weapon with the given type and level.
 	 * @param type the type of weapon
@@ -27,6 +30,7 @@ public class Weapon{
 	public Weapon(WeaponType type, WeaponLevel lvl){
 		this.type = type;
 		this.lvl = lvl;
+		item = getRawItem();
 	}
 
 	/**
@@ -34,36 +38,41 @@ public class Weapon{
 	 * @param mat the Material
 	 */
 	public Weapon(Material mat){
-		if(mat.name().contains("SWORD"))
-			type = WeaponType.SWORD;
-		if(mat.name().contains("AXE"))
-			type = WeaponType.AXE;
-		if(mat.name().contains("BOW")){
-			type = WeaponType.BOW;
-			lvl = WeaponLevel.WOOD;
+		if(mat != null){
+			if(mat.name().contains("SWORD"))
+				type = WeaponType.SWORD;
+			if(mat.name().contains("AXE"))
+				type = WeaponType.AXE;
+			if(mat.name().contains("BOW")){
+				type = WeaponType.BOW;
+				lvl = WeaponLevel.WOOD;
+			}
+
+			if(mat.name().contains("DIAMOND"))
+				lvl = WeaponLevel.DIAMOND;
+			if(mat.name().contains("IRON"))
+				lvl = WeaponLevel.IRON;
+			if(mat.name().contains("GOLD"))
+				lvl = WeaponLevel.GOLD;
+			if(mat.name().contains("STONE"))
+				lvl = WeaponLevel.STONE;
+			if(mat.name().contains("WOOD"))
+				lvl = WeaponLevel.WOOD;
+			item = getRawItem();
 		}
 		
-		if(mat.name().contains("DIAMOND"))
-			lvl = WeaponLevel.DIAMOND;
-		if(mat.name().contains("IRON"))
-			lvl = WeaponLevel.IRON;
-		if(mat.name().contains("GOLD"))
-			lvl = WeaponLevel.GOLD;
-		if(mat.name().contains("STONE"))
-			lvl = WeaponLevel.STONE;
-		if(mat.name().contains("WOOD"))
-			lvl = WeaponLevel.WOOD;
 	}
-	
+
 	/**
 	 * Constructs an Weapon from an ItemStack of the Material that it should represent.
 	 * @param stack the ItemStack
 	 */
 	public Weapon(ItemStack stack){
-		this(stack.getType());
+		this(stack == null ? null : stack.getType());
+		item = stack;
 	}
 
-	
+
 	/**
 	 * Gets the ItemStack that is currently in a player's weapon (held item) slot.
 	 * @param player the player to check
@@ -73,7 +82,7 @@ public class Weapon{
 		return player.getItemInHand();
 	}
 
-	
+
 	/**
 	 * Tests whether or not this Weapon is superior to another.
 	 * @param other the other Weapon
@@ -86,26 +95,26 @@ public class Weapon{
 			return true;
 		if(type == other.type)
 			return lvl.ordinal() >= other.lvl.ordinal();
-		else
-			return type.ordinal() >= other.type.ordinal();
+			else
+				return type.ordinal() >= other.type.ordinal();
 	}
-	
+
 	/**
 	 * Puts this Weapon in a Player's held item slot
 	 * @param player the Player to give this Weapon to
 	 */
 	public void putInSlot(Player player){
-		player.setItemInHand(getItem());
+		player.setItemInHand(item);
 	}
-	
+
 	/**
 	 * Tests whether or not this Weapon represents a real Material.
 	 * @return true if this Weapon is valid
 	 */
 	public boolean isValid(){
-		return type != null && lvl != null;
+		return type != null && lvl != null && item != null;
 	}
-	
+
 	/**
 	 * Tests whether or not a valid Weapon can be constructed from this Material.
 	 * @return true if a construction call with this Material will produce a valid Weapon
@@ -113,12 +122,14 @@ public class Weapon{
 	public static boolean isValid(Material mat){
 		return new Weapon(mat).isValid();
 	}
-	
+
 	/**
 	 * Gets the Material that would represent this Weapon.
 	 * @return the Material
 	 */
 	public Material getMaterial(){
+		if(type == null || lvl == null)
+			return null;
 		switch(type){
 		case AXE:
 			switch(lvl){
@@ -156,15 +167,23 @@ public class Weapon{
 			return Material.AIR;
 		}
 	}
-	
+
+	public WeaponType getType(){ return type; }
+
+	public WeaponLevel getLevel(){ return lvl; }
+
+	public ItemStack getItem(){ return item; }
+
 	/**
 	 * Gets an ItemStack containing one of the Material that this Weapon represents.
 	 * @return the ItemStack
 	 */
-	public ItemStack getItem(){
+	public ItemStack getRawItem(){
+		if(getMaterial() == null)
+			return null;
 		return new ItemStack(getMaterial());
 	}
-	
+
 	/** The levels of weapon.  Higher ordinals correspond to more powerful weapons. */
 	public enum WeaponLevel{
 		/** Wooden weapons */
@@ -178,7 +197,7 @@ public class Weapon{
 		/** Diamond weapons */
 		DIAMOND
 	};
-	
+
 	/** The types of weapon.  Higher ordinals correspond to more powerful weapons. */
 	public enum WeaponType{
 		/** Axes */
