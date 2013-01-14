@@ -159,7 +159,7 @@ public class Kit implements Cloneable{
 		Kit parent = clone.getParent();
 		if(parent != null)
 			for(Attribute type : parent.attributes.keySet())
-				if(!clone.attributes.containsKey(type))
+				if(!clone.attributes.containsKey(type) && type != Attribute.IDENTIFIER)
 					clone.attributes.put(type, parent.getAttribute(type));
 		return clone;
 	}
