@@ -1,5 +1,8 @@
 package com.amoebaman.kitmaster;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -13,6 +16,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -31,7 +35,7 @@ import com.amoebaman.kitmaster.handlers.TimeStampHandler;
 import com.amoebaman.kitmaster.objects.Kit;
 
 public class KitMasterEventHandler implements Listener{
-	
+
 	public static void init(KitMaster plugin){
 		Bukkit.getPluginManager().registerEvents(new KitMasterEventHandler(), plugin);
 	}
@@ -88,7 +92,7 @@ public class KitMasterEventHandler implements Listener{
 			event.getPlayer().sendMessage(ChatColor.ITALIC + "Kit select sign unregistered");
 		}
 	}
-	
+
 	@EventHandler
 	public void giveKitsOnRespawn(PlayerRespawnEvent event){
 		final Player player = event.getPlayer();
@@ -117,25 +121,42 @@ public class KitMasterEventHandler implements Listener{
 		if(KitMaster.config().getBoolean("clearKits.onDeath", true))
 			KitMaster.clearAll(event.getEntity());
 	}
-	
+
 	@EventHandler
 	public void removeItemDropsOnDeath(PlayerDeathEvent event){
 		for(Kit kit : HistoryHandler.getHistory(event.getEntity()))
-			if(kit.booleanAttribute(Attribute.RESTRICT_DEATH_DROPS))
-				event.getDrops().clear();
+			/*
+			 * If the player has a kit that clears death drops
+			 */
+			if(kit.booleanAttribute(Attribute.RESTRICT_DEATH_DROPS)){
+				List<ItemStack> toRemove = new ArrayList<ItemStack>();
+				/*
+				 * Only look for similarity between drops and kit items, not quantity
+				 */
+				for(ItemStack drop : event.getDrops())
+					for(ItemStack item : kit.items)
+						if(drop.isSimilar(item)){
+							toRemove.add(drop);
+							break;
+						}
+				/*
+				 * Remove drops that have been matched in the kit
+				 */
+				event.getDrops().removeAll(toRemove);
+			}
 	}
-	
+
 	@EventHandler
 	public void clearKitsWhenPlayerQuits(PlayerQuitEvent event){
 		if(KitMaster.config().getBoolean("clearKits.onDisconnect", true))
 			KitMaster.clearAll(event.getPlayer());
 	}
-	
+
 	@EventHandler
 	public void clearKitsWhenPlayerIsKicked(PlayerKickEvent event){
 		clearKitsWhenPlayerQuits(new PlayerQuitEvent(event.getPlayer(), "simulated"));
 	}
-	
+
 	@EventHandler
 	public void sendUpdateMessages(PlayerJoinEvent event){
 		Player player = event.getPlayer();
@@ -155,29 +176,69 @@ public class KitMasterEventHandler implements Listener{
 			default: }
 		}
 	}
-	
+
+	@EventHandler
+	public void optionalShortcutKitCommands(PlayerCommandPreprocessEvent event){
+		if(KitMaster.config().getBoolean("shortcutKitCommands")){
+			Kit target = KitHandler.getKit(event.getMessage());
+			if(target != null && target.name.equalsIgnoreCase(event.getMessage()))
+				event.setMessage("kit " + target.name);
+		}
+	}
+
 	@EventHandler
 	public void restrictArmorRemoval(InventoryClickEvent event){
-		for(Kit kit : HistoryHandler.getHistory((Player) event.getWhoClicked()))
-			if(event.getSlotType() == SlotType.ARMOR && kit.booleanAttribute(Attribute.RESTRICT_ARMOR))
-				event.setCancelled(true);
+		/*
+		 * If an armor slot was clicked
+		 */
+		if(event.getSlotType() == SlotType.ARMOR)
+			for(Kit kit : HistoryHandler.getHistory((Player) event.getWhoClicked()))
+				/*
+				 * If the player has a kit that restricts armor
+				 */
+				if(kit.booleanAttribute(Attribute.RESTRICT_ARMOR))
+					for(ItemStack item : kit.items)
+						/*
+						 * If that kit contains the armor being removed
+						 */
+						if(item.isSimilar(event.getCurrentItem()))
+							event.setCancelled(true);
 	}
-	
+
 	@EventHandler
 	public void restrictItemDrops(PlayerDropItemEvent event){
 		for(Kit kit : HistoryHandler.getHistory(event.getPlayer()))
+			/*
+			 * If the player has a kit that restricts drops
+			 */
 			if(kit.booleanAttribute(Attribute.RESTRICT_DROPS))
-				event.setCancelled(true);
+				for(ItemStack item : kit.items)
+					/*
+					 * If that kit contains the item being dropped
+					 */
+					if(item.isSimilar(event.getItemDrop().getItemStack()))
+						event.setCancelled(true);
 	}
-	
+
 	@EventHandler
 	public void restrictItemPickups(PlayerPickupItemEvent event){
 		for(Kit kit : HistoryHandler.getHistory(event.getPlayer()))
+			/*
+			 * If the player has a kit that restricts pickups
+			 */
 			if(kit.booleanAttribute(Attribute.RESTRICT_PICKUPS)){
+				/*
+				 * By default cancel it
+				 */
 				event.setCancelled(true);
 				for(ItemStack item : kit.items)
-					if(item != null && item.isSimilar(event.getItem().getItemStack()))
+					/*
+					 * If the kit contains that item, allow it
+					 */
+					if(item != null && item.isSimilar(event.getItem().getItemStack())){
 						event.setCancelled(false);
+						return;
+					}
 			}
 	}
 
