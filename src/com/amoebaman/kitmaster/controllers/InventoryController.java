@@ -121,7 +121,7 @@ public class InventoryController {
 			}
 			catch(ParseItemException pie){}
 		}
-		if(stack.getAmount() <= maxStackSize)
+		if(stack.getAmount() <= maxStackSize && inv.firstEmpty() != -1)
 			inv.setItem(getAddIndex(inv, reverse), stack);
 		else if(maxStackSize != 64){
 			ItemStack fullStack = stack.clone();
@@ -133,27 +133,28 @@ public class InventoryController {
 			}
 			items.add(stack);
 			for(ItemStack item : items)
-				inv.setItem(getAddIndex(inv, reverse), item);
+				if(inv.firstEmpty() != -1)
+					inv.setItem(getAddIndex(inv, reverse), item);
 		}
-		else
+		else if(inv.firstEmpty() != -1)
 			inv.setItem(getAddIndex(inv, reverse), stack);
 	}
 
 	private static final int MAX_SLOT_INDEX = 35;
 	
 	private static int getAddIndex(Inventory inv, boolean reverse){
+		if(inv.firstEmpty() == -1)
+			return -1;
+		
 		int addIndex;
 		if(reverse){
 			addIndex = MAX_SLOT_INDEX;
 			while(inv.getItem(addIndex) != null)
 				addIndex --;
+			return addIndex;
 		}
-		else{
-			addIndex = 0;
-			while(inv.getItem(addIndex) != null)
-				addIndex ++;
-		}
-		return addIndex;
+		else
+			return inv.firstEmpty();
 	}
 
 }
