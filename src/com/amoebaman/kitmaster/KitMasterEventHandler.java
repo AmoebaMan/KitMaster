@@ -180,7 +180,7 @@ public class KitMasterEventHandler implements Listener{
 	@EventHandler
 	public void optionalShortcutKitCommands(PlayerCommandPreprocessEvent event){
 		if(KitMaster.config().getBoolean("shortcutKitCommands")){
-			Kit target = KitHandler.getKit(event.getMessage());
+			Kit target = KitHandler.getKit(event.getMessage().replace("/", ""));
 			if(target != null && target.name.equalsIgnoreCase(event.getMessage()))
 				event.setMessage("kit " + target.name);
 		}
