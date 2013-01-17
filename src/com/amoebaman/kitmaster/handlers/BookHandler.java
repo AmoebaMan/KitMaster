@@ -71,7 +71,7 @@ public class BookHandler {
 		List<String> pages = bookYaml.getStringList("pages");
 		for(int i = 0; i < pages.size(); i++)
 			pages.set(i, pages.get(i).replace("|n", "\n").replace("|r", "\r"));
-		meta.setPages(bookYaml.getStringList("pages"));
+		meta.setPages(pages);
 		book.setItemMeta(meta);
 		return book;
 	}
