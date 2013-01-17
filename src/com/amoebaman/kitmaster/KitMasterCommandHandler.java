@@ -1,11 +1,15 @@
 package com.amoebaman.kitmaster;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -25,7 +29,7 @@ import com.amoebaman.kitmaster.utilities.CommandController;
 import com.amoebaman.kitmaster.utilities.CommandController.CommandHandler;
 import com.amoebaman.kitmaster.utilities.CommandController.SubCommandHandler;
 
-public class KitMasterCommandHandler{
+public class KitMasterCommandHandler implements TabCompleter{
 
 	public static KitMaster plugin;
 	public static void init(KitMaster instance){
@@ -74,7 +78,7 @@ public class KitMasterCommandHandler{
 		sender.sendMessage(ChatColor.GREEN + "Available kits:");
 		for(Kit kit : KitHandler.getKits()){
 			PermsResult perms = KitHandler.getKitPerms(sender, kit);
-			if(perms.generic.bool && kit.booleanAttribute(Attribute.SHOW_IN_LIST) && (kit.getParent() == null || kit.getParent().booleanAttribute(Attribute.SHOW_IN_LIST))){
+			if(perms.generic.bool && kit.applyParent().booleanAttribute(Attribute.SHOW_IN_LIST)){
 				String message = ChatColor.ITALIC + " - " + kit.name;
 				if(perms.generic == GenericResult.CONDITIONAL)
 					message += " - " + ChatColor.YELLOW + ChatColor.ITALIC + perms.message;
@@ -204,6 +208,25 @@ public class KitMasterCommandHandler{
 		}
 		player.getInventory().addItem(FireworkHandler.getFirework(args[0]));
 		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the firework named " + args[0]);
+	}
+
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+		if(command.getName().equals("kit")){
+			List<String> names = new ArrayList<String>();
+			String partial = "";
+			if(args.length > 0)
+				partial += args[0];
+			for(Kit kit : KitHandler.getKits()){
+				PermsResult perms = KitHandler.getKitPerms(sender, kit);
+				if(perms.generic == GenericResult.YES || perms == PermsResult.COMMAND_ONLY || perms == PermsResult.INHERIT_COMMAND_ONLY)
+					if(kit.applyParent().booleanAttribute(Attribute.SHOW_IN_LIST))
+						if(partial.isEmpty() || kit.name.toLowerCase().startsWith(partial.toLowerCase()))
+							names.add(kit.name);
+			}
+			return names;
+		}
+		
+		return null;
 	}
 	
 }
