@@ -10,6 +10,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -48,6 +49,8 @@ public class CommandController implements CommandExecutor{
 							plugin.getCommand(annotation.name()).setPermission(annotation.permission());
 						if(!annotation.permissionMessage().equals(""))
 							plugin.getCommand(annotation.name()).setPermissionMessage(ChatColor.RED + annotation.permissionMessage());
+						if(handler instanceof TabCompleter)
+							plugin.getCommand(annotation.name()).setTabCompleter((TabCompleter) handler);
 						handlers.put(plugin.getCommand(annotation.name()), handler);
 						methods.put(plugin.getCommand(annotation.name()), method);
 					}
