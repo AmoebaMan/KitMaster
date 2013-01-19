@@ -32,7 +32,9 @@ import com.amoebaman.kitmaster.handlers.HistoryHandler;
 import com.amoebaman.kitmaster.handlers.KitHandler;
 import com.amoebaman.kitmaster.handlers.SignHandler;
 import com.amoebaman.kitmaster.handlers.TimeStampHandler;
+import com.amoebaman.kitmaster.objects.Armor;
 import com.amoebaman.kitmaster.objects.Kit;
+import com.amoebaman.kitmaster.objects.Weapon;
 
 public class KitMasterEventHandler implements Listener{
 
@@ -135,7 +137,7 @@ public class KitMasterEventHandler implements Listener{
 				 */
 				for(ItemStack drop : event.getDrops())
 					for(ItemStack item : kit.items)
-						if(drop.isSimilar(item)){
+						if(areSimilar(drop, item)){
 							toRemove.add(drop);
 							break;
 						}
@@ -201,7 +203,7 @@ public class KitMasterEventHandler implements Listener{
 						/*
 						 * If that kit contains the armor being removed
 						 */
-						if(item.isSimilar(event.getCurrentItem()))
+						if(areSimilar(item, event.getCurrentItem()))
 							event.setCancelled(true);
 	}
 
@@ -216,7 +218,7 @@ public class KitMasterEventHandler implements Listener{
 					/*
 					 * If that kit contains the item being dropped
 					 */
-					if(item.isSimilar(event.getItemDrop().getItemStack()))
+					if(areSimilar(item, event.getItemDrop().getItemStack()))
 						event.setCancelled(true);
 	}
 
@@ -235,11 +237,15 @@ public class KitMasterEventHandler implements Listener{
 					/*
 					 * If the kit contains that item, allow it
 					 */
-					if(item != null && item.isSimilar(event.getItem().getItemStack())){
+					if(item != null && areSimilar(item, event.getItem().getItemStack())){
 						event.setCancelled(false);
 						return;
 					}
 			}
+	}
+	
+	private boolean areSimilar(ItemStack a, ItemStack b){
+		return a.isSimilar(b) || ((Weapon.isValid(a.getType()) || Armor.isValid(a.getType())) && a.getType() == b.getType());
 	}
 
 }
