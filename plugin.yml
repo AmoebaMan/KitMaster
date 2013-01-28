@@ -49,6 +49,12 @@ commands:
     permission: kitmaster.books
     permission-message: You don't have permission to manage books
     
+  editbook:
+    description: Loads the book from books.yml as an editable book
+    usage: /editbook <name>
+    permission: kitmaster.books
+    permission-message: You don't have permission to manage books
+    
   savefirework:
     description: Saves a firework to fireworks.yml file under a given name
     usage: /savefirework <name>

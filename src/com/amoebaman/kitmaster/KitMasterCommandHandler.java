@@ -170,6 +170,21 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.getInventory().addItem(BookHandler.getBook(args[0]));
 		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the book named " + args[0]);
 	}
+
+	@CommandHandler(name = "editbook")
+	@SubCommandHandler(parent = "kit", name = "editbook")
+	public void editbook(Player player, String[] args){
+		if(args.length == 0){
+			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("editbook").getUsage());
+			return;
+		}
+		if(!BookHandler.isBook(args[0])){
+			player.sendMessage(ChatColor.ITALIC + "No book is saved under that name");
+			return;
+		}
+		player.getInventory().addItem(BookHandler.getEditableBook(args[0]));
+		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the book named " + args[0]);
+	}
 	
 	@CommandHandler(name = "savefirework")
 	@SubCommandHandler(parent = "kit", name = "savefirework")

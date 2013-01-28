@@ -11,6 +11,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
+import com.google.common.collect.Lists;
+
 public class BookHandler {
 
 	private static final YamlConfiguration yaml = new YamlConfiguration();
@@ -53,9 +55,9 @@ public class BookHandler {
 		ConfigurationSection bookYaml = yaml.createSection(name);
 		bookYaml.set("title", meta.getTitle());
 		bookYaml.set("author", meta.getAuthor());
-		List<String> pages = meta.getPages();
+		List<String> pages = Lists.newArrayList(meta.getPages());
 		for(int i = 0; i < pages.size(); i++)
-			pages.set(i, pages.get(i).replace("\n", "|n").replace("\r", "|r"));
+			pages.set(i, new String(pages.get(i)).replace("\n", "|n").replace("\r", "|r"));
 		bookYaml.set("pages", pages);
 	}
 	
@@ -78,6 +80,10 @@ public class BookHandler {
 	
 	public static ItemStack getBook(String name){
 		return loadBook(new ItemStack(Material.WRITTEN_BOOK), name);
+	}
+	
+	public static ItemStack getEditableBook(String name){
+		return loadBook(new ItemStack(Material.BOOK_AND_QUILL), name);
 	}
 	
 	public static String getBookName(ItemStack book){
