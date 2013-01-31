@@ -136,7 +136,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 	@CommandHandler(name = "savebook")
 	@SubCommandHandler(parent = "kit", name = "savebook")
 	public void savebook(Player player, String[] args){
-		if(player.getItemInHand().getType() != Material.WRITTEN_BOOK){
+		if(player.getItemInHand().getType() != Material.WRITTEN_BOOK && player.getItemInHand().getType() != Material.BOOK_AND_QUILL){
 			player.sendMessage(ChatColor.ITALIC + "You need to hold a written book before using this command");
 			return;
 		}

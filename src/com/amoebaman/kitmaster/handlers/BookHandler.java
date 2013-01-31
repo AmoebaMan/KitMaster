@@ -49,7 +49,7 @@ public class BookHandler {
 	}
 	
 	public static void saveBook(ItemStack book, String name){
-		if(book.getType() != Material.WRITTEN_BOOK)
+		if(book.getType() != Material.WRITTEN_BOOK && book.getType() != Material.BOOK_AND_QUILL)
 			return;
 		BookMeta meta = (BookMeta) book.getItemMeta();
 		ConfigurationSection bookYaml = yaml.createSection(name);
@@ -62,7 +62,7 @@ public class BookHandler {
 	}
 	
 	public static ItemStack loadBook(ItemStack book, String name){
-		if(book.getType() != Material.WRITTEN_BOOK)
+		if(book.getType() != Material.WRITTEN_BOOK && book.getType() != Material.BOOK_AND_QUILL)
 			return book;
 		ConfigurationSection bookYaml = getSection(name);
 		if(bookYaml == null)
