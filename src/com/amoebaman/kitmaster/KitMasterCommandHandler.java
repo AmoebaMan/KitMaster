@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 
 import com.amoebaman.kitmaster.controllers.ItemController;
@@ -21,6 +22,7 @@ import com.amoebaman.kitmaster.enums.GiveKitContext;
 import com.amoebaman.kitmaster.enums.GiveKitResult;
 import com.amoebaman.kitmaster.enums.PermsResult;
 import com.amoebaman.kitmaster.handlers.BookHandler;
+import com.amoebaman.kitmaster.handlers.CustomItemHandler;
 import com.amoebaman.kitmaster.handlers.FireworkEffectHandler;
 import com.amoebaman.kitmaster.handlers.FireworkHandler;
 import com.amoebaman.kitmaster.handlers.KitHandler;
@@ -133,8 +135,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		}
 	}
 
-	@CommandHandler(name = "savebook")
-	@SubCommandHandler(parent = "kit", name = "savebook")
+	@SubCommandHandler(parent = "itemmeta", name = "savebook")
 	public void savebook(Player player, String[] args){
 		if(player.getItemInHand().getType() != Material.WRITTEN_BOOK && player.getItemInHand().getType() != Material.BOOK_AND_QUILL){
 			player.sendMessage(ChatColor.ITALIC + "You need to hold a written book before using this command");
@@ -156,8 +157,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Successfully saved the book under the name " + args[0]);
 	}
 
-	@CommandHandler(name = "loadbook")
-	@SubCommandHandler(parent = "kit", name = "loadbook")
+	@SubCommandHandler(parent = "itemmeta", name = "loadbook")
 	public void loadbook(Player player, String[] args){
 		if(args.length == 0){
 			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("loadbook").getUsage());
@@ -171,8 +171,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the book named " + args[0]);
 	}
 
-	@CommandHandler(name = "editbook")
-	@SubCommandHandler(parent = "kit", name = "editbook")
+	@SubCommandHandler(parent = "itemmeta", name = "editbook")
 	public void editbook(Player player, String[] args){
 		if(args.length == 0){
 			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("editbook").getUsage());
@@ -186,8 +185,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the book named " + args[0]);
 	}
 	
-	@CommandHandler(name = "savefirework")
-	@SubCommandHandler(parent = "kit", name = "savefirework")
+	@SubCommandHandler(parent = "itemmeta", name = "savefirework")
 	public void savefirework(Player player, String[] args){
 		if(player.getItemInHand().getType() != Material.FIREWORK){
 			player.sendMessage(ChatColor.ITALIC + "You need to hold a firework before using this command");
@@ -210,8 +208,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Successfully saved the firework under the name " + args[0]);
 	}
 
-	@CommandHandler(name = "loadfirework")
-	@SubCommandHandler(parent = "kit", name = "loadfirework")
+	@SubCommandHandler(parent = "itemmeta", name = "loadfirework")
 	public void loadfirework(Player player, String[] args){
 		if(args.length == 0){
 			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("loadfirework").getUsage());
@@ -225,6 +222,119 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the firework named " + args[0]);
 	}
 
+	@SubCommandHandler(parent = "itemmeta", name = "setname")
+	public void setname(Player player, String[] args){
+		if(player.getItemInHand() == null){
+			player.sendMessage(ChatColor.ITALIC + "You need to hold an item before using this command");
+			return;
+		}
+		if(args.length == 0){
+			player.sendMessage(ChatColor.ITALIC + "Include a new name for the item");
+			return;
+		}
+		ItemMeta meta = player.getItemInHand().getItemMeta();
+		meta.setDisplayName(ChatColor.RESET + args[0]);
+		player.getItemInHand().setItemMeta(meta);
+		player.sendMessage(ChatColor.ITALIC + "Renamed your held item to " + args[0]);
+	}
+	
+	@SubCommandHandler(parent = "itemmeta", name = "addlore")
+	public void addlore(Player player, String[] args){
+		if(player.getItemInHand() == null){
+			player.sendMessage(ChatColor.ITALIC + "You need to hold an item before using this command");
+			return;
+		}
+		if(args.length == 0){
+			player.sendMessage(ChatColor.ITALIC + "Include a new line of lore for the item");
+			return;
+		}
+		String line = "";
+		for(String str : args)
+			line += str + " ";
+		line = line.trim();
+		ItemMeta meta = player.getItemInHand().getItemMeta();
+		List<String> lore = meta.getLore();
+		lore.add(ChatColor.RESET + line);
+		meta.setLore(lore);
+		player.getItemInHand().setItemMeta(meta);
+		player.sendMessage(ChatColor.ITALIC + "Added \"" + line + "\" to your held item");
+	}
+	
+	@SubCommandHandler(parent = "itemmeta", name = "removelore")
+	public void removelore(Player player, String[] args){
+		if(player.getItemInHand() == null){
+			player.sendMessage(ChatColor.ITALIC + "You need to hold an item before using this command");
+			return;
+		}
+		if(args.length == 0){
+			player.sendMessage(ChatColor.ITALIC + "Include the line number to remove");
+			return;
+		}
+		int num;
+		try{
+			num = Integer.parseInt(args[0]);
+		}
+		catch(NumberFormatException nfe){
+			player.sendMessage(ChatColor.ITALIC + "Include the line number to remove");
+			return;
+		}
+		ItemMeta meta = player.getItemInHand().getItemMeta();
+		List<String> lore = meta.getLore();
+		try{
+			lore.remove(num + 1);
+		}
+		catch(IndexOutOfBoundsException iobe){
+			player.sendMessage(ChatColor.ITALIC + "Your held item doesn't have that many lines of lore");
+			return;
+		}
+		meta.setLore(lore);
+		player.getItemInHand().setItemMeta(meta);
+		player.sendMessage(ChatColor.ITALIC + "Removed line " + num + " from your held item");
+	}
+
+	@SubCommandHandler(parent = "itemmeta", name = "saveitem")
+	public void savemeta(Player player, String[] args){
+		if(player.getItemInHand() == null){
+			player.sendMessage(ChatColor.ITALIC + "You need to hold an item before using this command");
+			return;
+		}
+		if(args.length == 0){
+			player.sendMessage(ChatColor.ITALIC + "Include an identifier for this custom item");
+			return;
+		}
+		CustomItemHandler.saveCustomItem(player.getItemInHand(), args[0]);
+		try {
+			CustomItemHandler.save(KitMaster.itemsFile);
+		}
+		catch (IOException ioe) { 
+			ioe.printStackTrace();
+			player.sendMessage(ChatColor.ITALIC + "An error occurred while saving the item");
+			return;
+		}
+		player.sendMessage(ChatColor.ITALIC + "Successfully saved the item under the name " + args[0]);
+	}
+	
+	@SubCommandHandler(parent = "itemmeta", name = "loaditem")
+	public void loadmeta(Player player, String[] args){
+		if(args.length == 0){
+			player.sendMessage(ChatColor.ITALIC + "Include the identifier of the custom item");
+			return;
+		}
+		if(!CustomItemHandler.isCustomItem(args[0])){
+			player.sendMessage(ChatColor.ITALIC + "No item is saved under that name");
+			return;
+		}
+		try {
+			player.getInventory().addItem(CustomItemHandler.getCustomItem(args[0]));
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			player.sendMessage(ChatColor.ITALIC + "An error occurred while loading the item");
+			return;
+		}
+		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the item named " + args[0]);
+	}
+	
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
 		if(command.getName().equals("kit")){
 			List<String> names = new ArrayList<String>();

@@ -55,18 +55,12 @@ commands:
     permission: kitmaster.books
     permission-message: You don't have permission to manage books
     
-  savefirework:
-    description: Saves a firework to fireworks.yml file under a given name
-    usage: /savefirework <name>
-    permission: kitmaster.fireworks
-    permission-message: You don't have permission to manage fireworks
-
-  loadfirework:
-    description: Loads the firework from fireworks.yml with the given name
-    usage: /loadfirework <name>
-    permission: kitmaster.fireworks
-    permission-message: You don't have permission to manage fireworks
-    
+  itemmeta:
+    aliases: [meta, metadata]
+    description: Base for various item metadata manipulation commands
+    usage: /itemmeta ...
+    permission: kitmaster.meta
+    permission-message: You don't have permission to manage item metadata
 
 permissions:
 
@@ -134,4 +128,8 @@ permissions:
     
   kitmaster.fireworks:
     description: Allows the player to save and load fireworks
+    default: op
+    
+  kitmaster.meta:
+    description: Allows the player to manage item metadata
     default: op
