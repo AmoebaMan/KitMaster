@@ -2,7 +2,10 @@ package com.amoebaman.kitmaster.handlers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -67,8 +70,11 @@ public class CustomItemHandler {
 			return null;
 		ItemStack stack = ItemController.parseItem(section.getString("item"));
 		ItemMeta meta = stack.getItemMeta();
-		meta.setDisplayName(section.getString("name", null));
-		meta.setLore(section.getStringList("lore"));
+		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', section.getString("name", null)));
+		List<String> lore = new ArrayList<String>();
+		for(String line : section.getStringList("lore"))
+			lore.add(ChatColor.translateAlternateColorCodes('&', line));
+		meta.setLore(lore);
 		stack.setItemMeta(meta);
 		return stack;
 	}
