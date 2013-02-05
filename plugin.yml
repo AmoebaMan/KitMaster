@@ -36,24 +36,6 @@ commands:
     usage: /reloadkits
     permission: kitmaster.reload
     permission-message: You don't have permission to reload kits
-
-  savebook:
-    description: Saves a book to books.yml under a given name
-    usage: /savebook <name>
-    permission: kitmaster.books
-    permission-message: You don't have permission to manage books
-
-  loadbook:
-    description: Loads the book from books.yml with the given name
-    usage: /loadbook <name>
-    permission: kitmaster.books
-    permission-message: You don't have permission to manage books
-    
-  editbook:
-    description: Loads the book from books.yml as an editable book
-    usage: /editbook <name>
-    permission: kitmaster.books
-    permission-message: You don't have permission to manage books
     
   itemmeta:
     aliases: [meta, metadata]
@@ -61,6 +43,13 @@ commands:
     usage: /itemmeta ...
     permission: kitmaster.meta
     permission-message: You don't have permission to manage item metadata
+    
+  editkit:
+    aliases: [kitedit, kedit, editk]
+    description: Base for various kit editing commands
+    usage: /editkit ...
+    permission: kitmaster.edit
+    permission-message: You don't have permission to edit kits
 
 permissions:
 
@@ -133,3 +122,8 @@ permissions:
   kitmaster.meta:
     description: Allows the player to manage item metadata
     default: op
+    
+  kitmaster.edit:
+    description: Allows the player to edit kits
+    default: op
+    
