@@ -64,7 +64,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 	@SubCommandHandler(parent = "kit", name = "give")
 	public void givekit(CommandSender sender, String[] args){
 		if (args.length < 2){
-			sender.sendMessage(ChatColor.ITALIC + plugin.getCommand("givekit").getUsage());
+			sender.sendMessage(ChatColor.ITALIC + "Include a player to give to and a kit to give");
 			return;
 		}
 		Player target = Bukkit.getPlayer(args[0]);
@@ -104,7 +104,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 	@SubCommandHandler(parent = "kit", name = "info")
 	public void kitinfo(CommandSender sender, String[] args){
 		if(args.length < 1){
-			sender.sendMessage(ChatColor.ITALIC + "Specify a kit - /kitinfo <kitname>");
+			sender.sendMessage(ChatColor.ITALIC + "Include a kit to learn about");
 			return;
 		}
 		Kit kit = KitHandler.getKit(args[0]);
@@ -149,7 +149,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 			return;
 		}
 		if(args.length == 0){
-			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("savebook").getUsage());
+			player.sendMessage(ChatColor.ITALIC + "Include an identifier to save the book with");
 			return;
 		}
 		BookHandler.saveBook(player.getItemInHand(), args[0]);
@@ -167,7 +167,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 	@SubCommandHandler(parent = "itemmeta", name = "loadbook")
 	public void loadbook(Player player, String[] args){
 		if(args.length == 0){
-			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("loadbook").getUsage());
+			player.sendMessage(ChatColor.ITALIC + "Include the identifier of the book to load");
 			return;
 		}
 		if(!BookHandler.isBook(args[0])){
@@ -181,7 +181,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 	@SubCommandHandler(parent = "itemmeta", name = "editbook")
 	public void editbook(Player player, String[] args){
 		if(args.length == 0){
-			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("editbook").getUsage());
+			player.sendMessage(ChatColor.ITALIC + "Include the identifier of the book to edit");
 			return;
 		}
 		if(!BookHandler.isBook(args[0])){
@@ -199,7 +199,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 			return;
 		}
 		if(args.length == 0){
-			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("savefirework").getUsage());
+			player.sendMessage(ChatColor.ITALIC + "Include an identifier to save the firework with");
 			return;
 		}
 		FireworkHandler.saveFirework(player.getItemInHand(), args[0]);
@@ -218,7 +218,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 	@SubCommandHandler(parent = "itemmeta", name = "loadfirework")
 	public void loadfirework(Player player, String[] args){
 		if(args.length == 0){
-			player.sendMessage(ChatColor.ITALIC + plugin.getCommand("loadfirework").getUsage());
+			player.sendMessage(ChatColor.ITALIC + "Include the identifier of the firework to load");
 			return;
 		}
 		if(!FireworkHandler.isFirework(args[0])){
