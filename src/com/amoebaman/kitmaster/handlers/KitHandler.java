@@ -144,13 +144,13 @@ public class KitHandler {
 			if(kit == null || kit.name == null)
 				continue;
 			if(kit.name.equalsIgnoreCase(kitName))
-				return kit.applyParent();
+				return kit.applyParentAttributes();
 		}
 		for(Kit kit : kits){
 			if(kit == null || kit.name == null)
 				continue;
 			if(kit.name.toLowerCase().startsWith(kitName.toLowerCase()))
-				return kit.applyParent();
+				return kit.applyParentAttributes();
 		}
 		return null;
 	}
@@ -162,13 +162,13 @@ public class KitHandler {
 			if(kit == null || kit.name == null)
 				continue;
 			if(kit.stringAttribute(Attribute.IDENTIFIER).equalsIgnoreCase(identifier))
-				return kit.applyParent();
+				return kit.applyParentAttributes();
 		}
 		for(Kit kit : kits){
 			if(kit == null || kit.name == null)
 				continue;
 			if(kit.stringAttribute(Attribute.IDENTIFIER).toLowerCase().startsWith(identifier.toLowerCase()))
-				return kit.applyParent();
+				return kit.applyParentAttributes();
 		}
 		return null;
 	}

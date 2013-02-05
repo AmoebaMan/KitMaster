@@ -78,7 +78,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		sender.sendMessage(ChatColor.GREEN + "Available kits:");
 		for(Kit kit : KitHandler.getKits()){
 			PermsResult perms = KitHandler.getKitPerms(sender, kit);
-			if(perms.generic.bool && kit.applyParent().booleanAttribute(Attribute.SHOW_IN_LIST)){
+			if(perms.generic.bool && kit.applyParentAttributes().booleanAttribute(Attribute.SHOW_IN_LIST)){
 				String message = ChatColor.ITALIC + " - " + kit.name;
 				if(perms.generic == GenericResult.CONDITIONAL)
 					message += " - " + ChatColor.YELLOW + ChatColor.ITALIC + perms.message;
@@ -234,7 +234,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 			for(Kit kit : KitHandler.getKits()){
 				PermsResult perms = KitHandler.getKitPerms(sender, kit);
 				if(perms.generic == GenericResult.YES || perms == PermsResult.COMMAND_ONLY || perms == PermsResult.INHERIT_COMMAND_ONLY)
-					if(kit.applyParent().booleanAttribute(Attribute.SHOW_IN_LIST))
+					if(kit.applyParentAttributes().booleanAttribute(Attribute.SHOW_IN_LIST))
 						if(partial.isEmpty() || kit.name.toLowerCase().startsWith(partial.toLowerCase()))
 							names.add(kit.name);
 			}

@@ -154,7 +154,7 @@ public class Kit implements Cloneable{
 	 * This call will cascade recursively upwards, applying parents of parents as well.
 	 * @return A copy of this kit with its parent's attributes applied.
 	 */
-	public Kit applyParent(){
+	public Kit applyParentAttributes(){
 		Kit clone = clone();
 		Kit parent = clone.getParent();
 		if(parent != null)

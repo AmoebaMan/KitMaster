@@ -101,7 +101,7 @@ public class KitMasterEventHandler implements Listener{
 		Kit respawnKit = null;
 		for(Kit kit : KitHandler.getKits())
 			if(player.hasPermission("kitmaster.respawn." + kit.name)){
-				respawnKit = kit.applyParent();
+				respawnKit = kit.applyParentAttributes();
 				break;
 			}
 		if(respawnKit != null){
