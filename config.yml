@@ -10,5 +10,7 @@ inventory:
   renameFireworks: true
 maxStacks:
   Potion: 16
-automaticallyUpdate: true
+update:
+  checkForUpdate: true
+  autoInstallUpdate: true
 shortcutKitCommands: false

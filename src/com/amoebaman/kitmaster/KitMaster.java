@@ -58,8 +58,8 @@ public class KitMaster extends JavaPlugin implements Listener{
 
 	private static PluginLogger log;
 
-	protected static String mainDirectory, kitsDirectory, dataDirectory;
-	protected static File configFile, itemsFile, booksFile, potionsFile, fireworkEffectsFile, fireworksFile, kitsFile, signsFile, timestampsFile, historyFile;
+	public static String mainDirectory, kitsDirectory, dataDirectory;
+	public static File configFile, itemsFile, booksFile, potionsFile, fireworkEffectsFile, fireworksFile, kitsFile, signsFile, timestampsFile, historyFile;
 
 	protected static boolean vaultEnabled;
 	protected static Permission perms;
@@ -132,29 +132,31 @@ public class KitMaster extends JavaPlugin implements Listener{
 		/*
 		 * If allowed, automatically update
 		 */
-		try{
-			getLogger().info("Checking for updates...");
-			UpdateType type = getConfig().getBoolean("automaticallyUpdate") ? UpdateType.DEFAULT : UpdateType.NO_DOWNLOAD;
-			update = new Updater(this, "kitmaster", this.getFile(), type, true);
-			switch(update.getResult()){
-			case FAIL_BADSLUG:
-			case FAIL_NOVERSION:
-				getLogger().severe("Failed to check for updates due to bad code.  Contact the developer: " + update.getResult().name());
-				break;
-			case FAIL_DBO:
-				getLogger().severe("An error occurred while checking for updates.");
-				break;
-			case FAIL_DOWNLOAD:
-				getLogger().severe("An error occurred downloading the update.");
-				break;
-			case UPDATE_AVAILABLE:
-				getLogger().warning("An update is available for download on BukkitDev.");
-				break;
-			default: }
-		}
-		catch(Exception e){
-			getLogger().severe("Error occurred while trying to update");
-			e.printStackTrace();
+		if(getConfig().getBoolean("update.checkForUpdate")){
+			try{
+				getLogger().info("Checking for updates...");
+				UpdateType type = getConfig().getBoolean("update.autoInstallUpdate") ? UpdateType.DEFAULT : UpdateType.NO_DOWNLOAD;
+				update = new Updater(this, "kitmaster", this.getFile(), type, true);
+				switch(update.getResult()){
+				case FAIL_BADSLUG:
+				case FAIL_NOVERSION:
+					getLogger().severe("Failed to check for updates due to bad code.  Contact the developer: " + update.getResult().name());
+					break;
+				case FAIL_DBO:
+					getLogger().severe("An error occurred while checking for updates.");
+					break;
+				case FAIL_DOWNLOAD:
+					getLogger().severe("An error occurred downloading the update.");
+					break;
+				case UPDATE_AVAILABLE:
+					getLogger().warning("An update is available for download on BukkitDev.");
+					break;
+				default: }
+			}
+			catch(Exception e){
+				getLogger().severe("Error occurred while trying to update");
+				e.printStackTrace();
+			}
 		}
 
 		initVault();	
