@@ -376,7 +376,7 @@ public class ItemController {
 	}
 
 	/**
-	 * Gets a parser-friendly String that represents and ItemStack.
+	 * Gets a parser-friendly String that represents an ItemStack.
 	 * @param stack the item
 	 * @return the result
 	 */
@@ -413,6 +413,15 @@ public class ItemController {
 		return str;
 	}
 
+	/**
+	 * Gets a parser-friendly String that represents a PotionEffect.
+	 * @param effect the effect
+	 * @return the result
+	 */
+	public static String effectToString(PotionEffect effect){
+		return effect.getType().getName().toLowerCase() + ":" + (effect.getAmplifier() + 1) + ":" + (effect.getDuration() / 20);
+	}
+	
 	/**
 	 * Gets a reader-friendly String that represents a PotionEffect.
 	 * @param effect the effect
