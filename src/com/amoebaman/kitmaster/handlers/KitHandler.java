@@ -2,6 +2,7 @@ package com.amoebaman.kitmaster.handlers;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,6 +26,7 @@ import com.google.common.collect.Lists;
 public class KitHandler {
 
 	private static final ArrayList<Kit> kits = new ArrayList<Kit>();
+	public static Kit editKit;
 	
 	/**
 	 * Loads kits into the internal kit list from a file.  If the file is suffixed with .kit, the file will be immediately loaded.  If the file is a directory, all files within it suffixed with .kit will be automatically loaded.  If neither condition is met, nothing will happen.
@@ -55,6 +57,20 @@ public class KitHandler {
 			addKit(parseKit(name, yaml.getConfigurationSection(name)));
 	}
 
+	public static boolean saveKit(Kit kit){
+		File file = new File(KitMaster.kitsDirectory + "/" + kit.name + ".kit");
+		YamlConfiguration yaml = new YamlConfiguration();
+		yaml.createSection("", kit.serialize());
+		try {
+			yaml.save(file);
+			return true;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
  	/**
  	 * Parses a kit from a file.  All kits are parsed using YAML.
  	 * @param file The file to parse a kit from.

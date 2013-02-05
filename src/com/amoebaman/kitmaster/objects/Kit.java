@@ -3,14 +3,17 @@ package com.amoebaman.kitmaster.objects;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
+import com.amoebaman.kitmaster.controllers.ItemController;
 import com.amoebaman.kitmaster.enums.Attribute;
 import com.amoebaman.kitmaster.handlers.KitHandler;
 
-public class Kit implements Cloneable{
+public class Kit implements Cloneable, ConfigurationSerializable{
 	
 	/**
 	 * The name of the kit.
@@ -170,5 +173,26 @@ public class Kit implements Cloneable{
 	 */
 	public Kit clone(){
 		return new Kit(name, items, effects, permissions, attributes);
+	}
+	
+	public Map<String, Object> serialize() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		List<String> itemStrings = new ArrayList<String>();
+		for(ItemStack stack : items)
+			itemStrings.add(ItemController.itemToString(stack));
+		map.put("items", itemStrings);
+		
+		List<String> effectStrings = new ArrayList<String>();
+		for(PotionEffect effect : effects)
+			effectStrings.add(ItemController.effectToString(effect));
+		map.put("effects", effectStrings);
+		
+		map.put("permissions", permissions);
+		
+		for(Attribute type : attributes.keySet())
+			map.put(type.path, attributes.get(type));
+		
+		return map;
 	}
 }
