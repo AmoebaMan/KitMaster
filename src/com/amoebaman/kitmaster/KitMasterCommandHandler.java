@@ -38,6 +38,13 @@ public class KitMasterCommandHandler implements TabCompleter{
 		CommandController.registerCommands(instance, new KitMasterCommandHandler());
 	}
 
+	public static String concatArgs(String... args){
+		String result = "";
+		for(String str : args)
+			result += str + " ";
+		return result.trim();
+	}
+	
 	@CommandHandler(name = "kit")
 	public void kit(Player player, String[] args){
 		if (args.length < 1)
@@ -232,10 +239,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 			player.sendMessage(ChatColor.ITALIC + "Include a new name for the item");
 			return;
 		}
-		String name = "";
-		for(String str : args)
-			name += str + " ";
-		name = ChatColor.translateAlternateColorCodes('&', name.trim());
+		String name = ChatColor.translateAlternateColorCodes('&', concatArgs(args));
 		ItemMeta meta = player.getItemInHand().getItemMeta();
 		meta.setDisplayName(ChatColor.RESET + name);
 		player.getItemInHand().setItemMeta(meta);
@@ -252,10 +256,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 			player.sendMessage(ChatColor.ITALIC + "Include a new line of lore for the item");
 			return;
 		}
-		String line = "";
-		for(String str : args)
-			line += str + " ";
-		line = ChatColor.translateAlternateColorCodes('&', line.trim());
+		String line = ChatColor.translateAlternateColorCodes('&', concatArgs(args));
 		ItemMeta meta = player.getItemInHand().getItemMeta();
 		List<String> lore = meta.getLore();
 		if(lore == null)
@@ -263,7 +264,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		lore.add(ChatColor.RESET + line);
 		meta.setLore(lore);
 		player.getItemInHand().setItemMeta(meta);
-		player.sendMessage(ChatColor.ITALIC + "Added \"" + line + "\" to your held item");
+		player.sendMessage(ChatColor.ITALIC + "Added \"" + line + ChatColor.RESET + ChatColor.ITALIC + "\" to your held item");
 	}
 	
 	@SubCommandHandler(parent = "itemmeta", name = "removelore")
