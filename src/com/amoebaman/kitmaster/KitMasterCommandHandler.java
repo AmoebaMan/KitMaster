@@ -232,10 +232,14 @@ public class KitMasterCommandHandler implements TabCompleter{
 			player.sendMessage(ChatColor.ITALIC + "Include a new name for the item");
 			return;
 		}
+		String name = "";
+		for(String str : args)
+			name += str + " ";
+		name = ChatColor.translateAlternateColorCodes('&', name.trim());
 		ItemMeta meta = player.getItemInHand().getItemMeta();
-		meta.setDisplayName(ChatColor.RESET + args[0]);
+		meta.setDisplayName(ChatColor.RESET + name);
 		player.getItemInHand().setItemMeta(meta);
-		player.sendMessage(ChatColor.ITALIC + "Renamed your held item to " + args[0]);
+		player.sendMessage(ChatColor.ITALIC + "Renamed your held item to " + name);
 	}
 	
 	@SubCommandHandler(parent = "itemmeta", name = "addlore")
@@ -251,9 +255,11 @@ public class KitMasterCommandHandler implements TabCompleter{
 		String line = "";
 		for(String str : args)
 			line += str + " ";
-		line = line.trim();
+		line = ChatColor.translateAlternateColorCodes('&', line.trim());
 		ItemMeta meta = player.getItemInHand().getItemMeta();
 		List<String> lore = meta.getLore();
+		if(lore == null)
+			lore = new ArrayList<String>();
 		lore.add(ChatColor.RESET + line);
 		meta.setLore(lore);
 		player.getItemInHand().setItemMeta(meta);
@@ -280,8 +286,10 @@ public class KitMasterCommandHandler implements TabCompleter{
 		}
 		ItemMeta meta = player.getItemInHand().getItemMeta();
 		List<String> lore = meta.getLore();
+		if(lore == null)
+			lore = new ArrayList<String>();
 		try{
-			lore.remove(num + 1);
+			lore.remove(num - 1);
 		}
 		catch(IndexOutOfBoundsException iobe){
 			player.sendMessage(ChatColor.ITALIC + "Your held item doesn't have that many lines of lore");
