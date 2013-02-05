@@ -184,7 +184,7 @@ public class KitMasterEventHandler implements Listener{
 		if(KitMaster.config().getBoolean("shortcutKitCommands")){
 			Kit target = KitHandler.getKit(event.getMessage().replace("/", ""));
 			if(target != null && target.name.equalsIgnoreCase(event.getMessage()))
-				event.setMessage("kit " + target.name);
+				event.setMessage((event.getMessage().contains("/") ? "/" : "" ) + "kit " + target.name);
 		}
 	}
 
