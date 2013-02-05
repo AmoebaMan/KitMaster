@@ -53,8 +53,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 			player.sendMessage(ChatColor.ITALIC + "That kit does not exist");
 			return;
 		}
-		Kit kit = KitHandler.getKit(args[0]);
-		GiveKitResult result = KitMaster.giveKit(player, kit, GiveKitContext.COMMAND_TAKEN);
+		GiveKitResult result = KitMaster.giveKit(player, KitHandler.getKit(args[0]), GiveKitContext.COMMAND_TAKEN);
 		if(KitMaster.DEBUG_KITS)
 			KitMaster.logger().info("Result: " + result.name());
 		return;
@@ -342,6 +341,40 @@ public class KitMasterCommandHandler implements TabCompleter{
 			return;
 		}
 		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the item named " + args[0]);
+	}
+
+	@CommandHandler(name = "editkit")
+	public void editkit(CommandSender sender){
+		if(KitHandler.editKit == null)
+			sender.sendMessage(ChatColor.ITALIC + "There is no kit currently being edited");
+		else
+			sender.sendMessage(ChatColor.ITALIC + "The " + KitHandler.editKit.name + " kit is currently being edited");
+	}
+	
+	@SubCommandHandler(parent = "editkit", name = "select")
+	public void selectedit(CommandSender sender, String[] args){
+		if(args.length == 0){
+			sender.sendMessage(ChatColor.ITALIC + "Include the name of the kit to edit");
+			return;
+		}
+		if(!KitHandler.isKit(args[0])){
+			sender.sendMessage(ChatColor.ITALIC + "That kit does not exist");
+			return;
+		}
+		Bukkit.dispatchCommand(sender, "editkit save");
+		KitHandler.editKit = KitHandler.getKit(args[0]);
+		sender.sendMessage(ChatColor.ITALIC + "You are now editing the " + KitHandler.editKit.name + " kit");
+	}
+	
+	@SubCommandHandler(parent = "editkit", name = "save")
+	public void saveedit(CommandSender sender, String[] args){
+		if(KitHandler.editKit == null){
+			sender.sendMessage(ChatColor.ITALIC + "There is no kit currently being edited");
+			return;
+		}
+		KitHandler.saveKit(KitHandler.editKit);
+		sender.sendMessage(ChatColor.ITALIC + "The " + KitHandler.editKit.name + " kit has been saved");
+		KitHandler.editKit = null;
 	}
 	
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
