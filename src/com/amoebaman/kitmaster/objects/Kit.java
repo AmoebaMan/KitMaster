@@ -135,13 +135,12 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 	 * @return False if <code>newValue</code> did not match the designated class of <code>type</code>, true otherwise.
 	 */
 	public boolean setAttribute(Attribute type, Object newValue){
-		try{
-			attributes.put(type, type.clazz.cast(newValue));
+		if(type.type.matches(newValue)){
+			attributes.put(type, newValue);
+			return true;
 		}
-		catch(ClassCastException cce){
+		else
 			return false;
-		}
-		return true;
 	}
 	
 	/**

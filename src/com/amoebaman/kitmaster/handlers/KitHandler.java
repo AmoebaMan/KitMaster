@@ -120,13 +120,11 @@ public class KitHandler {
 		 */
 		for(Attribute type : Attribute.values()){
 			Object value = yaml.get(type.path, null);
-			if(type.clazz != null && value != null){
-				try{
-					attributes.put(type, type.clazz.cast(value));
-				}
-				catch(ClassCastException cce){
+			if(type.type != null && value != null && type.type.matches(value)){
+				if(type.type.matches(value))
+					attributes.put(type, value);
+				else
 					KitMaster.logger().severe("Failed to define attribute " + type.name() + " for kit " + name + ": the defined value was of the wrong type");
-				}
 			}
 		}
 		/*

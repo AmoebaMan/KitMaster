@@ -5,123 +5,123 @@ public enum Attribute{
 	/**
 	 * The timeout duration of this kit in seconds.
 	 */
-	TIMEOUT(Integer.class, "timeout.duration", 0),
+	TIMEOUT(AttributeType.INTEGER, "timeout.duration", 0),
 	
 	/**
 	 * Whether or not the kit will apply the same timeout to all players.
 	 */
-	GLOBAL_TIMEOUT(Boolean.class, "timeout.global", false),
+	GLOBAL_TIMEOUT(AttributeType.BOOLEAN, "timeout.global", false),
 	
 	/**
 	 * Whether or not the kit can only be taken once.
 	 */
-	SINGLE_USE(Boolean.class, "timeout.singleUse", false),
+	SINGLE_USE(AttributeType.BOOLEAN, "timeout.singleUse", false),
 	
 	/**
 	 * Whether or not the kit can only be taken once per life.
 	 */
-	SINGLE_USE_LIFE(Boolean.class, "timeout.singleUsePerLife", false),
+	SINGLE_USE_LIFE(AttributeType.BOOLEAN, "timeout.singleUsePerLife", false),
 	
 	/**
 	 * Whether or not the kit will infinitely renew its potion effects (until cleared).
 	 */
-	INFINITE_EFFECTS(Boolean.class, "infiniteEffects", false),
+	INFINITE_EFFECTS(AttributeType.BOOLEAN, "infiniteEffects", false),
 	
 	/**
 	 * Encompasses all other clear options.
 	 */
-	CLEAR_ALL(Boolean.class, "clear.all", false),
+	CLEAR_ALL(AttributeType.BOOLEAN, "clear.all", false),
 	
 	/**
 	 * Whether or not the kit should clear the player's inventory when taken.
 	 */
-	CLEAR_INVENTORY(Boolean.class, "clear.inventory", false),
+	CLEAR_INVENTORY(AttributeType.BOOLEAN, "clear.inventory", false),
 	
 	/**
 	 * Whether or not the kit should clear the player's potion effects when taken.
 	 */
-	CLEAR_EFFECTS(Boolean.class, "clear.effects", false),
+	CLEAR_EFFECTS(AttributeType.BOOLEAN, "clear.effects", false),
 	
 	/**
 	 * Whether or not the kit should clear the player's kit-given permissions when taken.
 	 */
-	CLEAR_PERMISSIONS(Boolean.class, "clear.permissions", false),
+	CLEAR_PERMISSIONS(AttributeType.BOOLEAN, "clear.permissions", false),
 	
 	/**
 	 * The name of the kit's intended parent.
 	 */
-	PARENT(String.class, "inheritance.parent", ""),
+	PARENT(AttributeType.STRING, "inheritance.parent", ""),
 	
 	/**
 	 * Whether or not the kit will attempt to blend its items and effects into those already present.
 	 */
-	UPGRADE(Boolean.class, "inheritance.upgrade", false),
+	UPGRADE(AttributeType.BOOLEAN, "inheritance.upgrade", false),
 	
 	/**
 	 * Whether or not the kit will require its parent's permissions as a supplement to its own.
 	 */
-	REQUIRE_PARENT_PERMS(Boolean.class, "inheritance.requireParentPerms", false),
+	REQUIRE_PARENT_PERMS(AttributeType.BOOLEAN, "inheritance.requireParentPerms", false),
 	
 	/**
 	 * Whether or not the kit will consider its parent's permissions to apply to itself.
 	 */
-	INHERIT_PARENT_PERMS(Boolean.class, "inheritance.inheritParentPerms", true),
+	INHERIT_PARENT_PERMS(AttributeType.BOOLEAN, "inheritance.inheritParentPerms", true),
 	
 	/**
 	 * The cost of the kit.  Only used if the economy handle is grabbed.
 	 */
-	COST(Double.class, "economy.cost", 0.0),
+	COST(AttributeType.DOUBLE, "economy.cost", 0.0),
 	
 	/**
 	 * The amount of currency which will be given as part of the kit.  Only used if the economy handle is grabbed.
 	 */
-	CASH(Double.class, "economy.cash", 0.0),
+	CASH(AttributeType.DOUBLE, "economy.cash", 0.0),
 	
 	/**
 	 * Whether or not the kit should restrict armor removal
 	 */
-	RESTRICT_ARMOR(Boolean.class, "restrictions.armor", false),
+	RESTRICT_ARMOR(AttributeType.BOOLEAN, "restrictions.armor", false),
 	
 	/**
 	 * Whether or not the kit should restrict item dropping
 	 */
-	RESTRICT_DROPS(Boolean.class, "restrictions.drops", false),
+	RESTRICT_DROPS(AttributeType.BOOLEAN, "restrictions.drops", false),
 	
 	/**
 	 * Whether or not the kit should restrict item drops on death
 	 */
-	RESTRICT_DEATH_DROPS(Boolean.class, "restrictions.deathDrops", false),
+	RESTRICT_DEATH_DROPS(AttributeType.BOOLEAN, "restrictions.deathDrops", false),
 	
 	/**
 	 * Whether or not the kit should restrict item pickups
 	 */
-	RESTRICT_PICKUPS(Boolean.class, "restrictions.pickups", false),
+	RESTRICT_PICKUPS(AttributeType.BOOLEAN, "restrictions.pickups", false),
 	
 	/**
 	 * Whether or not the kit should restrict players taking additional kits after this one
 	 */
-	RESTRICT_KITS(Boolean.class, "restrictions.otherKits", false),
+	RESTRICT_KITS(AttributeType.BOOLEAN, "restrictions.otherKits", false),
 	
 	/**
 	 * Whether or not the kit will show in the /kitlist list.
 	 */
-	SHOW_IN_LIST(Boolean.class, "showInList", true),
+	SHOW_IN_LIST(AttributeType.BOOLEAN, "showInList", true),
 	
 	/**
 	 * Whether or not the kit should suppress its notification when loaded.  Due to the way kits are loaded, this cannot be inherited.
 	 */
-	SUPPRESS_LOAD_NOTIFICATION(Boolean.class, "suppressLoadNotification", false),
+	SUPPRESS_LOAD_NOTIFICATION(AttributeType.BOOLEAN, "suppressLoadNotification", false),
 	
 	/**
 	 * An identifier string used exclusively by third-party plugins to identify kits by means other than their names.  Never used in SuperKits.
 	 */
-	IDENTIFIER(String.class, "identifier", ""),
+	IDENTIFIER(AttributeType.STRING, "identifier", ""),
 	;
 
 	/**
 	 * The class type that this attribute is defined by.
 	 */
-	public final Class<?> clazz;
+	public final AttributeType type;
 	
 	/**
 	 * The YAML path that is used to define this attribute when loading kits.
@@ -133,8 +133,8 @@ public enum Attribute{
 	 */
 	public final Object def;
 	
-	private Attribute(Class<?> clazz, String path, Object def){
-		this.clazz = clazz;
+	private Attribute(AttributeType clazz, String path, Object def){
+		this.type = clazz;
 		this.path = path;
 		this.def = def;
 	}
