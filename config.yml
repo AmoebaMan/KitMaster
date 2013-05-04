@@ -13,4 +13,3 @@ maxStacks:
 update:
   checkForUpdate: true
   autoInstallUpdate: true
-shortcutKitCommands: false
