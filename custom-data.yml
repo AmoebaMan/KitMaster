@@ -1,0 +1,72 @@
+## This is a generated custom data file.
+## The samples here are designed to show you how to use this file properly.
+## Messing with item metadata can be tricky, but can also make your kits and items seem much more polished.
+##
+## PLEASE NOTE THE FOLLOWING:
+##
+## 1) To insert a line break in a book, use the sequence '|n' (vertical slash + 'n').
+## 2) For custom items, the 'item' field is parsed with the same syntax as in kits.
+## 3) For custom items, %player% is a text macro that will be automatically replaced by the name of the player receiving the item.
+## 4) Bursts are sub-components of fireworks that contain color data and such.  A firework can contain multiple bursts.
+## 5) Burst type can be one of: BALL, BALL_LARGE, BURST, STAR, or CREEPER.
+## 6) Burst colors are represented by numbers in hexadecimal.  To look up hexadecimal codes, visit http://html-color-codes.com/.  Hexadecimal color codes MUST BE PREFIXED BY '0x'.
+## 7) Firework bursts are all the bursts that should display when the firework explodes.
+
+books:
+  sample:
+    title: Diary
+    author: AmoebaMan
+    pages:
+    - Day 1|n|nWoke up on the beach this morning.  I have no idea who I am or what this place is.
+    - Day 2|n|nFound some trees after wandering a ways.  They seem weak; simple punches knock them down.
+    - Day 3|n|nSo...hungry...
+    
+items:
+  Personalized_Sword:
+    item: Iron_Sword:1
+    name: '%player%''s Blade'
+    lore:
+    - Forged in the fires of a volcano
+    - by the mighty %player%
+    
+potions:
+  vodka:
+    '0':
+      type: confusion
+      duration: 1200
+      amplifier: 3
+    '1':
+      type: strength
+      duration: 1200
+      amplifier: 3
+    '2':
+      type: hunger
+      duration: 1200
+      amplifier: 3
+      
+bursts:
+  red_to_green_star:
+    type: star
+    trail: true
+    flicker: false
+    primary-colors:
+    - '0xff0000'
+    - '0x008000'
+    fade-colors:
+    - '0xc0c0c0'
+  grey_to_garnet_burst:
+    type: burst
+    trail: true
+    flicker: false
+    primary-colors:
+    - '0xc0c0c0'
+    fade-colors:
+    - '0x800000'
+
+fireworks:
+  firework:
+    fuse: 2
+    bursts:
+    - red_to_green_star
+    - grey_to_garnet_burst
+  
