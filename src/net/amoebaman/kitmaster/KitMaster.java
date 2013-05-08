@@ -23,6 +23,7 @@ import org.bukkit.potion.PotionEffect;
 
 import net.amoebaman.kitmaster.controllers.InventoryController;
 import net.amoebaman.kitmaster.enums.Attribute;
+import net.amoebaman.kitmaster.enums.ClearKitsContext;
 import net.amoebaman.kitmaster.enums.GiveKitContext;
 import net.amoebaman.kitmaster.enums.GiveKitResult;
 import net.amoebaman.kitmaster.enums.PermsResult;
@@ -176,7 +177,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 		if(getConfig().getBoolean("clearKits.onDisable", true))
 			for(OfflinePlayer player : HistoryHandler.getPlayers())
 				if(player instanceof Player)
-					clearAll((Player) player, true);
+					clearAll((Player) player, true, ClearKitsContext.PLUGIN_DISABLE);
 		try{
 			SignHandler.save(signsFile);
 			TimeStampHandler.save(timestampsFile);
@@ -185,6 +186,11 @@ public class KitMaster extends JavaPlugin implements Listener{
 		catch(Exception e){ e.printStackTrace(); }
 	}
 	
+	/**
+	 * Reloads all customized item data sets from their files, and then reloads all kits from their files.
+	 * This method will NOT remove kits from memory if they have been removed from the files, a reload is
+	 * necessary to accomplish this.
+	 */
 	public static void reloadKits(){
 		/*
 		 * Configuration
@@ -258,6 +264,9 @@ public class KitMaster extends JavaPlugin implements Listener{
 		}
 	}
 	
+	/**
+	 * Saves all customized item data to its flat file.
+	 */
 	public static void saveCustomData(){
 		YamlConfiguration yaml = new YamlConfiguration();
 		yaml.createSection("books", BookHandler.yaml.getValues(true));
@@ -273,12 +282,28 @@ public class KitMaster extends JavaPlugin implements Listener{
 		}
 	}
 	
+	/**
+	 * Retreives the PluginLogger that KitMaster uses for debugging.
+	 * @return KitMaster's PluginLogger
+	 */
 	public static PluginLogger logger(){ return log; }
 	
+	/**
+	 * Retreives the FileConfiguration that KitMaster uses.
+	 * @return KitMaster's FileConfiguration
+	 */
 	public static FileConfiguration config(){ return plugin().getConfig(); }
 	
+	/**
+	 * Retreives the instance of the KitMaster plugin.
+	 * @return KitMaster's plugin instance
+	 */
 	public static Plugin plugin(){ return Bukkit.getPluginManager().getPlugin("KitMaster"); }
 	
+	/**
+	 * Checks to see whether Vault was enabled at the time KitMaster was loaded.
+	 * @return
+	 */
 	public static boolean isVaultEnabled(){ return vaultEnabled; }
 	
 	/**
@@ -453,44 +478,45 @@ public class KitMaster extends JavaPlugin implements Listener{
 	}
 	
 	/**
-	 * Applies clearing attributes of a kit to a player.
+	 * Clears all attributes for all kits in history and clears the history for a player.
 	 * @param player The target player.
-	 * @param kit The kit whose clearing attributes should be considered.
 	 */
-	public static void applyKitClears(Player player, Kit kit){
-		boolean all = kit.booleanAttribute(Attribute.CLEAR_ALL);
-		if(kit.booleanAttribute(Attribute.CLEAR_INVENTORY) || all)
-			clearInventory(player, true);
-		if(kit.booleanAttribute(Attribute.CLEAR_EFFECTS) || all)
-			clearEffects(player, true);
-		if(perms != null)
-			if(kit.booleanAttribute(Attribute.CLEAR_PERMISSIONS) || all)
-				clearPermissions(player, true);
-		if(all)
-			HistoryHandler.resetHistory(player);
+	public static void clearKits(Player player){
+		clearAll(player, true, ClearKitsContext.PLUGIN_ORDER);
 	}
 	
-	/**
-	 * Clears all attributes for all kits in history and clears the history for a player.  This call is equivalent to calling <code>applyKitClears</code> with a kit that has the <code>CLEAR_ALL</code> attribute.
-	 * @param player The target player.
-	 */
-	public static void clearAll(Player player, boolean callEvent){
-		ClearKitsEvent event = new ClearKitsEvent(player);
+	private static void applyKitClears(Player player, Kit kit){
+		if(kit.booleanAttribute(Attribute.CLEAR_ALL) || (kit.booleanAttribute(Attribute.CLEAR_INVENTORY) && kit.booleanAttribute(Attribute.CLEAR_EFFECTS) && kit.booleanAttribute(Attribute.CLEAR_PERMISSIONS))){
+			clearAll(player, true, ClearKitsContext.KIT_ATTRIBUTE);
+			HistoryHandler.resetHistory(player);
+		}
+		else{
+			if(kit.booleanAttribute(Attribute.CLEAR_INVENTORY))
+				clearInventory(player, true, ClearKitsContext.KIT_ATTRIBUTE);
+			if(kit.booleanAttribute(Attribute.CLEAR_EFFECTS))
+				clearEffects(player, true, ClearKitsContext.KIT_ATTRIBUTE);
+			if(kit.booleanAttribute(Attribute.CLEAR_PERMISSIONS) && perms != null)
+				clearPermissions(player, true, ClearKitsContext.KIT_ATTRIBUTE);
+		}
+	}
+	
+ 	protected static void clearAll(Player player, boolean callEvent, ClearKitsContext context){
+		ClearKitsEvent event = new ClearKitsEvent(player, context);
 		if(callEvent)
 			event.callEvent();
 		if(!event.isCancelled()){
 			if(event.clearsInventory())
-				clearInventory(player, false);
+				clearInventory(player, false, context);
 			if(event.clearsEffects())
-				clearEffects(player, false);
+				clearEffects(player, false, context);
 			if(event.clearsPermissions())
-				clearPermissions(player, false);
+				clearPermissions(player, false, context);
 		}
 		HistoryHandler.resetHistory(player);
 	}
 	
-	private static void clearInventory(Player player, boolean callEvent){
-		ClearKitsEvent event = new ClearKitsEvent(player, true, false, false);
+	private static void clearInventory(Player player, boolean callEvent, ClearKitsContext context){
+		ClearKitsEvent event = new ClearKitsEvent(player, true, false, false, context);
 		if(callEvent)
 			event.callEvent();
 		if(!event.isCancelled() && event.clearsInventory()){
@@ -499,8 +525,8 @@ public class KitMaster extends JavaPlugin implements Listener{
 		}
 	}
 	
-	private static void clearEffects(Player player, boolean callEvent){
-		ClearKitsEvent event = new ClearKitsEvent(player, false, true, false);
+	private static void clearEffects(Player player, boolean callEvent, ClearKitsContext context){
+		ClearKitsEvent event = new ClearKitsEvent(player, false, true, false, context);
 		if(callEvent)
 			event.callEvent();
 		if(!event.isCancelled() && event.clearsEffects()){
@@ -509,8 +535,8 @@ public class KitMaster extends JavaPlugin implements Listener{
 		}
 	}
 	
-	private static void clearPermissions(Player player, boolean callEvent){
-		ClearKitsEvent event = new ClearKitsEvent(player, false, false, true);
+	private static void clearPermissions(Player player, boolean callEvent, ClearKitsContext context){
+		ClearKitsEvent event = new ClearKitsEvent(player, false, false, true, context);
 		if(callEvent)
 			event.callEvent();
 		if(!event.isCancelled() && event.clearsPermissions()){

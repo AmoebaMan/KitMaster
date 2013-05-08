@@ -1,5 +1,7 @@
 package net.amoebaman.kitmaster.utilities;
 
+import net.amoebaman.kitmaster.enums.ClearKitsContext;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -16,27 +18,30 @@ public class ClearKitsEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 	private Player player;
 	private boolean inventory, effects, permissions, cancelled;
+	private ClearKitsContext context;
  
 	/**
 	 * Should not be used.  This event is created and called automatically whenever a kit is given/taken.
 	 */
-    public ClearKitsEvent(Player player, boolean inventory, boolean effects, boolean permissions){
+    public ClearKitsEvent(Player player, boolean inventory, boolean effects, boolean permissions, ClearKitsContext context){
 		this.player = player;
 		this.inventory = inventory;
 		this.effects = effects;
 		this.permissions = permissions;
-		cancelled = false;
+		this.context = context;
+		this.cancelled = false;
     }
     
    	/**
    	 * Should not be used.  This event is created and called automatically whenever a kit is given/taken.
    	 */
-       public ClearKitsEvent(Player player){
+       public ClearKitsEvent(Player player, ClearKitsContext context){
    		this.player = player;
    		this.inventory = true;
    		this.effects = true;
    		this.permissions = true;
-   		cancelled = false;
+   		this.context = context;
+   		this.cancelled = false;
        }
     
     /**
@@ -58,38 +63,22 @@ public class ClearKitsEvent extends Event implements Cancellable {
 	public boolean isCancelled(){ return cancelled; }
     public void setCancelled(boolean cancel){ this.cancelled = cancel; }
 
-	public boolean clearsInventory() {
-		return inventory;
-	}
+	public boolean clearsInventory() { return inventory; }
+	public void setClearsInventory(boolean inventory) { this.inventory = inventory; }
 
-	public void setClearsInventory(boolean inventory) {
-		this.inventory = inventory;
-	}
+	public boolean clearsEffects() { return effects; }
+	public void setClearsEffects(boolean effects) { this.effects = effects; }
 
-	public boolean clearsEffects() {
-		return effects;
-	}
-
-	public void setClearsEffects(boolean effects) {
-		this.effects = effects;
-	}
-
-	public boolean clearsPermissions() {
-		return permissions;
-	}
-
-	public void setClearsPermissions(boolean permissions) {
-		this.permissions = permissions;
-	}
+	public boolean clearsPermissions() { return permissions; }
+	public void setClearsPermissions(boolean permissions) { this.permissions = permissions; }
 	
-	public boolean clearsAll(){
-		return inventory && effects && permissions;
-	}
-	
+	public boolean clearsAll(){ return inventory && effects && permissions; }
 	public void setClearsAll(boolean value){
 		inventory = value;
 		effects = value;
 		permissions = value;
 	}
+	
+	public ClearKitsContext getContext(){ return context; }
 	
 }
