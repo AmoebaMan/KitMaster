@@ -1,5 +1,7 @@
 package net.amoebaman.kitmaster.controllers;
 
+import java.util.Random;
+
 import net.amoebaman.kitmaster.KitMaster;
 import net.amoebaman.kitmaster.handlers.BookHandler;
 import net.amoebaman.kitmaster.handlers.CustomItemHandler;
@@ -286,7 +288,7 @@ public class ItemController {
 	 * @param stack the item
 	 * @return the result
 	 */
-	public static String getTag(ItemStack stack){
+	public static String getTag(ItemStack stack, boolean create){
 		String name = null;
 		switch(stack.getType()){
 		case MONSTER_EGG:
@@ -296,6 +298,11 @@ public class ItemController {
 			name = BookHandler.getBookName(stack);
 			if(name != null)
 				return name;
+			else if(create){
+				name = "autosaved_" + (new Random()).nextInt(Short.MAX_VALUE);
+				BookHandler.saveBook(stack, name);
+				return name;
+			}
 			break;
 		case LEATHER_HELMET:
 		case LEATHER_CHESTPLATE:
@@ -308,16 +315,31 @@ public class ItemController {
 			name = FireworkEffectHandler.getEffectName(((FireworkEffectMeta) stack.getItemMeta()).getEffect());
 			if(name != null)
 				return name;
+			else if(create){
+				name = "autosaved_" + (new Random()).nextInt(Short.MAX_VALUE);
+				FireworkEffectHandler.saveFirework(((FireworkEffectMeta) stack.getItemMeta()).getEffect(), name);
+				return name;
+			}
 			break;
 		case FIREWORK:
 			name = FireworkHandler.getFireworkName(stack);
 			if(name != null)
 				return name;
+			else if(create){
+				name = "autosaved_" + (new Random()).nextInt(Short.MAX_VALUE);
+				FireworkHandler.saveFirework(stack, name);
+				return name;
+			}
 			break;
 		case POTION:
 			name = CustomPotionHandler.getPotionName(stack);
 			if(name != null)
 				return name;
+			else if(create){
+				name = "autosaved_" + (new Random()).nextInt(Short.MAX_VALUE);
+				CustomPotionHandler.savePotion(stack, name);
+				return name;
+			}
 			break;
 		case LOG:
 		case LEAVES:
@@ -387,9 +409,11 @@ public class ItemController {
 	 * @return the result
 	 */
 	public static String itemToString(ItemStack stack){
+		if(stack == null)
+			return null;
 		String str = stack.getType().name().toLowerCase();
-		if(getTag(stack) != null)
-			str += ":" + getTag(stack);
+		if(getTag(stack, true) != null)
+			str += ":" + getTag(stack, true);
 		str += ":" + stack.getAmount();
 		for(Enchantment enc : stack.getEnchantments().keySet())
 			str += " " + enc.getName().toLowerCase() + ":" + stack.getEnchantmentLevel(enc);
@@ -404,7 +428,7 @@ public class ItemController {
 	public static String friendlyItemString(ItemStack stack){
 		String str = capitalize((stack.getItemMeta().getDisplayName() == null) ? stack.getType().name().toLowerCase().replace("_", " ") : stack.getItemMeta().getDisplayName()) + (stack.getAmount() > 1 ? "s" : "");
 		if(stack.getItemMeta().getDisplayName() == null){
-			String tag = getTag(stack);
+			String tag = getTag(stack, false);
 			if(tag != null)
 				str = capitalize(tag) + " " + str;
 		}

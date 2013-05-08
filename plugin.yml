@@ -1,7 +1,7 @@
 main: net.amoebaman.kitmaster.KitMaster
 
 name: KitMaster
-version: 1.3
+version: 1.4
 author: AmoebaMan
 description: The complete kit plugin
 softdepend: [Vault]
@@ -50,6 +50,13 @@ commands:
     usage: /editkit ...
     permission: kitmaster.edit
     permission-message: You don't have permission to edit kits
+    
+  inventory-kit:
+    aliases: [inventorykit, inv-kit, invkit]
+    description: Forms a basic kit using the contents of the player's inventory
+    usage: /inventory-kit <name>
+    permission: kitmaster.edit
+    permission-message: You don't have permission to create kits
 
 permissions:
 

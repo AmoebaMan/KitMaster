@@ -70,6 +70,10 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 		return false;
 	}
 	
+	public int hashCode(){
+		return toString().hashCode();
+	}
+	
 	/**
 	 * Tests whether the kit's items contain an item.
 	 * @param stack The <code>ItemStack</code> to test for.
@@ -181,6 +185,8 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 		List<String> itemStrings = new ArrayList<String>();
 		for(ItemStack stack : items)
 			itemStrings.add(ItemController.itemToString(stack));
+		while(itemStrings.contains(null))
+			itemStrings.remove(null);
 		map.put("items", itemStrings);
 		
 		List<String> effectStrings = new ArrayList<String>();

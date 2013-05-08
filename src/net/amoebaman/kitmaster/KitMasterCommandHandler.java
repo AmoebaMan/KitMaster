@@ -1,6 +1,7 @@
 package net.amoebaman.kitmaster;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import net.amoebaman.kitmaster.controllers.ItemController;
@@ -27,6 +28,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
+
+import com.google.common.collect.Lists;
 
 
 public class KitMasterCommandHandler implements TabCompleter{
@@ -382,6 +385,23 @@ public class KitMasterCommandHandler implements TabCompleter{
 		}
 //		Attribute type = Attribute.matchName(args[0]);
 //		TODO
+	}
+	
+	@CommandHandler(cmd = "inventory-kit")
+	public void inventoryKit(Player player, String[] args){
+		if(args.length == 0){
+			player.sendMessage(ChatColor.ITALIC + "Include the name of the new kit");
+			return;
+		}
+		if(KitHandler.isKit(args[0])){
+			player.sendMessage(ChatColor.ITALIC + "That kit name is already in use");
+			return;
+		}
+		Kit newKit = new Kit(args[0], Lists.newArrayList(player.getInventory().getContents()), new ArrayList<PotionEffect>(), new ArrayList<String>(), new HashMap<Attribute, Object>());
+		KitHandler.saveKit(newKit);
+		KitMaster.saveCustomData();
+		player.sendMessage(ChatColor.ITALIC + "The kit named " + args[0] + " has been created from the contents of your inventory");
+		player.sendMessage(ChatColor.ITALIC + "It has been saved to " + KitMaster.kitsDirectory + "/" + args[0] + ".kit");
 	}
 	
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {

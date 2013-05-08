@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import net.amoebaman.kitmaster.KitMaster;
 import net.amoebaman.kitmaster.controllers.ItemController;
@@ -59,9 +60,11 @@ public class KitHandler {
 	}
 
 	public static boolean saveKit(Kit kit){
+		addKit(kit);
 		File file = new File(KitMaster.kitsDirectory + "/" + kit.name + ".kit");
 		YamlConfiguration yaml = new YamlConfiguration();
-		yaml.createSection("", kit.serialize());
+		for(Entry<String, Object> e : kit.serialize().entrySet())
+			yaml.set(e.getKey(), e.getValue());
 		try {
 			yaml.save(file);
 			return true;
@@ -148,7 +151,7 @@ public class KitHandler {
 	}
 	
 	/**
-	 * Gets a kit by its name.  This method will ignore case.  If no kit maches the argument precisely, it will consider abbreviations.  The <code>applyParent()</code> method will be used on the kit prior to returning.
+	 * Gets a kit by its name.  This method will ignore case.  If no kit maches the argument precisely, it will consider abbreviations.
 	 * @param kitName The name of the desired kit.
 	 * @return The kit whose name matches the argument, or null if no kit was found.
 	 */
@@ -170,6 +173,11 @@ public class KitHandler {
 		return null;
 	}
 	
+	/**
+	 * Gets a kit by its identifier.  The identifier is an attribute that is defined inside the kit, and has no function unless a third-party plugin uses it.  This method will ignore case.  If no kit matches the argument precisely, it will consider abbreviations.
+	 * @param identifier The identifier of the desired kit.
+	 * @return The kit whose identifier matches the argument, or null if no kit was found.
+	 */
 	public static Kit getKitByIdentifier(String identifier){
 		if(identifier == null || identifier.equals(""))
 			return null;

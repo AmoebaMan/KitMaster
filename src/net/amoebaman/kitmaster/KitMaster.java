@@ -36,6 +36,7 @@ import net.amoebaman.kitmaster.handlers.KitHandler;
 import net.amoebaman.kitmaster.handlers.SignHandler;
 import net.amoebaman.kitmaster.handlers.TimeStampHandler;
 import net.amoebaman.kitmaster.objects.Kit;
+import net.amoebaman.kitmaster.utilities.ClearKitsEvent;
 import net.amoebaman.kitmaster.utilities.GiveKitEvent;
 import net.amoebaman.kitmaster.utilities.Metrics;
 import net.amoebaman.kitmaster.utilities.Updater;
@@ -56,41 +57,42 @@ import net.milkbowl.vault.permission.Permission;
  *
  */
 public class KitMaster extends JavaPlugin implements Listener{
-
+	
 	private static PluginLogger log;
-
+	
 	public static String mainDirectory, kitsDirectory, dataDirectory;
 	public static File configFile, customDataFile, kitsFile, signsFile, timestampsFile, historyFile;
-
+	
 	protected static boolean vaultEnabled, updateEnabled;
 	protected static Permission perms;
 	protected static Economy economy;
 	protected static Chat chat;
 	protected static Metrics metrics;
 	protected static Updater update;
-
+	
 	public final static boolean DEBUG_PERMS = false;
 	public final static boolean DEBUG_KITS = false;
-
+	
 	private static int taskID;
-
+	
 	@Override
 	public void onEnable(){
 		log = new PluginLogger(this);
-
+		
 		mainDirectory = getDataFolder().getPath();
 		kitsDirectory = mainDirectory + "/kits";
+		dataDirectory = mainDirectory + "/data";
 		new File(mainDirectory).mkdirs();
 		new File(kitsDirectory).mkdirs();
 		new File(dataDirectory).mkdirs();
-
+		
 		configFile = new File(mainDirectory + "/config.yml");
 		customDataFile = new File(mainDirectory + "/custom-data.yml"); 
 		kitsFile = new File(mainDirectory + "/kits.yml");
 		signsFile = new File(dataDirectory + "/signs.yml");
 		timestampsFile = new File(dataDirectory + "/timestamps.yml");
 		historyFile = new File(dataDirectory + "/history.yml");
-
+		
 		try{
 			/*
 			 * Kits and kit-related items
@@ -119,7 +121,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 			log.info("Loaded player kit history from " + historyFile.getPath());
 		}
 		catch(Exception e){e.printStackTrace();}
-
+		
 		/*
 		 * If allowed, automatically update
 		 */
@@ -130,20 +132,20 @@ public class KitMaster extends JavaPlugin implements Listener{
 				UpdateType type = getConfig().getBoolean("update.autoInstallUpdate") ? UpdateType.DEFAULT : UpdateType.NO_DOWNLOAD;
 				update = new Updater(this, "kitmaster", this.getFile(), type, true);
 				switch(update.getResult()){
-				case FAIL_BADSLUG:
-				case FAIL_NOVERSION:
-					getLogger().severe("Failed to check for updates due to bad code.  Contact the developer: " + update.getResult().name());
-					break;
-				case FAIL_DBO:
-					getLogger().severe("An error occurred while checking for updates.");
-					break;
-				case FAIL_DOWNLOAD:
-					getLogger().severe("An error occurred downloading the update.");
-					break;
-				case UPDATE_AVAILABLE:
-					getLogger().warning("An update is available for download on BukkitDev.");
-					break;
-				default: }
+					case FAIL_BADSLUG:
+					case FAIL_NOVERSION:
+						getLogger().severe("Failed to check for updates due to bad code.  Contact the developer: " + update.getResult().name());
+						break;
+					case FAIL_DBO:
+						getLogger().severe("An error occurred while checking for updates.");
+						break;
+					case FAIL_DOWNLOAD:
+						getLogger().severe("An error occurred downloading the update.");
+						break;
+					case UPDATE_AVAILABLE:
+						getLogger().warning("An update is available for download on BukkitDev.");
+						break;
+					default: }
 			}
 			catch(Exception e){
 				getLogger().severe("Error occurred while trying to update");
@@ -161,20 +163,20 @@ public class KitMaster extends JavaPlugin implements Listener{
 		catch(Exception e){
 			e.printStackTrace();
 		}
-
+		
 		initVault();	
 		KitMasterEventHandler.init(this);
 		KitMasterCommandHandler.init(this);
 		taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new InfiniteEffects(), 15, 15);
 	}
-
+	
 	@Override
 	public void onDisable() {
 		Bukkit.getScheduler().cancelTask(taskID);
 		if(getConfig().getBoolean("clearKits.onDisable", true))
 			for(OfflinePlayer player : HistoryHandler.getPlayers())
 				if(player instanceof Player)
-					clearAll((Player) player);
+					clearAll((Player) player, true);
 		try{
 			SignHandler.save(signsFile);
 			TimeStampHandler.save(timestampsFile);
@@ -182,7 +184,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 		}
 		catch(Exception e){ e.printStackTrace(); }
 	}
-
+	
 	public static void reloadKits(){
 		/*
 		 * Configuration
@@ -255,7 +257,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 			e.printStackTrace();
 		}
 	}
-
+	
 	public static void saveCustomData(){
 		YamlConfiguration yaml = new YamlConfiguration();
 		yaml.createSection("books", BookHandler.yaml.getValues(true));
@@ -272,13 +274,13 @@ public class KitMaster extends JavaPlugin implements Listener{
 	}
 	
 	public static PluginLogger logger(){ return log; }
-
+	
 	public static FileConfiguration config(){ return plugin().getConfig(); }
-
+	
 	public static Plugin plugin(){ return Bukkit.getPluginManager().getPlugin("KitMaster"); }
-
+	
 	public static boolean isVaultEnabled(){ return vaultEnabled; }
-
+	
 	/**
 	 * Gives a player a kit.  This method will consider and apply all attributes of the given kit, including timeouts, permissions, and inheritance.  If the kit has a parent kit, a recursive call will be made to this method <i>prior</i> to the application of <code>kit</code>, with <code>GiveKitContext.PARENT_GIVEN</code>..
 	 * @param player The player to give the kit to.
@@ -306,36 +308,36 @@ public class KitMaster extends JavaPlugin implements Listener{
 		if(!context.overrides){
 			PermsResult getKitPerms = KitHandler.getKitPerms(player, kit);
 			switch(getKitPerms){
-			case COMMAND_ONLY:
-				if(context == GiveKitContext.SIGN_TAKEN){
-					player.sendMessage(ChatColor.ITALIC + "You can't take the " + kit.name + " kit from signs");
+				case COMMAND_ONLY:
+					if(context == GiveKitContext.SIGN_TAKEN){
+						player.sendMessage(ChatColor.ITALIC + "You can't take the " + kit.name + " kit from signs");
+						return GiveKitResult.FAIL_NO_PERMS;
+					}
+					break;
+				case SIGN_ONLY:
+					if(context == GiveKitContext.COMMAND_TAKEN){
+						player.sendMessage(ChatColor.ITALIC + "You can't take the " + kit.name + " kit by command");
+						return GiveKitResult.FAIL_NO_PERMS;
+					}
+					break;
+				case INHERIT_COMMAND_ONLY:
+					if(context == GiveKitContext.SIGN_TAKEN){
+						player.sendMessage(ChatColor.ITALIC + "You can't take " + kit.getParent().name + " kits from signs");
+						return GiveKitResult.FAIL_NO_PERMS;
+					}
+				case INHERIT_SIGN_ONLY:
+					if(context == GiveKitContext.COMMAND_TAKEN){
+						player.sendMessage(ChatColor.ITALIC + "You can't take " + kit.getParent().name + " kits by command");
+						return GiveKitResult.FAIL_NO_PERMS;
+					}
+					break;
+				case NONE:
+					player.sendMessage(ChatColor.ITALIC + "You can't take the " + kit.name + " kit");
 					return GiveKitResult.FAIL_NO_PERMS;
-				}
-				break;
-			case SIGN_ONLY:
-				if(context == GiveKitContext.COMMAND_TAKEN){
-					player.sendMessage(ChatColor.ITALIC + "You can't take the " + kit.name + " kit by command");
+				case INHERIT_NONE:
+					player.sendMessage(ChatColor.ITALIC + "You can't take " + kit.getParent().name + " kits");
 					return GiveKitResult.FAIL_NO_PERMS;
-				}
-				break;
-			case INHERIT_COMMAND_ONLY:
-				if(context == GiveKitContext.SIGN_TAKEN){
-					player.sendMessage(ChatColor.ITALIC + "You can't take " + kit.getParent().name + " kits from signs");
-					return GiveKitResult.FAIL_NO_PERMS;
-				}
-			case INHERIT_SIGN_ONLY:
-				if(context == GiveKitContext.COMMAND_TAKEN){
-					player.sendMessage(ChatColor.ITALIC + "You can't take " + kit.getParent().name + " kits by command");
-					return GiveKitResult.FAIL_NO_PERMS;
-				}
-				break;
-			case NONE:
-				player.sendMessage(ChatColor.ITALIC + "You can't take the " + kit.name + " kit");
-				return GiveKitResult.FAIL_NO_PERMS;
-			case INHERIT_NONE:
-				player.sendMessage(ChatColor.ITALIC + "You can't take " + kit.getParent().name + " kits");
-				return GiveKitResult.FAIL_NO_PERMS;
-			default:
+				default:
 			}
 		}
 		/*
@@ -350,13 +352,13 @@ public class KitMaster extends JavaPlugin implements Listener{
 			 */
 			if(!context.overrides && !player.hasPermission("kitmaster.notimeout")){
 				switch(TimeStampHandler.timeoutCheck(player, parentKit)){
-				case FAIL_TIMEOUT:
-					player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutLeft(player, parentKit) + " more seconds before using a " + parentKit.name + " kit");
-					return GiveKitResult.FAIL_TIMEOUT;
-				case FAIL_SINGLE_USE:
-					player.sendMessage(ChatColor.ITALIC + "You can only use a " + parentKit.name + " kit once");
-					return GiveKitResult.FAIL_SINGLE_USE;
-				default: }
+					case FAIL_TIMEOUT:
+						player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutLeft(player, parentKit) + " more seconds before using a " + parentKit.name + " kit");
+						return GiveKitResult.FAIL_TIMEOUT;
+					case FAIL_SINGLE_USE:
+						player.sendMessage(ChatColor.ITALIC + "You can only use a " + parentKit.name + " kit once");
+						return GiveKitResult.FAIL_SINGLE_USE;
+					default: }
 			}
 		/*
 		 * Check timeouts for the current kit
@@ -364,13 +366,13 @@ public class KitMaster extends JavaPlugin implements Listener{
 		 */
 		if(!context.overrides && !player.hasPermission("kitmaster.notimeout")){
 			switch(TimeStampHandler.timeoutCheck(player, kit)){
-			case FAIL_TIMEOUT:
-				player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutLeft(player, kit) + " more seconds before using the " + kit.name + " kit");
-				return GiveKitResult.FAIL_TIMEOUT;
-			case FAIL_SINGLE_USE:
-				player.sendMessage(ChatColor.ITALIC + "You can only use the " + kit.name + " kit once");
-				return GiveKitResult.FAIL_SINGLE_USE;
-			default: }
+				case FAIL_TIMEOUT:
+					player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutLeft(player, kit) + " more seconds before using the " + kit.name + " kit");
+					return GiveKitResult.FAIL_TIMEOUT;
+				case FAIL_SINGLE_USE:
+					player.sendMessage(ChatColor.ITALIC + "You can only use the " + kit.name + " kit once");
+					return GiveKitResult.FAIL_SINGLE_USE;
+				default: }
 		}
 		/*
 		 * Check if the player can afford the kit
@@ -449,7 +451,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 		 */
 		return GiveKitResult.SUCCESS;
 	}
-
+	
 	/**
 	 * Applies clearing attributes of a kit to a player.
 	 * @param player The target player.
@@ -458,44 +460,67 @@ public class KitMaster extends JavaPlugin implements Listener{
 	public static void applyKitClears(Player player, Kit kit){
 		boolean all = kit.booleanAttribute(Attribute.CLEAR_ALL);
 		if(kit.booleanAttribute(Attribute.CLEAR_INVENTORY) || all)
-			clearInventory(player);
+			clearInventory(player, true);
 		if(kit.booleanAttribute(Attribute.CLEAR_EFFECTS) || all)
-			clearEffects(player);
+			clearEffects(player, true);
 		if(perms != null)
 			if(kit.booleanAttribute(Attribute.CLEAR_PERMISSIONS) || all)
-				clearPermissions(player);
+				clearPermissions(player, true);
 		if(all)
 			HistoryHandler.resetHistory(player);
 	}
-
+	
 	/**
 	 * Clears all attributes for all kits in history and clears the history for a player.  This call is equivalent to calling <code>applyKitClears</code> with a kit that has the <code>CLEAR_ALL</code> attribute.
 	 * @param player The target player.
 	 */
-	public static void clearAll(Player player){
-		clearInventory(player);
-		clearEffects(player);
-		clearPermissions(player);
+	public static void clearAll(Player player, boolean callEvent){
+		ClearKitsEvent event = new ClearKitsEvent(player);
+		if(callEvent)
+			event.callEvent();
+		if(!event.isCancelled()){
+			if(event.clearsInventory())
+				clearInventory(player, false);
+			if(event.clearsEffects())
+				clearEffects(player, false);
+			if(event.clearsPermissions())
+				clearPermissions(player, false);
+		}
 		HistoryHandler.resetHistory(player);
 	}
-
-	private static void clearInventory(Player player){
-		player.getInventory().clear();
-		player.getInventory().setArmorContents(null);
+	
+	private static void clearInventory(Player player, boolean callEvent){
+		ClearKitsEvent event = new ClearKitsEvent(player, true, false, false);
+		if(callEvent)
+			event.callEvent();
+		if(!event.isCancelled() && event.clearsInventory()){
+			player.getInventory().clear();
+			player.getInventory().setArmorContents(null);
+		}
 	}
-
-	private static void clearEffects(Player player){
-		for(PotionEffect effect : player.getActivePotionEffects())
-			player.removePotionEffect(effect.getType());
+	
+	private static void clearEffects(Player player, boolean callEvent){
+		ClearKitsEvent event = new ClearKitsEvent(player, false, true, false);
+		if(callEvent)
+			event.callEvent();
+		if(!event.isCancelled() && event.clearsEffects()){
+			for(PotionEffect effect : player.getActivePotionEffects())
+				player.removePotionEffect(effect.getType());
+		}
 	}
-
-	private static void clearPermissions(Player player){
-		if(perms != null)
-			for(Kit last : HistoryHandler.getHistory(player))
-				for(String node : last.permissions)
-					perms.playerRemove(player, node);
+	
+	private static void clearPermissions(Player player, boolean callEvent){
+		ClearKitsEvent event = new ClearKitsEvent(player, false, false, true);
+		if(callEvent)
+			event.callEvent();
+		if(!event.isCancelled() && event.clearsPermissions()){
+			if(perms != null)
+				for(Kit last : HistoryHandler.getHistory(player))
+					for(String node : last.permissions)
+						perms.playerRemove(player, node);
+		}
 	}
-
+	
 	private static void initVault(){
 		vaultEnabled = Bukkit.getPluginManager().isPluginEnabled("Vault");
 		if(!vaultEnabled)
@@ -519,13 +544,13 @@ public class KitMaster extends JavaPlugin implements Listener{
 				log.info("Hooked into Chat manager: " + chat.getName());
 		}
 	}
-
+	
 	/**
 	 * Private <i>Runnable</i> that is used to handle infinitely renewed potion effects.
 	 * @author Dennison
 	 */
 	private static class InfiniteEffects implements Runnable{
-
+		
 		public void run() {
 			for(World world : Bukkit.getWorlds())
 				for(Player player : world.getPlayers())
@@ -539,6 +564,6 @@ public class KitMaster extends JavaPlugin implements Listener{
 							}
 		}
 	}
-
-
+	
+	
 }

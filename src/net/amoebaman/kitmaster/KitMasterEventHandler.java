@@ -124,7 +124,7 @@ public class KitMasterEventHandler implements Listener{
 					TimeStampHandler.clearTimeStamp(null, kit);
 			}
 		if(KitMaster.config().getBoolean("clearKits.onDeath", true))
-			KitMaster.clearAll(event.getEntity());
+			KitMaster.clearAll(event.getEntity(), true);
 	}
 	
 	@EventHandler
@@ -154,7 +154,7 @@ public class KitMasterEventHandler implements Listener{
 	@EventHandler
 	public void clearKitsWhenPlayerQuits(PlayerQuitEvent event){
 		if(KitMaster.config().getBoolean("clearKits.onDisconnect", true))
-			KitMaster.clearAll(event.getPlayer());
+			KitMaster.clearAll(event.getPlayer(), true);
 	}
 	
 	@EventHandler
