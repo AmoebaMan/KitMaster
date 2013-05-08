@@ -77,10 +77,10 @@ public class KitMasterEventHandler implements Listener{
 			}
 			Kit kit = KitHandler.getKit(event.getLine(1));
 			SignHandler.saveKitSign(kit, event.getBlock().getLocation());
-			event.setLine(0,	"==============");
-			event.setLine(1, ChatColor.BOLD + "[Kit Select]");
-			event.setLine(2, ChatColor.ITALIC + kit.name);
-			event.setLine(3, "==============");
+			event.setLine(0, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_1").substring(0, 15)));
+			event.setLine(1, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_2").substring(0, 15)));
+			event.setLine(2, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_3").substring(0, 15)));
+			event.setLine(3, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_4").substring(0, 15)));
 			player.sendMessage(ChatColor.ITALIC + "Kit select sign registered");
 		}
 	}

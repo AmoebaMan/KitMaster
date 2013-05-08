@@ -1,15 +1,59 @@
+## This is the KitMaster configuration file
+## Change the values however you like, but never change the key names
+
 clearKits:
-  onDeath: true
-  onDisable: false
+
+  ## Whether kits should be cleared when the player dies
+  onDeath: true'
+  
+  ## Whether kits should be cleared when the player leaves the server
   onDisconnect: false
+  
+  ## Whether kits should be cleared when the server is reloaded or shut down
+  onDisable: false
+  
 inventory:
+
+  ## Whether weapons should be automatically placed in the player's hotbar
+  ## Weapons are automatically tiered by type and grade, and a weaker weapon will not replace a stronger one
+  ## Enchantments are not considered when comparing weapons
   autoEquipWeapon: true
+  
+  ## Whether armor should be automatically placed in the player's armor slots
+  ## Armor is automatically tiered by grade, and weaker armor will not replace stronger armor
+  ## Enchantments are not considered when comparing armor
   autoEquipArmor: true
+  
+  ## Whether wool should be considered as armor, to be used with armor auto-equipment
+  ## If enabled, wool is considered the lowest tier of armor, below leather
   woolHats: false
+  
+  ## Performs the same function as woolHats, but for monster/player skulls
   skullHats: false
+  
+  ##Whether customized fireworks should automatically be renamed according to the name they are saved under in the custom item data file
   renameFireworks: true
+  
+## If you wish to override the maximum stack value for any item, enter it here
 maxStacks:
   Potion: 16
+  
+## The text which will be used to automatically format kit selection signs
+## Enter the text between two single quotes
+## Color codes are supported
+## Text will be automatically truncated at 15 characters to fit on signs
+kitSelectionSignText:
+  line_1: '=============='
+  line_2: '&l[Kit Select]'
+  line_3: '&o%kit%'
+  line_4: '=============='
+  
 update:
+
+  ## Whether or not KitMaster should check to see if an update is available when it loads
+  ## Checking for updates involves querying BukkitDev, and can take several seconds
   checkForUpdate: true
+  
+  ## Whether any updates found for KitMaster should be readied for automatic installation when KitMaster is next loaded
   autoInstallUpdate: true
+  
