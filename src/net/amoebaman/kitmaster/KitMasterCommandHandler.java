@@ -405,11 +405,13 @@ public class KitMasterCommandHandler implements TabCompleter{
 	}
 	
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-		if(command.getName().equals("kit")){
+		
+		if(args.length == 0)
+			return null;
+		
+		if(command.getName().equals("kit") || command.getName().equals("kitinfo") || (command.getName().equals("givekit") && args.length == 2)){
 			List<String> names = new ArrayList<String>();
-			String partial = "";
-			if(args.length > 0)
-				partial += args[0];
+			String partial = args[args.length - 1];
 			for(Kit kit : KitHandler.getKits()){
 				PermsResult perms = KitHandler.getKitPerms(sender, kit);
 				if(perms.generic == GenericResult.YES || perms == PermsResult.COMMAND_ONLY || perms == PermsResult.INHERIT_COMMAND_ONLY)
