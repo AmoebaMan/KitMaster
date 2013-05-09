@@ -23,16 +23,13 @@ public class GiveKitEvent extends Event implements Cancellable {
 	private boolean cancelled;
  
 	/**
-	 * Should not be used.  This event is created and called automatically whenever a kit is given/taken.
-	 * @param player
-	 * @param kit
-	 * @param context
+	 * Do not construct this event.  All event firing/handling is done by KitMaster.
 	 */
     public GiveKitEvent(Player player, Kit kit, GiveKitContext context){
 		this.player = player;
 		this.kit = kit;
 		this.context = context;
-		cancelled = false;
+		this.cancelled = false;
     }
     
     /**
