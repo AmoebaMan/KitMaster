@@ -19,9 +19,9 @@ public class ClearKitsEvent extends Event implements Cancellable {
 	private Player player;
 	private boolean inventory, effects, permissions, cancelled;
 	private ClearKitsContext context;
- 
+
 	/**
-	 * Should not be used.  This event is created and called automatically whenever a kit is given/taken.
+	 * Do not construct this event.  All event firing/handling is done by KitMaster.
 	 */
     public ClearKitsEvent(Player player, boolean inventory, boolean effects, boolean permissions, ClearKitsContext context){
 		this.player = player;
@@ -33,7 +33,7 @@ public class ClearKitsEvent extends Event implements Cancellable {
     }
     
    	/**
-   	 * Should not be used.  This event is created and called automatically whenever a kit is given/taken.
+   	 * Do not construct this event.  All event firing/handling is done by KitMaster.
    	 */
        public ClearKitsEvent(Player player, ClearKitsContext context){
    		this.player = player;
