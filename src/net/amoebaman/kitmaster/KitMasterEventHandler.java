@@ -40,7 +40,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class KitMasterEventHandler implements Listener{
 	
-	public static void init(KitMaster plugin){
+	protected static void init(KitMaster plugin){
 		Bukkit.getPluginManager().registerEvents(new KitMasterEventHandler(), plugin);
 	}
 	
@@ -77,10 +77,10 @@ public class KitMasterEventHandler implements Listener{
 			}
 			Kit kit = KitHandler.getKit(event.getLine(1));
 			SignHandler.saveKitSign(kit, event.getBlock().getLocation());
-			event.setLine(0, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_1").substring(0, 15)));
-			event.setLine(1, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_2").substring(0, 15)));
-			event.setLine(2, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_3").substring(0, 15)));
-			event.setLine(3, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_4").substring(0, 15)));
+			event.setLine(0, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_1")).replace("%kit%", kit.name));
+			event.setLine(1, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_2")).replace("%kit%", kit.name));
+			event.setLine(2, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_3")).replace("%kit%", kit.name));
+			event.setLine(3, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_4")).replace("%kit%", kit.name));
 			player.sendMessage(ChatColor.ITALIC + "Kit select sign registered");
 		}
 	}
@@ -104,7 +104,7 @@ public class KitMasterEventHandler implements Listener{
 		final Player player = event.getPlayer();
 		Kit respawnKit = null;
 		for(Kit kit : KitHandler.getKits())
-			if(player.hasPermission("kitmaster.respawn." + kit.name)){
+			if(player.isPermissionSet("kitmaster.respawn." + kit.name) && player.hasPermission("kitmaster.respawn." + kit.name)){
 				respawnKit = kit.applyParentAttributes();
 				break;
 			}
@@ -187,8 +187,12 @@ public class KitMasterEventHandler implements Listener{
 	public void optionalShortcutKitCommands(PlayerCommandPreprocessEvent event){
 		if(KitMaster.config().getBoolean("shortcutKitCommands")){
 			Kit target = KitHandler.getKit(event.getMessage().replace("/", ""));
-			if(target != null && target.name.equalsIgnoreCase(event.getMessage()))
-				event.setMessage((event.getMessage().contains("/") ? "/" : "" ) + "kit " + target.name);
+			System.out.println(event.getMessage() + " --> " + target);
+			if(target != null && target.name.equalsIgnoreCase(event.getMessage().replace("/", ""))){
+				String newMessage = (event.getMessage().contains("/") ? "/" : "" ) + "kit " + target.name;
+				System.out.println("  |---> " + newMessage);
+				event.setMessage(newMessage);
+			}
 		}
 	}
 	
