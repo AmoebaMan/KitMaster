@@ -44,12 +44,12 @@ commands:
     permission: kitmaster.meta
     permission-message: You don't have permission to manage item metadata
     
-  editkit:
-    aliases: [kitedit, kedit, editk]
-    description: Base for various kit editing commands
-    usage: /editkit ...
-    permission: kitmaster.edit
-    permission-message: You don't have permission to edit kits
+##  editkit:
+##    aliases: [kitedit, kedit, editk]
+##    description: Base for various kit editing commands
+##    usage: /editkit ...
+##    permission: kitmaster.edit
+##    permission-message: You don't have permission to edit kits
     
   inventory-kit:
     aliases: [inventorykit, inv-kit, invkit]
@@ -64,31 +64,13 @@ permissions:
     description: Gives access to all SuperKits permissions
     children:
       kitmaster.give: true
-      kitmaster.list: true
-      kitmaster.info: true
       kitmaster.reload: true
       kitmaster.kit.*: true
       kitmaster.notimeout: true
       kitmaster.nocharge: true
       kitmaster.createsign: true
-      kitmaster.books: true
-      kitmaster.fireworks: true
-    
-  kitmaster.sign:
-    description: Allows the player to take kits from signs
-    default: true
-    
-  kitmaster.respawn:
-    description: Allows the player to automatically take kits when then respawn
-    default: true
-    
-  kitmaster.list:
-    description: Allows the player to see the kits available to them
-    default: true
-    
-  kitmaster.info:
-    description: Allows the player to see the contents and options of any kit available to them
-    default: true
+      kitmaster.meta: true
+      kitmaster.edit: true
     
   kitmaster.give:
     description: Allows the player to give kits to other players
@@ -102,10 +84,6 @@ permissions:
     description: Grants permission for all kits
     default: op
     
-  kitmaster.shorttimeout:
-    description: Reduces the timeouts of all kits (except global-timeouts) to 1/3 their configured values for the player
-    default: false
-    
   kitmaster.notimeout:
     description: Removes the timeouts of all kits entirely for the player
     default: op
@@ -116,14 +94,6 @@ permissions:
     
   kitmaster.createsign:
     description: Allows the player to create and break kit selection signs
-    default: op
-    
-  kitmaster.books:
-    description: Allows the player to save and load books
-    default: op
-    
-  kitmaster.fireworks:
-    description: Allows the player to save and load fireworks
     default: op
     
   kitmaster.meta:
