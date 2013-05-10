@@ -17,37 +17,37 @@ import org.bukkit.potion.PotionEffect;
 public class Kit implements Cloneable, ConfigurationSerializable{
 	
 	/**
-	 * The name of the kit.
+	 * The name of the kit
 	 */
 	public final String name;
 	
 	/**
-	 * The set of items that the kit will give.
+	 * The set of items that the kit will give
 	 */
 	public final ArrayList<ItemStack> items = new ArrayList<ItemStack>();
 	
 	/**
-	 * The set of potion effects that the kit will apply.
+	 * The set of potion effects that the kit will apply
 	 */
 	public final ArrayList<PotionEffect> effects = new ArrayList<PotionEffect>();
 	
 	/**
-	 * The set of (temporary) permissions that the kit will grant.
+	 * The set of (temporary) permissions that the kit will grant
 	 */
 	public final ArrayList<String> permissions = new ArrayList<String>();
 	
 	/**
-	 * The set of attributes that have been defined for the kit.
+	 * The set of attributes that have been defined for the kit
 	 */
 	public final HashMap<Attribute, Object> attributes = new HashMap<Attribute, Object>();
 	
 	/**
 	 * Constructs a kit from the given specifications.  The lists/maps will be copied onto the kit's lists/maps rather than adopted.
-	 * @param name The name of the kit.
-	 * @param items The items of the kit.
-	 * @param effects The applied potion effects of the kit.
-	 * @param permissions The granted permissions of the kit.
-	 * @param attributes The defined attributes of the kit.
+	 * @param name The name of the kit
+	 * @param items The items of the kit
+	 * @param effects The applied potion effects of the kit
+	 * @param permissions The granted permissions of the kit
+	 * @param attributes The defined attributes of the kit
 	 */
 	public Kit(String name, List<ItemStack> items, List<PotionEffect> effects, List<String> permissions, HashMap<Attribute, Object> attributes){
 		this.name = name;
@@ -57,12 +57,15 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 		this.attributes.putAll(attributes);
 	}
 	
+	/**
+	 * Kits are reperesented in String form just by their name
+	 */
 	public String toString(){
 		return name;
 	}
 	
 	/**
-	 * Two kits are considered equal so long as their names match.  This is done to prevent two kits from possessing the same name.
+	 * Two kits are considered equal so long as their names match, in order to prevent two kits from possessing the same name
 	 */
 	public boolean equals(Object other){
 		if(other instanceof Kit)
@@ -70,14 +73,17 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 		return false;
 	}
 	
+	/**
+	 * Similar to the implementation of equals(Object), kits are hashed by their names
+	 */
 	public int hashCode(){
 		return toString().hashCode();
 	}
 	
 	/**
-	 * Tests whether the kit's items contain an item.
-	 * @param stack The <code>ItemStack</code> to test for.
-	 * @return True if the kit contains the given <code>ItemStack</code>
+	 * Tests whether the kit's items contain an item
+	 * @param stack The ItemStack to test for
+	 * @return True if the kit contains the given ItemStack
 	 */
 	public boolean containsItem(ItemStack stack){
 		if(stack == null)
@@ -89,9 +95,9 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 	}
 
 	/**
-	 * Tests whether the kit's items contain an effect.
-	 * @param potion The <code>PotionEffect</code> to test for.
-	 * @return True if the kit contains the given <code>PotionEffect</code>
+	 * Tests whether the kit's items contain an effect
+	 * @param potion The PotionEffect to test for
+	 * @return True if the kit contains the given PotionEffect
 	 */
 	public boolean containsEffect(PotionEffect potion){
 		if(potion == null)
@@ -103,9 +109,9 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 	}
 	
 	/**
-	 * Retrives the value of an attribute as it has been defined for this kit.
-	 * @param type The <code>Attribute</code> to retrieve.
-	 * @return The value of the attribute, or the attribute's default value if it was not explicitly defined.
+	 * Retrives the value of an attribute as it has been defined for this kit
+	 * @param type The Attribute to retrieve
+	 * @return The value of the attribute, or the attribute's default value if it was not explicitly defined
 	 */
 	public Object getAttribute(Attribute type){
 		if(attributes.containsKey(type))
@@ -114,30 +120,30 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 	}
 	
 	/**
-	 * Retrives the value of an attribute as a boolean.  See <code>getAttribute(Attribute)</code>
+	 * Retrives the value of an attribute as a boolean.  See getAttribute(Attribute)
 	 */
 	public boolean booleanAttribute(Attribute type){ return (Boolean) getAttribute(type); }
 
 	/**
-	 * Retrives the value of an attribute as an int.  See <code>getAttribute(Attribute)</code>
+	 * Retrives the value of an attribute as an int.  See getAttribute(Attribute)
 	 */
 	public int integerAttribute(Attribute type){ return (Integer) getAttribute(type); }
 
 	/**
-	 * Retrives the value of an attribute as a double.  See <code>getAttribute(Attribute)</code>
+	 * Retrives the value of an attribute as a double.  See getAttribute(Attribute)
 	 */
 	public double doubleAttribute(Attribute type){ return (Double) getAttribute(type); }
 	
 	/**
-	 * Retrives the value of an attribute as a String.  See <code>getAttribute(Attribute)</code>
+	 * Retrives the value of an attribute as a String.  See getAttribute(Attribute)
 	 */
 	public String stringAttribute(Attribute type){ return (String) getAttribute(type); }
 
 	/**
-	 * Defines/redefines the value of an attribute for this kit.  If <code>newValue</code> does not match <code>type</code>'s enumerated class type, the operation will fail.
-	 * @param type The attribute type to set.
-	 * @param newValue The new value for the attribute.
-	 * @return False if <code>newValue</code> did not match the designated class of <code>type</code>, true otherwise.
+	 * Defines/redefines the value of an attribute for this kit.  If newValue does not match type's enumerated class type, the operation will fail.
+	 * @param type The attribute type to set
+	 * @param newValue The new value for the attribute
+	 * @return False if <code>newValue</code> did not match the designated class of <code>type</code>, true otherwise
 	 */
 	public boolean setAttribute(Attribute type, Object newValue){
 		if(type.type.matches(newValue)){
@@ -149,8 +155,8 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 	}
 	
 	/**
-	 * Gets the kit that this kit regards as its parent.
-	 * @return The parent kit, or null if no parent kit is found.
+	 * Gets the kit that this kit regards as its parent
+	 * @return The parent kit, or null if no parent kit is found
 	 */
 	public Kit getParent(){
 		return KitHandler.getKit((String) attributes.get(Attribute.PARENT));
@@ -159,7 +165,7 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 	/**
 	 * Gets a new copy of this kit that replaces all undefined attributes of this kit with those defined by its parent.
 	 * This call will cascade recursively upwards, applying parents of parents as well.
-	 * @return A copy of this kit with its parent's attributes applied.
+	 * @return A copy of this kit with its parent's (and grandparents') attributes applied
 	 */
 	public Kit applyParentAttributes(){
 		Kit clone = clone();
@@ -172,13 +178,17 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 	}
 	
 	/**
-	 * Clones the kit for safe modification.
-	 * @return A perfect copy of this kit.
+	 * Clones the kit for safe modification
+	 * @return A perfect copy of this kit
 	 */
 	public Kit clone(){
 		return new Kit(name, items, effects, permissions, attributes);
 	}
 	
+	/**
+	 * Serializes this kit into a Map for easy Configuration storage
+	 * @returns A map of key to value that can be placed into a configuration and parsed back with the KitHandler to get the same kit
+	 */
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		

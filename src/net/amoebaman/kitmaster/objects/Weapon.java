@@ -5,25 +5,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * 
  * Represents a weapon
  * 
  * @author Dennison
- *
  */
 public class Weapon{
 
-	/** The type of the weapon. */
+	/** The type of the weapon */
 	public WeaponType type;
 
-	/** The level of the weapon. */
+	/** The level of the weapon */
 	public WeaponLevel lvl;
 
-	/** The interally saved ItemStack. */
+	/** The interally saved ItemStack */
 	private ItemStack item;
 
 	/**
-	 * Constructs a weapon with the given type and level.
+	 * Constructs a weapon with the given type and level
 	 * @param type the type of weapon
 	 * @param lvl the level of weapon
 	 */
@@ -34,7 +32,7 @@ public class Weapon{
 	}
 
 	/**
-	 * Constructs a Weapon from the Material that it should represent.
+	 * Constructs a Weapon from the Material that it should represent
 	 * @param mat the Material
 	 */
 	public Weapon(Material mat){
@@ -64,7 +62,7 @@ public class Weapon{
 	}
 
 	/**
-	 * Constructs an Weapon from an ItemStack of the Material that it should represent.
+	 * Constructs an Weapon from an ItemStack of the Material that it should represent
 	 * @param stack the ItemStack
 	 */
 	public Weapon(ItemStack stack){
@@ -74,7 +72,7 @@ public class Weapon{
 
 
 	/**
-	 * Gets the ItemStack that is currently in a player's weapon (held item) slot.
+	 * Gets the ItemStack that is currently in a player's weapon (held item) slot
 	 * @param player the player to check
 	 * @return the ItemStack
 	 */
@@ -84,7 +82,7 @@ public class Weapon{
 
 
 	/**
-	 * Tests whether or not this Weapon is superior to another.
+	 * Tests whether or not this Weapon is superior to another
 	 * @param other the other Weapon
 	 * @return true if this Weapon is superior to the other
 	 */
@@ -108,7 +106,7 @@ public class Weapon{
 	}
 
 	/**
-	 * Tests whether or not this Weapon represents a real Material.
+	 * Tests whether or not this Weapon represents a real Material
 	 * @return true if this Weapon is valid
 	 */
 	public boolean isValid(){
@@ -116,7 +114,7 @@ public class Weapon{
 	}
 
 	/**
-	 * Tests whether or not a valid Weapon can be constructed from this Material.
+	 * Tests whether or not a valid Weapon can be constructed from this Material
 	 * @return true if a construction call with this Material will produce a valid Weapon
 	 */
 	public static boolean isValid(Material mat){
@@ -124,7 +122,7 @@ public class Weapon{
 	}
 
 	/**
-	 * Gets the Material that would represent this Weapon.
+	 * Gets the Material that would represent this Weapon
 	 * @return the Material
 	 */
 	public Material getMaterial(){
@@ -175,7 +173,7 @@ public class Weapon{
 	public ItemStack getItem(){ return item; }
 
 	/**
-	 * Gets an ItemStack containing one of the Material that this Weapon represents.
+	 * Gets an ItemStack containing one of the Material that this Weapon represents
 	 * @return the ItemStack
 	 */
 	public ItemStack getRawItem(){

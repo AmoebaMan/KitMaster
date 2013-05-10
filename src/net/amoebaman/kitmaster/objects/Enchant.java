@@ -3,22 +3,20 @@ package net.amoebaman.kitmaster.objects;
 import org.bukkit.enchantments.Enchantment;
 
 /**
- * 
  * Stores and Enchantment and its level
  * 
  * @author Dennison
- *
  */
 public class Enchant {
 	
-	/** The enchantment type. */
+	/** The enchantment type */
 	public Enchantment enc;
 	
-	/** The enchantment level. */
+	/** The enchantment level */
 	public int lvl;
 
 	/**
-	 * Constructs an EnchantmentWithLevel with the given Enchantment and level.
+	 * Constructs an EnchantmentWithLevel with the given Enchantment and level
 	 * @param enc the Enchantment
 	 * @param lvl the level of the Enchantment
 	 */

@@ -3,77 +3,77 @@ package net.amoebaman.kitmaster.enums;
 public enum Attribute{
 
 	/**
-	 * The timeout duration of this kit in seconds.
+	 * The timeout duration of this kit in seconds
 	 */
 	TIMEOUT(AttributeType.INTEGER, "timeout.duration", 0),
 	
 	/**
-	 * Whether or not the kit will apply the same timeout to all players.
+	 * Whether or not the kit will apply the same timeout to all players
 	 */
 	GLOBAL_TIMEOUT(AttributeType.BOOLEAN, "timeout.global", false),
 	
 	/**
-	 * Whether or not the kit can only be taken once.
+	 * Whether or not the kit can only be taken once
 	 */
 	SINGLE_USE(AttributeType.BOOLEAN, "timeout.singleUse", false),
 	
 	/**
-	 * Whether or not the kit can only be taken once per life.
+	 * Whether or not the kit can only be taken once per life
 	 */
 	SINGLE_USE_LIFE(AttributeType.BOOLEAN, "timeout.singleUsePerLife", false),
 	
 	/**
-	 * Whether or not the kit will infinitely renew its potion effects (until cleared).
+	 * Whether or not the kit will infinitely renew its potion effects (until cleared)
 	 */
 	INFINITE_EFFECTS(AttributeType.BOOLEAN, "infiniteEffects", false),
 	
 	/**
-	 * Encompasses all other clear options.
+	 * Encompasses all other clear options
 	 */
 	CLEAR_ALL(AttributeType.BOOLEAN, "clear.all", false),
 	
 	/**
-	 * Whether or not the kit should clear the player's inventory when taken.
+	 * Whether or not the kit should clear the player's inventory when taken
 	 */
 	CLEAR_INVENTORY(AttributeType.BOOLEAN, "clear.inventory", false),
 	
 	/**
-	 * Whether or not the kit should clear the player's potion effects when taken.
+	 * Whether or not the kit should clear the player's potion effects when taken
 	 */
 	CLEAR_EFFECTS(AttributeType.BOOLEAN, "clear.effects", false),
 	
 	/**
-	 * Whether or not the kit should clear the player's kit-given permissions when taken.
+	 * Whether or not the kit should clear the player's kit-given permissions when taken
 	 */
 	CLEAR_PERMISSIONS(AttributeType.BOOLEAN, "clear.permissions", false),
 	
 	/**
-	 * The name of the kit's intended parent.
+	 * The name of the kit's intended parent
 	 */
 	PARENT(AttributeType.STRING, "inheritance.parent", ""),
 	
 	/**
-	 * Whether or not the kit will attempt to blend its items and effects into those already present.
+	 * Whether or not the kit will attempt to blend its items and effects into those already present
 	 */
 	UPGRADE(AttributeType.BOOLEAN, "inheritance.upgrade", false),
 	
 	/**
-	 * Whether or not the kit will require its parent's permissions as a supplement to its own.
+	 * Whether or not the kit will require its parent's permissions as a supplement to its own
 	 */
 	REQUIRE_PARENT_PERMS(AttributeType.BOOLEAN, "inheritance.requireParentPerms", false),
 	
 	/**
-	 * Whether or not the kit will consider its parent's permissions to apply to itself.
+	 * Whether or not the kit will consider its parent's permissions to apply to itself
 	 */
 	INHERIT_PARENT_PERMS(AttributeType.BOOLEAN, "inheritance.inheritParentPerms", true),
 	
 	/**
-	 * The cost of the kit.  Only used if the economy handle is grabbed.
+	 * The cost of the kit, only used if the economy handle is grabbed
 	 */
 	COST(AttributeType.DOUBLE, "economy.cost", 0.0),
 	
 	/**
-	 * The amount of currency which will be given as part of the kit.  Only used if the economy handle is grabbed.
+	 * The amount of currency which will be given as part of the kit, only used if the economy handle is grabbed.
 	 */
 	CASH(AttributeType.DOUBLE, "economy.cash", 0.0),
 	
@@ -103,33 +103,33 @@ public enum Attribute{
 	RESTRICT_KITS(AttributeType.BOOLEAN, "restrictions.otherKits", false),
 	
 	/**
-	 * Whether or not the kit will show in the /kitlist list.
+	 * Whether or not the kit will show in the /kitlist list
 	 */
 	SHOW_IN_LIST(AttributeType.BOOLEAN, "showInList", true),
 	
 	/**
-	 * Whether or not the kit should suppress its notification when loaded.  Due to the way kits are loaded, this cannot be inherited.
+	 * Whether or not the kit should suppress its notification when loaded, due to the way kits are loaded this cannot be inherited
 	 */
 	SUPPRESS_LOAD_NOTIFICATION(AttributeType.BOOLEAN, "suppressLoadNotification", false),
 	
 	/**
-	 * An identifier string used exclusively by third-party plugins to identify kits by means other than their names.  Never used in SuperKits.
+	 * An identifier string used exclusively by third-party plugins to identify kits by means other than their names
 	 */
 	IDENTIFIER(AttributeType.STRING, "identifier", ""),
 	;
 
 	/**
-	 * The class type that this attribute is defined by.
+	 * The class type that this attribute is defined by
 	 */
 	public final AttributeType type;
 	
 	/**
-	 * The YAML path that is used to define this attribute when loading kits.
+	 * The YAML path that is used to define this attribute when loading kits
 	 */
 	public final String path;
 	
 	/**
-	 * The default value of this attribute if it is not explicitly defined in the kit's YAML file.
+	 * The default value of this attribute if it is not explicitly defined in the kit's YAML file
 	 */
 	public final Object def;
 	
@@ -140,16 +140,16 @@ public enum Attribute{
 	}
 
 	/**
-	 * Gets a more user-friendly version of this Attribute's enumerated name.
+	 * Gets a more user-friendly version of this Attribute's enumerated name
 	 */
 	public String toString(){
 		return name().toLowerCase().replace('_', ' ');
 	}
 	
 	/**
-	 * Attempts to grab the <code>Attribute</code> that matches the given String.
-	 * @param str The name of the desired attribute.
-	 * @return The matched <code>Attribute</code>, or <code>null</code> if no match is found.
+	 * Attempts to grab the Attribute that matches the given String
+	 * @param str The name of the desired attribute
+	 * @return The matched Attribute, or null if no match is found
 	 */
 	public static Attribute matchName(String str){
 		for(Attribute type : values())

@@ -307,13 +307,19 @@ public class KitMaster extends JavaPlugin implements Listener{
 	public static boolean isVaultEnabled(){ return vaultEnabled; }
 	
 	/**
-	 * Gives a player a kit.  This method will consider and apply all attributes of the given kit, including timeouts, permissions, and inheritance.  If the kit has a parent kit, a recursive call will be made to this method <i>prior</i> to the application of <code>kit</code>, with <code>GiveKitContext.PARENT_GIVEN</code>..
-	 * @param player The player to give the kit to.
-	 * @param kit The kit that will be given.
-	 * @param context The context or reason for giving this kit.
-	 * @return a GiveKitResult signifying the success or reason for failure of giving the kit.
+	 * Gives a player a kit.
+	 * This method will consider and apply all attributes of the given kit, including timeouts, permissions, and inheritance.
+	 * If the kit has a parent, a recursive call will be made to this method <i>prior</i> to the application of the initial kit.
+	 * @param player The player to give the kit to
+	 * @param kit The kit to give
+	 * @param override True if this operation should ignore checks for permissions, and timeouts
+	 * @return A GiveKitResult signifying the success or reason for failure of giving the kit
 	 */
-	public static GiveKitResult giveKit(Player player, Kit kit, GiveKitContext context){
+	public static GiveKitResult giveKit(Player player, Kit kit, boolean override){
+		return giveKit(player, kit, override ? GiveKitContext.PLUGIN_GIVEN_OVERRIDE : GiveKitContext.PLUGIN_GIVEN);
+	}
+	
+	protected static GiveKitResult giveKit(Player player, Kit kit, GiveKitContext context){
 		/*
 		 * We can't give a player a null kit
 		 * Return a result that reflects this
@@ -323,7 +329,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 		if(DEBUG_KITS)
 			log.info("Attempting to give " + player.getName() + " the " + kit.name + " kit");
 		/*
-		 * Clone the kit to prevent accidental damage to the base kit
+		 * Clone the kit to prevent accidental mutation damage to the base kit
 		 */
 		kit = kit.clone();
 		/*

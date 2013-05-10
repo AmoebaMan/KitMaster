@@ -8,25 +8,23 @@ import org.bukkit.inventory.ItemStack;
 
 
 /**
- * 
  * Represents a piece of armor
  * 
  * @author Dennison
- *
  */
 public class Armor {
 
-	/** The type of the armor. */
+	/** The type of the armor */
 	private ArmorType type;
 
-	/** The level of the armor. */
+	/** The level of the armor */
 	private ArmorLevel lvl;
 
-	/** The interally saved ItemStack. */
+	/** The interally saved ItemStack */
 	private ItemStack item;
 
 	/**
-	 * Constructs an Armor with the given type and level.
+	 * Constructs an Armor with the given type and level
 	 * @param type the type of armor
 	 * @param lvl the level of armor
 	 */
@@ -37,7 +35,7 @@ public class Armor {
 	}
 
 	/**
-	 * Constructs an Armor from the Material that it should represent.
+	 * Constructs an Armor from the Material that it should represent
 	 * @param mat the Material
 	 */
 	public Armor(Material mat){
@@ -75,7 +73,7 @@ public class Armor {
 	}
 
 	/**
-	 * Constructs an Armor from an ItemStack of the Material that it should represent.
+	 * Constructs an Armor from an ItemStack of the Material that it should represent
 	 * @param stack the ItemStack
 	 */
 	public Armor(ItemStack stack){
@@ -84,7 +82,7 @@ public class Armor {
 	}	
 
 	/**
-	 * Gets the ItemStack that is currently in a player's armor slot.
+	 * Gets the ItemStack that is currently in a player's armor slot
 	 * @param player the player to check
 	 * @param type the type of armor to get
 	 * @return the ItemStack
@@ -100,7 +98,7 @@ public class Armor {
 	}
 
 	/**
-	 * Tests whether or not this Armor is superior to another.
+	 * Tests whether or not this Armor is superior to another
 	 * @param other the other Armor
 	 * @return true if this Armor is superior to the other
 	 */
@@ -126,7 +124,7 @@ public class Armor {
 	}
 
 	/**
-	 * Tests whether or not this Armor represents a real Material.
+	 * Tests whether or not this Armor represents a real Material
 	 * @return true if this Armor is valid
 	 */
 	public boolean isValid(){
@@ -138,7 +136,7 @@ public class Armor {
 	}
 
 	/**
-	 * Tests whether or not a valid Armor can be constructed from this Material.
+	 * Tests whether or not a valid Armor can be constructed from this Material
 	 * @return true if a construction call with this Material will produce a valid Armor
 	 */
 	public static boolean isValid(Material mat){
@@ -146,7 +144,7 @@ public class Armor {
 	}
 
 	/**
-	 * Gets the Material that would represent this Armor.
+	 * Gets the Material that would represent this Armor
 	 * @return the Material
 	 */
 	public Material getMaterial(){
@@ -206,7 +204,7 @@ public class Armor {
 	public ItemStack getItem(){ return item; }
 
 	/**
-	 * Gets an ItemStack containing one of the Material that this Armor represents, without metadata.
+	 * Gets an ItemStack containing one of the Material that this Armor represents, without metadata
 	 * @return the ItemStack
 	 */
 	public ItemStack getRawItem(){
@@ -233,15 +231,15 @@ public class Armor {
 		DIAMOND
 	};
 
-	/** The types of armor. */
+	/** The types of armor */
 	public enum ArmorType{
-		/** Helmet armor */
+		/** Helmets */
 		HELMET,
-		/** Chestplate armor */
+		/** Chestplates */
 		CHESTPLATE,
-		/** Leggings armor */
+		/** Leggings */
 		LEGGINGS,
-		/** Boots armor */
+		/** Boots */
 		BOOTS
 	};
 
