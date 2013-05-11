@@ -187,12 +187,8 @@ public class KitMasterEventHandler implements Listener{
 	public void optionalShortcutKitCommands(PlayerCommandPreprocessEvent event){
 		if(KitMaster.config().getBoolean("shortcutKitCommands")){
 			Kit target = KitHandler.getKit(event.getMessage().replace("/", ""));
-			System.out.println(event.getMessage() + " --> " + target);
-			if(target != null && target.name.equalsIgnoreCase(event.getMessage().replace("/", ""))){
-				String newMessage = (event.getMessage().contains("/") ? "/" : "" ) + "kit " + target.name;
-				System.out.println("  |---> " + newMessage);
-				event.setMessage(newMessage);
-			}
+			if(target != null && target.name.equalsIgnoreCase(event.getMessage().replace("/", "")))
+				event.setMessage((event.getMessage().contains("/") ? "/" : "" ) + "kit " + target.name);
 		}
 	}
 	
