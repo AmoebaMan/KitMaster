@@ -194,7 +194,7 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 		
 		List<String> itemStrings = new ArrayList<String>();
 		for(ItemStack stack : items)
-			itemStrings.add(ItemController.itemToString(stack));
+			itemStrings.add(ItemController.itemToString(stack, true));
 		while(itemStrings.contains(null))
 			itemStrings.remove(null);
 		map.put("items", itemStrings);

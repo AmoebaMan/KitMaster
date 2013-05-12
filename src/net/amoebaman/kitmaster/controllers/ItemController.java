@@ -169,6 +169,7 @@ public class ItemController {
 						stack.setDurability(entity.getTypeId());
 					break;
 				case WRITTEN_BOOK:
+				case BOOK_AND_QUILL:
 						stack = BookHandler.loadBook(stack, tag);
 					break;
 				case LEATHER_HELMET:
@@ -186,6 +187,7 @@ public class ItemController {
 					skullMeta.setOwner(tag);
 					stack.setItemMeta(skullMeta);
 					stack.setDurability((short) 3);
+					break;
 				case SKULL:
 					if(tag.toLowerCase().toLowerCase().contains("skeleton"))
 						stack.setDurability((short) 0);
@@ -207,8 +209,10 @@ public class ItemController {
 					stack = FireworkHandler.loadFirework(stack, tag);
 					break;
 				case POTION:
-					stack.setDurability(parsePotionData(tag));
-					stack = CustomPotionHandler.loadPotion(stack, tag);
+					if(CustomPotionHandler.isPotion(tag))
+						stack = CustomPotionHandler.loadPotion(stack, tag);
+					else
+						stack.setDurability(parsePotionData(tag));
 					break;
 				case LOG:
 				case LEAVES:
@@ -260,6 +264,7 @@ public class ItemController {
 						stack.setDurability((short) 1);
 					if(tag.toLowerCase().contains("cobble"))
 						stack.setDurability((short) 2);
+					break;
 				case SMOOTH_BRICK:
 					if(tag.toLowerCase().contains("mossy"))
 						stack.setDurability((short) 1);
@@ -267,12 +272,15 @@ public class ItemController {
 						stack.setDurability((short) 2);
 					if(tag.toLowerCase().contains("chiseled") || tag.toLowerCase().contains("circle"))
 						stack.setDurability((short) 3);
+					break;
 				case COBBLESTONE:
 					if(tag.toLowerCase().contains("mossy"))
 						stack.setDurability((short) 1);
+					break;
 				case GOLDEN_APPLE:
 					if(tag.toLowerCase().contains("enchanted") || tag.toLowerCase().contains("power") || tag.toLowerCase().contains("super"))
 						stack.setDurability((short) 1);
+					break;
 				default: }
 
 				if(isInt(tag))
@@ -295,6 +303,7 @@ public class ItemController {
 		case MOB_SPAWNER:
 			return EntityType.fromId(stack.getDurability()).name().toLowerCase();
 		case WRITTEN_BOOK:
+		case BOOK_AND_QUILL:
 			name = BookHandler.getBookName(stack);
 			if(name != null)
 				return name;
@@ -334,11 +343,11 @@ public class ItemController {
 		case POTION:
 			name = CustomPotionHandler.getPotionName(stack);
 			if(name != null)
-				return name;
+				return stack.getDurability() + ":" + name;
 			else if(create){
 				name = "autosaved_" + (new Random()).nextInt(Short.MAX_VALUE);
 				CustomPotionHandler.savePotion(stack, name);
-				return name;
+				return stack.getDurability() + ":" + name;
 			}
 			break;
 		case LOG:
@@ -408,10 +417,14 @@ public class ItemController {
 	 * @param stack the item
 	 * @return the result
 	 */
-	public static String itemToString(ItemStack stack){
+	public static String itemToString(ItemStack stack, boolean includeNameAndLore){
 		if(stack == null)
 			return null;
 		String str = stack.getType().name().toLowerCase();
+		if((stack.getItemMeta().hasDisplayName() || stack.getItemMeta().hasLore()) && includeNameAndLore){
+			str += "_autosaved_" + (new Random()).nextInt(Short.MAX_VALUE);
+			CustomItemHandler.saveCustomItem(stack, str);
+		}
 		if(getTag(stack, true) != null)
 			str += ":" + getTag(stack, true);
 		str += ":" + stack.getAmount();
@@ -426,8 +439,8 @@ public class ItemController {
 	 * @return the result
 	 */
 	public static String friendlyItemString(ItemStack stack){
-		String str = capitalize((stack.getItemMeta().getDisplayName() == null) ? stack.getType().name().toLowerCase().replace("_", " ") : stack.getItemMeta().getDisplayName()) + (stack.getAmount() > 1 ? "s" : "");
-		if(stack.getItemMeta().getDisplayName() == null){
+		String str = capitalize(stack.getItemMeta().hasDisplayName() ? stack.getItemMeta().getDisplayName() : stack.getType().name().toLowerCase().replace("_", " ")) + (stack.getAmount() > 1 ? "s" : "");
+		if(!stack.getItemMeta().hasDisplayName()){
 			String tag = getTag(stack, false);
 			if(tag != null)
 				str = capitalize(tag) + " " + str;
