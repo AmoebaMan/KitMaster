@@ -7,6 +7,8 @@ import net.amoebaman.kitmaster.enums.Attribute;
 import net.amoebaman.kitmaster.enums.GiveKitResult;
 import net.amoebaman.kitmaster.objects.Kit;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -21,10 +23,21 @@ public class TimeStampHandler {
 	}
 	
 	public static void save(File file) throws IOException{
+		OfflinePlayer player;
+		Kit kit;
+		for(String name : yamlConfig.getKeys(false))
+			if(yamlConfig.isConfigurationSection(name))
+				for(String kitName : yamlConfig.getConfigurationSection(name).getKeys(false)){
+					player = Bukkit.getOfflinePlayer(name);
+					kit = KitHandler.getKit(kitName);
+					if(!kit.booleanAttribute(Attribute.SINGLE_USE) && timeoutLeft(player, kit) <= 0)
+						yamlConfig.set(name + "." + kitName, null);
+				}
+					
 		yamlConfig.save(file);
 	}
 
-	public static long getTimeStamp(Player player, Kit kit){
+	public static long getTimeStamp(OfflinePlayer player, Kit kit){
 		String sectionName = player == null ? "global" : player.getName();
 		ConfigurationSection playerSection = yamlConfig.getConfigurationSection(sectionName);
 		if(playerSection == null){
@@ -34,7 +47,7 @@ public class TimeStampHandler {
 		return playerSection.getLong(kit.name, 0);
 	}
 
-	public static void setTimeStamp(Player player, Kit kit){
+	public static void setTimeStamp(OfflinePlayer player, Kit kit){
 		String sectionName = player == null ? "global" : player.getName();
 		ConfigurationSection playerSection = yamlConfig.getConfigurationSection(sectionName);
 		if(playerSection == null)
@@ -42,7 +55,7 @@ public class TimeStampHandler {
 		playerSection.set(kit.name, System.currentTimeMillis());
 	}
 	
-	public static void clearTimeStamp(Player player, Kit kit){
+	public static void clearTimeStamp(OfflinePlayer player, Kit kit){
 		String sectionName = player == null ? "global" : player.getName();
 		ConfigurationSection playerSection = yamlConfig.getConfigurationSection(sectionName);
 		if(playerSection == null)
@@ -50,7 +63,7 @@ public class TimeStampHandler {
 		playerSection.set(kit.name, null);
 	}
 
-	public static GiveKitResult timeoutCheck(Player player, Kit kit){
+	public static GiveKitResult timeoutCheck(OfflinePlayer player, Kit kit){
 		long timestamp = getTimeStamp(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT) ? null : player, kit);
 		long timeout = kit.integerAttribute(Attribute.TIMEOUT);
 		if(System.currentTimeMillis() < timestamp + (timeout * 1000))
@@ -60,7 +73,7 @@ public class TimeStampHandler {
 		return GiveKitResult.SUCCESS;
 	}
 
-	public static int timeoutLeft(Player player, Kit kit){
+	public static int timeoutLeft(OfflinePlayer player, Kit kit){
 		long timestamp = getTimeStamp(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT) ? null : player, kit);
 		long timeout = kit.integerAttribute(Attribute.TIMEOUT);
 		return (int)(((timestamp + (timeout * 1000)) - System.currentTimeMillis()) / 1000);
