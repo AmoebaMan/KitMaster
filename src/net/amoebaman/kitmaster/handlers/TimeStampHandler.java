@@ -2,20 +2,22 @@ package net.amoebaman.kitmaster.handlers;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
 
+import net.amoebaman.kitmaster.KitMaster;
 import net.amoebaman.kitmaster.enums.Attribute;
 import net.amoebaman.kitmaster.enums.GiveKitResult;
 import net.amoebaman.kitmaster.objects.Kit;
+import net.amoebaman.kitmaster.sql.SQLQueries;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 
 public class TimeStampHandler {
-
+	
 	private static YamlConfiguration yamlConfig;
 	
 	public static void load(File file) throws IOException{
@@ -27,56 +29,78 @@ public class TimeStampHandler {
 		Kit kit;
 		for(String name : yamlConfig.getKeys(false))
 			if(yamlConfig.isConfigurationSection(name))
+				/*
+				 * Purge expired/irrelevant timestamps
+				 * We need this to keep the file from becoming horribly massive on large servers
+				 */
 				for(String kitName : yamlConfig.getConfigurationSection(name).getKeys(false)){
 					player = Bukkit.getOfflinePlayer(name);
 					kit = KitHandler.getKit(kitName);
-					if(!kit.booleanAttribute(Attribute.SINGLE_USE) && timeoutLeft(player, kit) <= 0)
+					if(kit == null || (!kit.booleanAttribute(Attribute.SINGLE_USE) && timeoutSeconds(player, kit) <= 0))
 						yamlConfig.set(name + "." + kitName, null);
 				}
-					
+		
 		yamlConfig.save(file);
 	}
-
+	
 	public static long getTimeStamp(OfflinePlayer player, Kit kit){
-		String sectionName = player == null ? "global" : player.getName();
-		ConfigurationSection playerSection = yamlConfig.getConfigurationSection(sectionName);
-		if(playerSection == null){
-			yamlConfig.createSection(sectionName);
-			return 0;
+		String name = player == null ? "global" : player.getName();
+		if(KitMaster.isSQLRunning()){
+			ResultSet set = KitMaster.getSQL().executeQuery(SQLQueries.GET_TIMESTAMP.replace(SQLQueries.PLAYER_MACRO, name).replace(SQLQueries.KIT_MACRO, kit.name));
+			String str = KitMaster.getSQL().getFirstResult(set, kit.name, String.class);
+			if(str != null)
+				return Long.parseLong(KitMaster.getSQL().getFirstResult(set, kit.name, String.class));
+			else
+				return 0;
 		}
-		return playerSection.getLong(kit.name, 0);
+		else{
+			ConfigurationSection playerSection = yamlConfig.getConfigurationSection(name);
+			if(playerSection == null){
+				yamlConfig.createSection(name);
+				return 0;
+			}
+			return playerSection.getLong(kit.name, 0);
+		}
 	}
-
+	
 	public static void setTimeStamp(OfflinePlayer player, Kit kit){
-		String sectionName = player == null ? "global" : player.getName();
-		ConfigurationSection playerSection = yamlConfig.getConfigurationSection(sectionName);
-		if(playerSection == null)
-			playerSection = yamlConfig.createSection(sectionName);
-		playerSection.set(kit.name, System.currentTimeMillis());
+		String name = player == null ? "global" : player.getName();
+		if(KitMaster.isSQLRunning())
+			KitMaster.getSQL().executeCommand(SQLQueries.UPDATE_TIMESTAMP.replace(SQLQueries.PLAYER_MACRO, name).replace(SQLQueries.KIT_MACRO, kit.name).replace(SQLQueries.TIMESTAMP_MACRO, "" + System.currentTimeMillis()));
+		else{
+			ConfigurationSection playerSection = yamlConfig.getConfigurationSection(name);
+			if(playerSection == null)
+				playerSection = yamlConfig.createSection(name);
+			playerSection.set(kit.name, System.currentTimeMillis());
+		}
 	}
 	
 	public static void clearTimeStamp(OfflinePlayer player, Kit kit){
-		String sectionName = player == null ? "global" : player.getName();
-		ConfigurationSection playerSection = yamlConfig.getConfigurationSection(sectionName);
-		if(playerSection == null)
-			playerSection = yamlConfig.createSection(sectionName);
-		playerSection.set(kit.name, null);
+		String name = player == null ? "global" : player.getName();
+		if(KitMaster.isSQLRunning())
+			KitMaster.getSQL().executeCommand(SQLQueries.UPDATE_TIMESTAMP.replace(SQLQueries.PLAYER_MACRO, name).replace(SQLQueries.KIT_MACRO, kit.name).replace(SQLQueries.TIMESTAMP_MACRO, "0"));
+		else{
+			ConfigurationSection playerSection = yamlConfig.getConfigurationSection(name);
+			if(playerSection == null)
+				playerSection = yamlConfig.createSection(name);
+			playerSection.set(kit.name, null);
+		}
 	}
-
+	
 	public static GiveKitResult timeoutCheck(OfflinePlayer player, Kit kit){
-		long timestamp = getTimeStamp(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT) ? null : player, kit);
+		long stamp = getTimeStamp(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT) ? null : player, kit);
 		long timeout = kit.integerAttribute(Attribute.TIMEOUT);
-		if(System.currentTimeMillis() < timestamp + (timeout * 1000))
+		if(System.currentTimeMillis() - stamp < timeout * 1000)
 			return GiveKitResult.FAIL_TIMEOUT;	
-		if(timestamp > 0 && (kit.booleanAttribute(Attribute.SINGLE_USE) || kit.booleanAttribute(Attribute.SINGLE_USE_LIFE)))
+		if(stamp > 0 && (kit.booleanAttribute(Attribute.SINGLE_USE) || kit.booleanAttribute(Attribute.SINGLE_USE_LIFE)))
 			return GiveKitResult.FAIL_SINGLE_USE;
 		return GiveKitResult.SUCCESS;
 	}
-
-	public static int timeoutLeft(OfflinePlayer player, Kit kit){
-		long timestamp = getTimeStamp(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT) ? null : player, kit);
-		long timeout = kit.integerAttribute(Attribute.TIMEOUT);
-		return (int)(((timestamp + (timeout * 1000)) - System.currentTimeMillis()) / 1000);
+	
+	public static int timeoutSeconds(OfflinePlayer player, Kit kit){
+		long stamp = getTimeStamp(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT) ? null : player, kit);
+		long timeout = kit.integerAttribute(Attribute.TIMEOUT) * 1000;
+		return (int)((stamp + timeout - System.currentTimeMillis()) / 1000);
 	}
 	
 }

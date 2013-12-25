@@ -49,13 +49,9 @@ public class KitMasterEventHandler implements Listener{
 		if(event.getAction() == Action.LEFT_CLICK_BLOCK){
 			Kit kit = SignHandler.getKitSign(event.getClickedBlock().getLocation());
 			if(kit != null){
-				if(event.getPlayer().hasPermission("kitmaster.sign")){
-					GiveKitResult result = KitMaster.giveKit(event.getPlayer(), kit, GiveKitContext.SIGN_TAKEN);
-					if(KitMaster.DEBUG_KITS)
-						KitMaster.logger().info("Result: " + result.name());
-				}
-				else
-					event.getPlayer().sendMessage(ChatColor.ITALIC + "You don't have permission to take kits from signs");
+				GiveKitResult result = Actions.giveKit(event.getPlayer(), kit, GiveKitContext.SIGN_TAKEN);
+				if(KitMaster.DEBUG_KITS)
+					KitMaster.logger().info("Result: " + result.name());
 			}
 		}
 	}
@@ -111,7 +107,7 @@ public class KitMasterEventHandler implements Listener{
 		if(respawnKit != null){
 			final Kit fRespawnKit = respawnKit.clone();
 			Bukkit.getScheduler().scheduleSyncDelayedTask(KitMaster.plugin(), new Runnable(){ public void run(){
-				KitMaster.giveKit(player, fRespawnKit, GiveKitContext.PLUGIN_GIVEN_OVERRIDE);
+				Actions.giveKit(player, fRespawnKit, GiveKitContext.PLUGIN_GIVEN_OVERRIDE);
 			}});
 		}
 	}
@@ -125,7 +121,7 @@ public class KitMasterEventHandler implements Listener{
 					TimeStampHandler.clearTimeStamp(null, kit);
 			}
 		if(KitMaster.config().getBoolean("clearKits.onDeath", true))
-			KitMaster.clearAll(event.getEntity(), true, ClearKitsContext.PLAYER_DEATH);
+			Actions.clearAll(event.getEntity(), true, ClearKitsContext.PLAYER_DEATH);
 	}
 	
 	@EventHandler
@@ -155,7 +151,7 @@ public class KitMasterEventHandler implements Listener{
 	@EventHandler
 	public void clearKitsWhenPlayerQuits(PlayerQuitEvent event){
 		if(KitMaster.config().getBoolean("clearKits.onDisconnect", true))
-			KitMaster.clearAll(event.getPlayer(), true, ClearKitsContext.PLAYER_DISCONNECT);
+			Actions.clearAll(event.getPlayer(), true, ClearKitsContext.PLAYER_DISCONNECT);
 	}
 	
 	@EventHandler
@@ -166,8 +162,8 @@ public class KitMasterEventHandler implements Listener{
 	@EventHandler
 	public void sendUpdateMessages(PlayerJoinEvent event){
 		Player player = event.getPlayer();
-		if(player.hasPermission("kitmaster.*") && KitMaster.updateEnabled){
-			switch(KitMaster.update.getResult()){
+		if(player.hasPermission("kitmaster.*") && KitMaster.isUpdateEnabled()){
+			switch(KitMaster.getUpdate().getResult()){
 				case FAIL_BADSLUG:
 				case FAIL_NOVERSION:
 					player.sendMessage(ChatColor.ITALIC + "KitMaster: Failed to check for updates due to bad code, contact the developer immediately"); break;
@@ -178,7 +174,7 @@ public class KitMasterEventHandler implements Listener{
 				case SUCCESS:
 					player.sendMessage(ChatColor.ITALIC + ""); break;
 				case UPDATE_AVAILABLE:
-					player.sendMessage(ChatColor.ITALIC + "KitMaster: Version " + KitMaster.update.getLatestVersionString().replace("v", "") + " is available on BukkitDev, you currently have version " + KitMaster.plugin().getDescription().getVersion()); break;
+					player.sendMessage(ChatColor.ITALIC + "KitMaster: Version " + KitMaster.getUpdate().getLatestVersionString().replace("v", "") + " is available on BukkitDev, you currently have version " + KitMaster.plugin().getDescription().getVersion()); break;
 				default: }
 		}
 	}

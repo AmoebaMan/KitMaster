@@ -26,7 +26,7 @@ import org.bukkit.potion.PotionEffect;
 import com.google.common.collect.Lists;
 
 public class KitHandler {
-
+	
 	private static final ArrayList<Kit> kits = new ArrayList<Kit>();
 	public static Kit editKit;
 	
@@ -46,7 +46,7 @@ public class KitHandler {
 		else if(file.getName().endsWith(".kit"))
 			loadFromKitFile(file);
 	}
-
+	
 	private static void loadFromKitFile(File file) {
 		String name = file.getName().replaceAll("\\.kit", "");
 		YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
@@ -58,10 +58,10 @@ public class KitHandler {
 		for(String name : yaml.getKeys(false))
 			addKit(parseKit(name, yaml.getConfigurationSection(name)));
 	}
-
+	
 	public static boolean saveKit(Kit kit){
 		addKit(kit);
-		File file = new File(KitMaster.kitsDirectory + "/" + kit.name + ".kit");
+		File file = new File(KitMaster.KITS_DIR + "/" + kit.name + ".kit");
 		YamlConfiguration yaml = new YamlConfiguration();
 		for(Entry<String, Object> e : kit.serialize().entrySet())
 			yaml.set(e.getKey(), e.getValue());
@@ -75,17 +75,29 @@ public class KitHandler {
 		}
 	}
 	
- 	/**
- 	 * Parses a kit from a file.  All kits are parsed using YAML.
- 	 * @param file The file to parse a kit from.
- 	 * @return The kit parsed from the file.
- 	 */
+	/**
+	 * Parses a kit from a file.  All kits are parsed using YAML.
+	 * @param file The file to parse a kit from.
+	 * @return The kit parsed from the file.
+	 */
 	public static Kit parseKit(String name, ConfigurationSection yaml){
 		
+		HashMap<Attribute, Object> attributes = new HashMap<Attribute, Object>();
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		List<PotionEffect> effects = new ArrayList<PotionEffect>();
 		List<String> permissions = new ArrayList<String>();
-		HashMap<Attribute, Object> attributes = new HashMap<Attribute, Object>();
+		/*
+		 * For each defined attribute, retrive it from its designated YAML path
+		 */
+		for(Attribute type : Attribute.values()){
+			Object value = yaml.get(type.path, null);
+			if(type.type != null && value != null && type.type.matches(value)){
+				if(type.type.matches(value))
+					attributes.put(type, value);
+				else
+					KitMaster.logger().severe("Failed to define attribute " + type.name() + " for kit " + name + ": the defined value was of the wrong type");
+			}
+		}
 		/*
 		 * Parse the kit's items
 		 */
@@ -120,18 +132,6 @@ public class KitHandler {
 		if(permissions == null)
 			permissions = new ArrayList<String>();
 		/*
-		 * For each defined attribute, retrive it from its designated YAML path
-		 */
-		for(Attribute type : Attribute.values()){
-			Object value = yaml.get(type.path, null);
-			if(type.type != null && value != null && type.type.matches(value)){
-				if(type.type.matches(value))
-					attributes.put(type, value);
-				else
-					KitMaster.logger().severe("Failed to define attribute " + type.name() + " for kit " + name + ": the defined value was of the wrong type");
-			}
-		}
-		/*
 		 * SuperKits legacy compatibility for clear options
 		 */
 		if(yaml.getBoolean("clearInventory", false))
@@ -141,8 +141,16 @@ public class KitHandler {
 		 */
 		return new Kit(name, items, effects, permissions, attributes);
 	}
-
+	
 	private static void addKit(Kit kit){
+		if(kit.name.length() > 50){
+			KitMaster.logger().warning("Could not load the " + kit.name + " kit - kit names must not be longer than 50 characters");
+			return;
+		}
+		if(kit.name.matches("[ .,<>/?;:'\"\\[\\]{}|`~!@#$%^&*()-_=+]")){
+			KitMaster.logger().warning("Could not load the " + kit.name + " kit - kit names may only contain letters and numbers");
+			return;
+		}
 		while(kits.contains(kit))
 			kits.remove(kit);
 		kits.add(kit);
@@ -195,7 +203,7 @@ public class KitHandler {
 		}
 		return null;
 	}
-
+	
 	/**
 	 * Tests whether a kit exists that matches the given name.
 	 * @param kitName The name of the kit to search for.
@@ -204,7 +212,7 @@ public class KitHandler {
 	public static boolean isKit(String kitName){
 		return getKit(kitName) != null;
 	}
-
+	
 	/**
 	 * Gets the list of all registered kits.
 	 * @return The list of kits.
@@ -212,7 +220,7 @@ public class KitHandler {
 	public static ArrayList<Kit> getKits(){
 		return kits;
 	}
-
+	
 	/**
 	 * Tests a <code>CommandSender</code>'s permissions to access a kit.
 	 * @param sender The CommandSender to test.
@@ -220,16 +228,16 @@ public class KitHandler {
 	 * @return The <code>PermsResult</code> that reflects the nature of the testee's permissions for the given kit.
 	 */
 	public static PermsResult getKitPerms(CommandSender sender, Kit kit){
-
+		
 		//If the kit is null, we obviously can't check it
 		if(kit == null)
 			return PermsResult.NULL_KIT;
-
+		
 		//Check conditions, from lowest to highest priority
 		//Permissions always stack, never cancel
 		//Default to no permissions
 		PermsResult result = PermsResult.NONE;
-
+		
 		//First check for individual permissions
 		boolean hasSignPerms = sender.hasPermission("kitmaster.sign." + kit.name) || sender.hasPermission("kitmaster.kit." + kit.name);
 		boolean hasCommandPerms = sender.hasPermission("kitmaster.cmd." + kit.name) || sender.hasPermission("kitmaster.kit." + kit.name);
@@ -241,7 +249,7 @@ public class KitHandler {
 			else
 				result = PermsResult.ALL;
 		}
-
+		
 		//Next check for blanket (star) nodes
 		if(sender.hasPermission("kitmaster.sign.*")){
 			if(result == PermsResult.COMMAND_ONLY)
@@ -257,49 +265,49 @@ public class KitHandler {
 		}
 		if(sender.hasPermission("kitmaster.kit.*"))
 			result = PermsResult.ALL;
-
+		
 		//Now let's see if there are any parents to consider
 		Kit parentKit = kit.getParent();
 		if(parentKit != null){	
-
+			
 			//Test the parent kit's permissions
 			//Again, always stack, never cancel
 			PermsResult parentResult = getKitPerms(sender, parentKit);
 			switch(parentResult){
-			case SIGN_ONLY:
-			case INHERIT_SIGN_ONLY:
-				if(kit.booleanAttribute(Attribute.INHERIT_PARENT_PERMS)){
-					if(result == PermsResult.COMMAND_ONLY)
+				case SIGN_ONLY:
+				case INHERIT_SIGN_ONLY:
+					if(kit.booleanAttribute(Attribute.INHERIT_PARENT_PERMS)){
+						if(result == PermsResult.COMMAND_ONLY)
+							result = PermsResult.INHERIT_ALL;
+						else if(result != PermsResult.ALL)
+							result = PermsResult.INHERIT_SIGN_ONLY;
+					}
+					break;
+				case COMMAND_ONLY:
+				case INHERIT_COMMAND_ONLY:
+					if(kit.booleanAttribute(Attribute.INHERIT_PARENT_PERMS)){
+						if(result == PermsResult.SIGN_ONLY)
+							result = PermsResult.INHERIT_ALL;
+						else if(result != PermsResult.ALL)
+							result = PermsResult.INHERIT_COMMAND_ONLY;
+					}
+					break;
+				case ALL:
+				case INHERIT_ALL:
+					if(kit.booleanAttribute(Attribute.INHERIT_PARENT_PERMS))
 						result = PermsResult.INHERIT_ALL;
-					else if(result != PermsResult.ALL)
-						result = PermsResult.INHERIT_SIGN_ONLY;
-				}
-				break;
-			case COMMAND_ONLY:
-			case INHERIT_COMMAND_ONLY:
-				if(kit.booleanAttribute(Attribute.INHERIT_PARENT_PERMS)){
-					if(result == PermsResult.SIGN_ONLY)
-						result = PermsResult.INHERIT_ALL;
-					else if(result != PermsResult.ALL)
-						result = PermsResult.INHERIT_COMMAND_ONLY;
-				}
-				break;
-			case ALL:
-			case INHERIT_ALL:
-				if(kit.booleanAttribute(Attribute.INHERIT_PARENT_PERMS))
-					result = PermsResult.INHERIT_ALL;
-				break;
-			case NONE:
-			case INHERIT_NONE:
-				if(kit.booleanAttribute(Attribute.REQUIRE_PARENT_PERMS))
-					result = PermsResult.INHERIT_NONE;
-				break;
-			case NULL_KIT: }
+					break;
+				case NONE:
+				case INHERIT_NONE:
+					if(kit.booleanAttribute(Attribute.REQUIRE_PARENT_PERMS))
+						result = PermsResult.INHERIT_NONE;
+					break;
+				case NULL_KIT: }
 		}
-
+		
 		if(KitMaster.DEBUG_PERMS)
 			KitMaster.logger().info("Performed permissions check for player " + sender.getName() + " and kit " + kit.name + " => result was " + result.name());
 		return result;
 	}
-
+	
 }
