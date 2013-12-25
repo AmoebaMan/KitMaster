@@ -9,7 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
  * Contains methods for converting <code>Location</code>s to and from saveable forms.
  * @author Dennison
  */
-public class S_Location{
+public class S_Loc{
 	
 	/**
 	 * Saves a <code>Location</code> to a <code>ConfigurationSection</code>.  This method will define fields within the section that describe its values.
@@ -41,8 +41,11 @@ public class S_Location{
 	 * @param loc The Location to save.
 	 * @return The string.
 	 */
-	public static String stringSave(Location loc){
-		return loc.getWorld().getName() + "@" + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + "," + loc.getYaw() + "," + loc.getPitch();
+	public static String stringSave(Location loc, boolean block){
+		if(block)
+			return loc.getWorld().getName() + "@" + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ();
+		else
+			return loc.getWorld().getName() + "@" + loc.getX() + "," + loc.getY() + "," + loc.getZ() + "," + loc.getYaw() + "," + loc.getPitch();
 	}
 	
 	/**

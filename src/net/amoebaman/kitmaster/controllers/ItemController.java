@@ -573,6 +573,8 @@ public class ItemController {
 	 * @return the common name
 	 */
 	public static String getPotionEffectName(PotionEffectType effect){
+		if(effect == null)
+			return "null";
 		if(effect.equals(PotionEffectType.BLINDNESS)) return "blindness";
 		if(effect.equals(PotionEffectType.CONFUSION)) return "nausea";
 		if(effect.equals(PotionEffectType.DAMAGE_RESISTANCE)) return "resistance";
@@ -593,7 +595,10 @@ public class ItemController {
 		if(effect.equals(PotionEffectType.WATER_BREATHING)) return "water breathing";
 		if(effect.equals(PotionEffectType.WEAKNESS)) return "weakness";
 		if(effect.equals(PotionEffectType.WITHER)) return "wither";
-		return null;
+		if(effect.equals(PotionEffectType.ABSORPTION)) return "absorption";
+		if(effect.equals(PotionEffectType.HEALTH_BOOST)) return "health boost";
+		if(effect.equals(PotionEffectType.SATURATION)) return "saturation";
+		return "unknown";
 	}
 
 	/**

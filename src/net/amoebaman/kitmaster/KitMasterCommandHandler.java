@@ -54,7 +54,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 			player.sendMessage(ChatColor.ITALIC + "That kit does not exist");
 			return;
 		}
-		GiveKitResult result = KitMaster.giveKit(player, KitHandler.getKit(args[0]), GiveKitContext.COMMAND_TAKEN);
+		GiveKitResult result = Actions.giveKit(player, KitHandler.getKit(args[0]), GiveKitContext.COMMAND_TAKEN);
 		if(KitMaster.DEBUG_KITS)
 			KitMaster.logger().info("Result: " + result.name());
 		return;
@@ -72,7 +72,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 			return;
 		}
 		Kit kit = KitHandler.getKit(args[1]);
-		GiveKitResult result = KitMaster.giveKit(target, kit, GiveKitContext.COMMAND_GIVEN);
+		GiveKitResult result = Actions.giveKit(target, kit, GiveKitContext.COMMAND_GIVEN);
 		if(KitMaster.DEBUG_KITS)
 			KitMaster.logger().info("Result: " + result.name());
 		target.sendMessage(ChatColor.ITALIC + "You have been given the " + kit.name + " kit");
@@ -401,7 +401,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		KitHandler.saveKit(newKit);
 		KitMaster.saveCustomData();
 		player.sendMessage(ChatColor.ITALIC + "The kit named " + args[0] + " has been created from the contents of your inventory");
-		player.sendMessage(ChatColor.ITALIC + "It has been saved to " + KitMaster.kitsDirectory + "/" + args[0] + ".kit");
+		player.sendMessage(ChatColor.ITALIC + "It has been saved to " + KitMaster.KITS_DIR + "/" + args[0] + ".kit");
 	}
 	
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
