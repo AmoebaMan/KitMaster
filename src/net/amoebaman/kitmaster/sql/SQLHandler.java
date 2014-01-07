@@ -65,11 +65,7 @@ public class SQLHandler {
 		if(isConnected()){
 			try{ connection.prepareStatement(command).executeUpdate(); }
 			catch(SQLException sqle){
-<<<<<<< HEAD
-				if(!suppressErrors || sqle.getMessage().toLowerCase().contains("duplicate column"))
-=======
 				if(!suppressErrors && !sqle.getMessage().toLowerCase().contains("duplicate column"))
->>>>>>> 43674613e972f132e793f342824d85b900109312
 					sqle.printStackTrace();
 			}
 		}
