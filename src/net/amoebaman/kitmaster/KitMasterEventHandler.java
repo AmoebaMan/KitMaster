@@ -114,7 +114,7 @@ public class KitMasterEventHandler implements Listener{
 	
 	@EventHandler
 	public void clearKitsWhenPlayerDies(PlayerDeathEvent event){
-		for(Kit kit : HistoryHandler.getHistory(event.getEntity()))
+		for(Kit kit : KitHandler.getKits())
 			if(kit.booleanAttribute(Attribute.SINGLE_USE_LIFE)){
 				TimeStampHandler.clearTimeStamp(event.getEntity(), kit);
 				if(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT))
