@@ -108,11 +108,6 @@ public enum Attribute{
 	SHOW_IN_LIST(AttributeType.BOOLEAN, "showInList", true),
 	
 	/**
-	 * Whether or not the kit should suppress its notification when loaded, due to the way kits are loaded this cannot be inherited
-	 */
-	SUPPRESS_LOAD_NOTIFICATION(AttributeType.BOOLEAN, "suppressLoadNotification", false),
-	
-	/**
 	 * An identifier string used exclusively by third-party plugins to identify kits by means other than their names
 	 */
 	IDENTIFIER(AttributeType.STRING, "identifier", ""),

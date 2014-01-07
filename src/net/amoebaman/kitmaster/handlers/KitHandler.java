@@ -154,8 +154,6 @@ public class KitHandler {
 		while(kits.contains(kit))
 			kits.remove(kit);
 		kits.add(kit);
-		if(!kit.booleanAttribute(Attribute.SUPPRESS_LOAD_NOTIFICATION))
-			KitMaster.logger().info("Successfully loaded the " + kit.name + " kit");
 	}
 	
 	/**
