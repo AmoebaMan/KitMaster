@@ -1,3 +1,4 @@
+
 SampleKit:
   items:
   - Iron_Sword:1 Sharpness:1
@@ -9,6 +10,8 @@ SampleKit:
   - Chainmail_Boots:1
   effects:
   - Strength:1
+  permissions:
+  - none
   infiniteEffects: true
   timeout:
     duration: 30
@@ -35,3 +38,4 @@ SampleKit:
     pickups: false
     otherKits: false
   showInList: true
+  identifier: none

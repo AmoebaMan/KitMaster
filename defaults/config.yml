@@ -61,7 +61,7 @@ update:
   
 mysql:
 
-  # Set this to true to store sign locations, timestamps, and histories in an SQL database
+  # Set this to true to store sign locations, timestamps, and histories in an SQL database (faster and safer, but requires an SQL server)
   use-mysql: false
   
   # If using the SQL database option, enter the url of the server
