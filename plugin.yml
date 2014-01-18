@@ -12,38 +12,27 @@ commands:
   kit:
     description: Get a kit
     usage: /kit <kit-name>
-    permission-message: You don't have permission to take kits via command
 
   givekit:
     description: Give a kit to a player
     usage: /givekit <player> <kit-name>
-    permission: kitmaster.give
-    permission-message: You dont have permission to give kits
 
   kitlist:
     description: List the available kits
     usage: /kitlist
-    permission: kitmaster.list
-    permission-message: You don't have permission to view kits
 
   kitinfo:
     description: Displays info about a kit
     usage: /kitinfo <kit>
-    permission: kitmaster.info
-    permission-message: You don't have permissions to get info about kits
 
   reloadkits:
     description: Reloads kits from kits.yml
     usage: /reloadkits
-    permission: kitmaster.reload
-    permission-message: You don't have permission to reload kits
     
   itemmeta:
     aliases: [meta, metadata]
     description: Base for various item metadata manipulation commands
     usage: /itemmeta ...
-    permission: kitmaster.meta
-    permission-message: You don't have permission to manage item metadata
     
 ##  editkit:
 ##    aliases: [kitedit, kedit, editk]
@@ -56,8 +45,6 @@ commands:
     aliases: [inventorykit, inv-kit, invkit]
     description: Forms a basic kit using the contents of the player's inventory
     usage: /inventory-kit <name>
-    permission: kitmaster.edit
-    permission-message: You don't have permission to create kits
 
 permissions:
 

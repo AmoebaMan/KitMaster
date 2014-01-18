@@ -60,7 +60,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		return;
 	}
 
-	@CommandHandler(cmd = "givekit", aliases = { "kit give" }, permissions = "kitmaster.give")
+	@CommandHandler(cmd = "givekit", aliases = { "kit give" }, permissions = "kitmaster.give", permissionMessage = "You dont have permission to give kits")
 	public void givekit(CommandSender sender, String[] args){
 		if (args.length < 2){
 			sender.sendMessage(ChatColor.ITALIC + "Include a player to give to and a kit to give");
@@ -80,7 +80,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		return;
 	}
 
-	@CommandHandler(cmd = "kitlist", aliases = { "kit list" }, permissions = "kitmaster.list")
+	@CommandHandler(cmd = "kitlist", aliases = { "kit list" }, permissions = "kitmaster.list", permissionMessage = "You don't have permission to view kits")
 	public void kitlist(CommandSender sender, String[] args){
 		sender.sendMessage(ChatColor.GREEN + "Available kits:");
 		for(Kit kit : KitHandler.getKits()){
@@ -98,7 +98,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 			sender.sendMessage(ChatColor.GREEN + "Use '/kitinfo <kitname>' to see more about a kit");
 	}
 
-	@CommandHandler(cmd = "kitinfo", aliases = { "kit info" }, permissions = "kitmaster.list")
+	@CommandHandler(cmd = "kitinfo", aliases = { "kit info" }, permissions = "kitmaster.list", permissionMessage = "You don't have permissions to get info about kits")
 	public void kitinfo(CommandSender sender, String[] args){
 		if(args.length < 1){
 			sender.sendMessage(ChatColor.ITALIC + "Include a kit to learn about");
@@ -127,7 +127,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 			sender.sendMessage(ChatColor.ITALIC + attribute.toString() + ": " + kit.getAttribute(attribute));
 	}
 
-	@CommandHandler(cmd = "reloadkits", aliases = { "kit reload" }, permissions = "kitmaster.reload")
+	@CommandHandler(cmd = "reloadkits", aliases = { "kit reload" }, permissions = "kitmaster.reload", permissionMessage = "You don't have permission to reload kits")
 	public void reloadkits(CommandSender sender, String[] args){
 		try {
 			KitMaster.reloadKits();
@@ -138,7 +138,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		}
 	}
 
-	@CommandHandler(cmd = "itemmeta savebook", permissions = "kitmaster.meta")
+	@CommandHandler(cmd = "itemmeta savebook", permissions = "kitmaster.meta", permissionMessage = "You don't have permission to manage item metadata")
 	public void savebook(Player player, String[] args){
 		if(player.getItemInHand().getType() != Material.WRITTEN_BOOK && player.getItemInHand().getType() != Material.BOOK_AND_QUILL){
 			player.sendMessage(ChatColor.ITALIC + "You need to hold a written book before using this command");
@@ -153,7 +153,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Successfully saved the book under the name " + args[0]);
 	}
 
-	@CommandHandler(cmd = "itemmeta loadbook", permissions = "kitmaster.meta")
+	@CommandHandler(cmd = "itemmeta loadbook", permissions = "kitmaster.meta", permissionMessage = "You don't have permission to manage item metadata")
 	public void loadbook(Player player, String[] args){
 		if(args.length == 0){
 			player.sendMessage(ChatColor.ITALIC + "Include the identifier of the book to load");
@@ -167,7 +167,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the book named " + args[0]);
 	}
 
-	@CommandHandler(cmd = "itemmeta editbook", permissions = "kitmaster.meta")
+	@CommandHandler(cmd = "itemmeta editbook", permissions = "kitmaster.meta", permissionMessage = "You don't have permission to manage item metadata")
 	public void editbook(Player player, String[] args){
 		if(args.length == 0){
 			player.sendMessage(ChatColor.ITALIC + "Include the identifier of the book to edit");
@@ -181,7 +181,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the book named " + args[0]);
 	}
 	
-	@CommandHandler(cmd = "itemmeta savefirework", permissions = "kitmaster.meta")
+	@CommandHandler(cmd = "itemmeta savefirework", permissions = "kitmaster.meta", permissionMessage = "You don't have permission to manage item metadata")
 	public void savefirework(Player player, String[] args){
 		if(player.getItemInHand().getType() != Material.FIREWORK){
 			player.sendMessage(ChatColor.ITALIC + "You need to hold a firework before using this command");
@@ -196,7 +196,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Successfully saved the firework under the name " + args[0]);
 	}
 
-	@CommandHandler(cmd = "itemmeta loadfirework", permissions = "kitmaster.meta")
+	@CommandHandler(cmd = "itemmeta loadfirework", permissions = "kitmaster.meta", permissionMessage = "You don't have permission to manage item metadata")
 	public void loadfirework(Player player, String[] args){
 		if(args.length == 0){
 			player.sendMessage(ChatColor.ITALIC + "Include the identifier of the firework to load");
@@ -210,7 +210,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the firework named " + args[0]);
 	}
 
-	@CommandHandler(cmd = "itemmeta setname", permissions = "kitmaster.meta")
+	@CommandHandler(cmd = "itemmeta setname", permissions = "kitmaster.meta", permissionMessage = "You don't have permission to manage item metadata")
 	public void setname(Player player, String[] args){
 		if(player.getItemInHand() == null){
 			player.sendMessage(ChatColor.ITALIC + "You need to hold an item before using this command");
@@ -227,7 +227,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Renamed your held item to " + name);
 	}
 	
-	@CommandHandler(cmd = "itemmeta addlore", permissions = "kitmaster.meta")
+	@CommandHandler(cmd = "itemmeta addlore", permissions = "kitmaster.meta", permissionMessage = "You don't have permission to manage item metadata")
 	public void addlore(Player player, String[] args){
 		if(player.getItemInHand() == null){
 			player.sendMessage(ChatColor.ITALIC + "You need to hold an item before using this command");
@@ -248,7 +248,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Added \"" + line + ChatColor.RESET + ChatColor.ITALIC + "\" to your held item");
 	}
 	
-	@CommandHandler(cmd = "itemmeta removelore", permissions = "kitmaster.meta")
+	@CommandHandler(cmd = "itemmeta removelore", permissions = "kitmaster.meta", permissionMessage = "You don't have permission to manage item metadata")
 	public void removelore(Player player, String[] args){
 		if(player.getItemInHand() == null){
 			player.sendMessage(ChatColor.ITALIC + "You need to hold an item before using this command");
@@ -282,7 +282,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Removed line " + num + " from your held item");
 	}
 
-	@CommandHandler(cmd = "itemmeta saveitem", permissions = "kitmaster.meta")
+	@CommandHandler(cmd = "itemmeta saveitem", permissions = "kitmaster.meta", permissionMessage = "You don't have permission to manage item metadata")
 	public void savemeta(Player player, String[] args){
 		if(player.getItemInHand() == null){
 			player.sendMessage(ChatColor.ITALIC + "You need to hold an item before using this command");
@@ -297,7 +297,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		player.sendMessage(ChatColor.ITALIC + "Successfully saved the item under the name " + args[0]);
 	}
 	
-	@CommandHandler(cmd = "itemmeta loaditem", permissions = "kitmaster.meta")
+	@CommandHandler(cmd = "itemmeta loaditem", permissions = "kitmaster.meta", permissionMessage = "You don't have permission to manage item metadata")
 	public void loadmeta(Player player, String[] args){
 		if(args.length == 0){
 			player.sendMessage(ChatColor.ITALIC + "Include the identifier of the custom item");
@@ -391,7 +391,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 	
 	*/
 	
-	@CommandHandler(cmd = "inventory-kit", permissions = "kitmaster.edit")
+	@CommandHandler(cmd = "inventory-kit", permissions = "kitmaster.edit", permissionMessage = "You don't have permission to create kits")
 	public void inventoryKit(Player player, String[] args){
 		if(args.length == 0){
 			player.sendMessage(ChatColor.ITALIC + "Include the name of the new kit");
