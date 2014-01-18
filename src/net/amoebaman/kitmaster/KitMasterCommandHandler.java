@@ -317,6 +317,8 @@ public class KitMasterCommandHandler implements TabCompleter{
 		}
 		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the item named " + args[0]);
 	}
+	
+	/*
 
 	@CommandHandler(cmd = "editkit")
 	public void editkit(CommandSender sender){
@@ -386,6 +388,8 @@ public class KitMasterCommandHandler implements TabCompleter{
 //		Attribute type = Attribute.matchName(args[0]);
 //		TODO
 	}
+	
+	*/
 	
 	@CommandHandler(cmd = "inventory-kit", permissions = "kitmaster.edit")
 	public void inventoryKit(Player player, String[] args){
