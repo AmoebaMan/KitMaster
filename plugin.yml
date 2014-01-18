@@ -3,7 +3,8 @@ main: net.amoebaman.kitmaster.KitMaster
 name: KitMaster
 version: 1.3.2
 author: AmoebaMan
-description: The complete kit plugin
+website: www.amoebaman.net
+description: The complete short-term kit plugin
 softdepend: [Vault]
 
 commands:
