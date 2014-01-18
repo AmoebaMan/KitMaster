@@ -94,7 +94,7 @@ public class Actions {
 			 * Check timeouts for the parent kit
 			 * Don't perform these checks if the context overrides them or the player has an override permission
 			 */
-			if(!context.overrides && !player.hasPermission("kitmaster.notimeout")){
+			if(!context.overrides && !player.hasPermission("kitmaster.notimeout") && !player.hasPermission("kitmaster.notimeout." + parentKit.name)){
 				switch(TimeStampHandler.timeoutCheck(player, parentKit)){
 					case FAIL_TIMEOUT:
 						player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutSeconds(player, parentKit) + " more seconds before using a " + parentKit.name + " kit");
@@ -108,7 +108,7 @@ public class Actions {
 		 * Check timeouts for the current kit
 		 * Don't perform these checks if the context overrides them or the player has an override permission
 		 */
-		if(!context.overrides && !player.hasPermission("kitmaster.notimeout")){
+		if(!context.overrides && !player.hasPermission("kitmaster.notimeout") && !player.hasPermission("kitmaster.notimeout." + kit.name)){
 			switch(TimeStampHandler.timeoutCheck(player, kit)){
 				case FAIL_TIMEOUT:
 					player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutSeconds(player, kit) + " more seconds before using the " + kit.name + " kit");
@@ -123,7 +123,7 @@ public class Actions {
 		 * Don't perform these checks if the economy is not enabled, or if the contexts overrides them or the player has an override permission
 		 */
 		if(KitMaster.getEcon() != null)
-			if(KitMaster.getEcon().getBalance(player.getName()) < kit.doubleAttribute(Attribute.COST) && !player.hasPermission("kitmaster.nocharge")){
+			if(KitMaster.getEcon().getBalance(player.getName()) < kit.doubleAttribute(Attribute.COST) && !player.hasPermission("kitmaster.nocharge") && !player.hasPermission("kitmaster.nocharge." + kit.name)){
 				player.sendMessage(ChatColor.ITALIC + "You need " + kit.doubleAttribute(Attribute.COST) + " " + KitMaster.getEcon().currencyNameSingular() + " to take the " + kit.name + " kit");
 				return GiveKitResult.FAIL_COST;
 			}
@@ -176,7 +176,7 @@ public class Actions {
 		 * Apply the kit's economic attributes
 		 * Don't perform this operation if the economy handle is not enabled, or if the player has  an override permission
 		 */
-		if(KitMaster.getEcon() != null && !player.hasPermission("kitmaster.nocharge")){
+		if(KitMaster.getEcon() != null && !player.hasPermission("kitmaster.nocharge") && !player.hasPermission("kitmaster.nocharge." + kit.name)){
 			KitMaster.getEcon().bankWithdraw(player.getName(), kit.doubleAttribute(Attribute.COST));
 			KitMaster.getEcon().bankDeposit(player.getName(), kit.doubleAttribute(Attribute.CASH));
 		}
