@@ -60,7 +60,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		return;
 	}
 
-	@CommandHandler(cmd = "givekit", aliases = { "kit give" }, permissions = "kitmaster.give", permissionMessage = "You dont have permission to give kits")
+	@CommandHandler(cmd = "givekit", permissions = "kitmaster.give", permissionMessage = "You dont have permission to give kits")
 	public void givekit(CommandSender sender, String[] args){
 		if (args.length < 2){
 			sender.sendMessage(ChatColor.ITALIC + "Include a player to give to and a kit to give");
@@ -80,7 +80,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 		return;
 	}
 
-	@CommandHandler(cmd = "kitlist", aliases = { "kit list" }, permissions = "kitmaster.list", permissionMessage = "You don't have permission to view kits")
+	@CommandHandler(cmd = "kitlist", permissions = "kitmaster.list", permissionMessage = "You don't have permission to view kits")
 	public void kitlist(CommandSender sender, String[] args){
 		sender.sendMessage(ChatColor.GREEN + "Available kits:");
 		for(Kit kit : KitHandler.getKits()){
@@ -98,7 +98,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 			sender.sendMessage(ChatColor.GREEN + "Use '/kitinfo <kitname>' to see more about a kit");
 	}
 
-	@CommandHandler(cmd = "kitinfo", aliases = { "kit info" }, permissions = "kitmaster.list", permissionMessage = "You don't have permissions to get info about kits")
+	@CommandHandler(cmd = "kitinfo", permissions = "kitmaster.list", permissionMessage = "You don't have permissions to get info about kits")
 	public void kitinfo(CommandSender sender, String[] args){
 		if(args.length < 1){
 			sender.sendMessage(ChatColor.ITALIC + "Include a kit to learn about");
@@ -127,7 +127,7 @@ public class KitMasterCommandHandler implements TabCompleter{
 			sender.sendMessage(ChatColor.ITALIC + attribute.toString() + ": " + kit.getAttribute(attribute));
 	}
 
-	@CommandHandler(cmd = "reloadkits", aliases = { "kit reload" }, permissions = "kitmaster.reload", permissionMessage = "You don't have permission to reload kits")
+	@CommandHandler(cmd = "reloadkits", permissions = "kitmaster.reload", permissionMessage = "You don't have permission to reload kits")
 	public void reloadkits(CommandSender sender, String[] args){
 		try {
 			KitMaster.reloadKits();
