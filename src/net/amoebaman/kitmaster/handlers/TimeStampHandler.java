@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 
 public class TimeStampHandler {
@@ -50,12 +51,11 @@ public class TimeStampHandler {
 	public static long getTimeStamp(OfflinePlayer player, Kit kit){
 		String name = player == null ? "global" : player.getName();
 		if(KitMaster.isSQLRunning()){
-			ResultSet set = KitMaster.getSQL().executeQuery(SQLQueries.GET_TIMESTAMP.replace(SQLQueries.PLAYER_MACRO, name).replace(SQLQueries.KIT_MACRO, kit.name));
-			String str = KitMaster.getSQL().getFirstResult(set, kit.name, String.class);
-			if(str != null)
-				return Long.parseLong(KitMaster.getSQL().getFirstResult(set, kit.name, String.class));
-			else
-				return 0;
+			String query = SQLQueries.GET_TIMESTAMP.replace(SQLQueries.PLAYER_MACRO, name).replace(SQLQueries.KIT_MACRO, kit.name);
+			ResultSet set = KitMaster.getSQL().executeQuery(query);
+			Long stamp = KitMaster.getSQL().getFirstResult(set, kit.name, Long.class);
+			System.out.println(query + " --> " + set.toString() + " --> " + stamp);
+			return stamp == null ? 0 : stamp;
 		}
 		else{
 			ConfigurationSection playerSection = yamlConfig.getConfigurationSection(name);
