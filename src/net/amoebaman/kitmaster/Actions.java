@@ -95,6 +95,7 @@ public class Actions {
 			 * Don't perform these checks if the context overrides them or the player has an override permission
 			 */
 			if(!context.overrides && !player.hasPermission("kitmaster.notimeout") && !player.hasPermission("kitmaster.notimeout." + parentKit.name)){
+			if(!context.overrides && !TimeStampHandler.hasOverride(player, parentKit)){
 				switch(TimeStampHandler.timeoutCheck(player, parentKit)){
 					case FAIL_TIMEOUT:
 						player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutSeconds(player, parentKit) + " more seconds before using a " + parentKit.name + " kit");
@@ -109,6 +110,7 @@ public class Actions {
 		 * Don't perform these checks if the context overrides them or the player has an override permission
 		 */
 		if(!context.overrides && !player.hasPermission("kitmaster.notimeout") && !player.hasPermission("kitmaster.notimeout." + kit.name)){
+		if(!context.overrides && !TimeStampHandler.hasOverride(player, kit)){
 			switch(TimeStampHandler.timeoutCheck(player, kit)){
 				case FAIL_TIMEOUT:
 					player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutSeconds(player, kit) + " more seconds before using the " + kit.name + " kit");

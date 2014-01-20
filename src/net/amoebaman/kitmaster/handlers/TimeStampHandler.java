@@ -43,6 +43,10 @@ public class TimeStampHandler {
 		yamlConfig.save(file);
 	}
 	
+	public static boolean hasOverride(Player player, Kit kit){
+		return player.hasPermission("kitmaster.notimeout") || player.hasPermission("kitmaster.notimeout." + kit.name);
+	}
+	
 	public static long getTimeStamp(OfflinePlayer player, Kit kit){
 		String name = player == null ? "global" : player.getName();
 		if(KitMaster.isSQLRunning()){
