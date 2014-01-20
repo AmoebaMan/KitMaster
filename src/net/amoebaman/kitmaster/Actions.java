@@ -31,15 +31,20 @@ public class Actions {
 	public static GiveKitResult giveKit(Player player, Kit kit, boolean override){
 		return giveKit(player, kit, override ? GiveKitContext.PLUGIN_GIVEN_OVERRIDE : GiveKitContext.PLUGIN_GIVEN);
 	}
+
+	public static boolean debugNextGiveKit = false;
 	
 	public static GiveKitResult giveKit(Player player, Kit kit, GiveKitContext context){
+		boolean debug = debugNextGiveKit;
+		debugNextGiveKit = false;
+		
 		/*
 		 * We can't give a player a null kit
 		 * Return a result that reflects this
 		 */
 		if(kit == null)
 			return GiveKitResult.FAIL_NULL_KIT;
-		if(KitMaster.DEBUG_KITS)
+		if(debug)
 			KitMaster.logger().info("Attempting to give " + player.getName() + " the " + kit.name + " kit");
 		/*
 		 * Clone the kit to prevent accidental mutation damage to the base kit
@@ -50,8 +55,10 @@ public class Actions {
 		 * Ignore these checks if the context overrides them
 		 */
 		if(!context.overrides){
-			PermsResult getKitPerms = KitHandler.getKitPerms(player, kit);
-			switch(getKitPerms){
+			PermsResult perms = KitHandler.getKitPerms(player, kit);
+			if(debug)
+				KitMaster.logger().info("Permissions result: " + perms);
+			switch(perms){
 				case COMMAND_ONLY:
 					if(context == GiveKitContext.SIGN_TAKEN){
 						player.sendMessage(ChatColor.ITALIC + "You can't take the " + kit.name + " kit from signs");
@@ -89,13 +96,18 @@ public class Actions {
 		 * Obviously these don't need to happen if there is no parent kit
 		 */
 		Kit parentKit = kit.getParent();
+		if(debug)
+			KitMaster.logger().info("Parent kit: " + parentKit);
 		if(parentKit != null)
 			/*
 			 * Check timeouts for the parent kit
 			 * Don't perform these checks if the context overrides them or the player has an override permission
 			 */
-			if(!context.overrides && !player.hasPermission("kitmaster.notimeout") && !player.hasPermission("kitmaster.notimeout." + parentKit.name)){
 			if(!context.overrides && !TimeStampHandler.hasOverride(player, parentKit)){
+				if(debug){
+					KitMaster.logger().info("Checking parent timestamp: " + TimeStampHandler.getTimeStamp(player, parentKit));
+					KitMaster.logger().info("Checking parent timeout: " + TimeStampHandler.timeoutSeconds(player, parentKit));
+				}
 				switch(TimeStampHandler.timeoutCheck(player, parentKit)){
 					case FAIL_TIMEOUT:
 						player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutSeconds(player, parentKit) + " more seconds before using a " + parentKit.name + " kit");
@@ -109,8 +121,11 @@ public class Actions {
 		 * Check timeouts for the current kit
 		 * Don't perform these checks if the context overrides them or the player has an override permission
 		 */
-		if(!context.overrides && !player.hasPermission("kitmaster.notimeout") && !player.hasPermission("kitmaster.notimeout." + kit.name)){
 		if(!context.overrides && !TimeStampHandler.hasOverride(player, kit)){
+			if(debug){
+				KitMaster.logger().info("Checking timestamp: " + TimeStampHandler.getTimeStamp(player, parentKit));
+				KitMaster.logger().info("Checking timeout: " + TimeStampHandler.timeoutSeconds(player, kit));
+			}
 			switch(TimeStampHandler.timeoutCheck(player, kit)){
 				case FAIL_TIMEOUT:
 					player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutSeconds(player, kit) + " more seconds before using the " + kit.name + " kit");
@@ -132,6 +147,8 @@ public class Actions {
 		/*
 		 * Check if the player has taken any kits that restrict further kit usage
 		 */
+		if(debug)
+			KitMaster.logger().info("Checking history: " + HistoryHandler.getHistory(player));
 		for(Kit other : HistoryHandler.getHistory(player))
 			if(other.booleanAttribute(Attribute.RESTRICT_KITS)){
 				player.sendMessage(ChatColor.ITALIC + "You've already taken a kit that doesn't allow you to take further kits");
@@ -199,6 +216,7 @@ public class Actions {
 		 * Return the success of the mission
 		 */
 		return GiveKitResult.SUCCESS;
+		
 	}
 	
 	/**

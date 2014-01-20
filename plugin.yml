@@ -45,6 +45,9 @@ commands:
     aliases: [inventorykit, inv-kit, invkit]
     description: Forms a basic kit using the contents of the player's inventory
     usage: /inventory-kit <name>
+    
+  kitdebug:
+    description: Prints debugging info for the next kit selection to the console
 
 permissions:
 

@@ -46,6 +46,11 @@ public class KitMasterCommandHandler implements TabCompleter{
 		return result.trim();
 	}
 	
+	@CommandHandler(cmd = "kitdebug")
+	public void kitDebug(CommandSender sender, String[] args){
+		Actions.debugNextGiveKit = true;
+	}
+	
 	@CommandHandler(cmd = "kit")
 	public void kit(Player player, String[] args){
 		if (args.length < 1)
