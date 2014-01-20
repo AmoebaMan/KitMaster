@@ -54,7 +54,6 @@ public class TimeStampHandler {
 			String query = SQLQueries.GET_TIMESTAMP.replace(SQLQueries.PLAYER_MACRO, name).replace(SQLQueries.KIT_MACRO, kit.name);
 			ResultSet set = KitMaster.getSQL().executeQuery(query);
 			Long stamp = KitMaster.getSQL().getFirstResult(set, kit.name, Long.class);
-			System.out.println(query + " --> " + set.toString() + " --> " + stamp);
 			return stamp == null ? 0 : stamp;
 		}
 		else{
