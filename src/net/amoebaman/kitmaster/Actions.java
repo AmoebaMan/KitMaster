@@ -106,11 +106,11 @@ public class Actions {
 			if(!context.overrides && !TimeStampHandler.hasOverride(player, parentKit)){
 				if(debug){
 					KitMaster.logger().info("Checking parent timestamp: " + TimeStampHandler.getTimeStamp(player, parentKit));
-					KitMaster.logger().info("Checking parent timeout: " + TimeStampHandler.timeoutSeconds(player, parentKit));
+					KitMaster.logger().info("Checking parent timeout: " + TimeStampHandler.timeoutRemaining(player, parentKit));
 				}
 				switch(TimeStampHandler.timeoutCheck(player, parentKit)){
 					case FAIL_TIMEOUT:
-						player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutSeconds(player, parentKit) + " more seconds before using a " + parentKit.name + " kit");
+						player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutRemaining(player, parentKit) + " before using a " + parentKit.name + " kit");
 						return GiveKitResult.FAIL_TIMEOUT;
 					case FAIL_SINGLE_USE:
 						player.sendMessage(ChatColor.ITALIC + "You can only use a " + parentKit.name + " kit once");
@@ -124,11 +124,11 @@ public class Actions {
 		if(!context.overrides && !TimeStampHandler.hasOverride(player, kit)){
 			if(debug){
 				KitMaster.logger().info("Checking timestamp: " + TimeStampHandler.getTimeStamp(player, parentKit));
-				KitMaster.logger().info("Checking timeout: " + TimeStampHandler.timeoutSeconds(player, kit));
+				KitMaster.logger().info("Checking timeout: " + TimeStampHandler.timeoutRemaining(player, kit));
 			}
 			switch(TimeStampHandler.timeoutCheck(player, kit)){
 				case FAIL_TIMEOUT:
-					player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutSeconds(player, kit) + " more seconds before using the " + kit.name + " kit");
+					player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutRemaining(player, kit) + " before using the " + kit.name + " kit");
 					return GiveKitResult.FAIL_TIMEOUT;
 				case FAIL_SINGLE_USE:
 					player.sendMessage(ChatColor.ITALIC + "You can only use the " + kit.name + " kit once");

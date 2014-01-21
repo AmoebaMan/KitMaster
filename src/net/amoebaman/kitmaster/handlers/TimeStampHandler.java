@@ -37,7 +37,7 @@ public class TimeStampHandler {
 				for(String kitName : yamlConfig.getConfigurationSection(name).getKeys(false)){
 					player = Bukkit.getOfflinePlayer(name);
 					kit = KitHandler.getKit(kitName);
-					if(kit == null || (!kit.booleanAttribute(Attribute.SINGLE_USE) && timeoutSeconds(player, kit) <= 0))
+					if(kit == null || (!kit.booleanAttribute(Attribute.SINGLE_USE) && !timeoutRemaining(player, kit).isEmpty()))
 						yamlConfig.set(name + "." + kitName, null);
 				}
 		
@@ -100,10 +100,29 @@ public class TimeStampHandler {
 		return GiveKitResult.SUCCESS;
 	}
 	
-	public static int timeoutSeconds(OfflinePlayer player, Kit kit){
+	public static String timeoutRemaining(OfflinePlayer player, Kit kit){
 		long stamp = getTimeStamp(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT) ? null : player, kit);
 		long timeout = kit.integerAttribute(Attribute.TIMEOUT) * 1000;
-		return (int)((stamp + timeout - System.currentTimeMillis()) / 1000);
+		int seconds = (int)((stamp + timeout - System.currentTimeMillis()) / 1000), minutes = 0, hours = 0, days = 0;
+		seconds = seconds < 0 ? 0 : seconds;
+		if(seconds >= 60){
+			minutes = seconds / 60;
+			seconds %= 60;
+			if(minutes >= 60){
+				hours = minutes / 60;
+				minutes %= 60;
+				if(hours >= 24){
+					days = hours / 24;
+					hours %= 24;
+				}
+			}
+		}
+		String result = "";
+		if(days > 0) result += days + " days ";
+		if(hours > 0) result += hours + " hours ";
+		if(minutes > 0) result += minutes + " minutes ";
+		if(seconds > 0) result += seconds + " seconds ";
+		return result.trim();
 	}
 	
 }
