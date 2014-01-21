@@ -164,7 +164,7 @@ public class KitMasterEventHandler implements Listener{
 		Player player = event.getPlayer();
 		if(player.hasPermission("kitmaster.*") && KitMaster.isUpdateEnabled()){
 			switch(KitMaster.getUpdate().getResult()){
-				case FAIL_BADSLUG:
+				case FAIL_BADID:
 				case FAIL_NOVERSION:
 					player.sendMessage(ChatColor.ITALIC + "KitMaster: Failed to check for updates due to bad code, contact the developer immediately"); break;
 				case FAIL_DBO:
@@ -174,7 +174,7 @@ public class KitMasterEventHandler implements Listener{
 				case SUCCESS:
 					player.sendMessage(ChatColor.ITALIC + ""); break;
 				case UPDATE_AVAILABLE:
-					player.sendMessage(ChatColor.ITALIC + "KitMaster: Version " + KitMaster.getUpdate().getLatestVersionString().replace("v", "") + " is available on BukkitDev, you currently have version " + KitMaster.plugin().getDescription().getVersion()); break;
+					player.sendMessage(ChatColor.ITALIC + "KitMaster: Version " + KitMaster.getUpdate().getLatestGameVersion().replace("v", "") + " is available on BukkitDev, you currently have version " + KitMaster.plugin().getDescription().getVersion()); break;
 				default: }
 		}
 	}

@@ -227,9 +227,9 @@ public class KitMaster extends JavaPlugin implements Listener{
 			try{
 				getLogger().info("Checking for updates...");
 				UpdateType type = getConfig().getBoolean("update.autoInstallUpdate") ? UpdateType.DEFAULT : UpdateType.NO_DOWNLOAD;
-				UPDATE = new Updater(this, "kitmaster", this.getFile(), type, true);
+				UPDATE = new Updater(this, 48658, this.getFile(), type, true);
 				switch(UPDATE.getResult()){
-					case FAIL_BADSLUG:
+					case FAIL_BADID:
 					case FAIL_NOVERSION:
 						getLogger().severe("Failed to check for updates due to bad code.  Contact the developer: " + UPDATE.getResult().name());
 						break;
