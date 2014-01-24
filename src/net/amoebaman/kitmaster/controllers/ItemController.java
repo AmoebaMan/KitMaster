@@ -27,7 +27,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-
+@SuppressWarnings("deprecation")
 public class ItemController {
 
 	/**
