@@ -159,17 +159,29 @@ public class KitMasterCommandHandler implements TabCompleter{
 	}
 
 	@CommandHandler(cmd = "itemmeta loadbook", permissions = "kitmaster.meta", permissionMessage = "You don't have permission to manage item metadata")
-	public void loadbook(Player player, String[] args){
-		if(args.length == 0){
-			player.sendMessage(ChatColor.ITALIC + "Include the identifier of the book to load");
+	public void loadbook(CommandSender sender, String[] args){
+		if(args.length < 1){
+			sender.sendMessage(ChatColor.ITALIC + "Include the identifier of the book to load");
+			return;
+		}
+		if(args.length < 2 && !(sender instanceof Player)){
+			sender.sendMessage(ChatColor.ITALIC + "Include a player to load the book for");
 			return;
 		}
 		if(!BookHandler.isBook(args[0])){
-			player.sendMessage(ChatColor.ITALIC + "No book is saved under that name");
+			sender.sendMessage(ChatColor.ITALIC + "No book is saved under that name");
 			return;
 		}
-		player.getInventory().addItem(BookHandler.getBook(args[0]));
-		player.sendMessage(ChatColor.ITALIC + "Successfully loaded the book named " + args[0]);
+		Player target = sender instanceof Player ? (Player) sender : Bukkit.getPlayer(args[1]);
+		if(target == null){
+			sender.sendMessage(ChatColor.ITALIC + "Could not find target player");
+			return;
+		}
+		target.getInventory().addItem(BookHandler.getBook(args[0]));
+		if(target.equals(sender))
+			sender.sendMessage(ChatColor.ITALIC + "Successfully loaded the book named " + args[0]);
+		else
+			target.sendMessage(ChatColor.ITALIC + "Given the book " + args[0]);
 	}
 
 	@CommandHandler(cmd = "itemmeta editbook", permissions = "kitmaster.meta", permissionMessage = "You don't have permission to manage item metadata")
