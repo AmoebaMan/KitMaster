@@ -190,7 +190,7 @@ public class Actions {
 		 */
 		if(KitMaster.getPerms() != null)
 			for(String node : kit.permissions)
-				KitMaster.getPerms().playerAdd("world", player.getName(), node);
+				KitMaster.getPerms().playerAdd(player, node);
 		/*
 		 * Apply the kit's economic attributes
 		 * Don't perform this operation if the economy handle is not enabled, or if the player has  an override permission
