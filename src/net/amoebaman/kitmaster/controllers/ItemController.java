@@ -544,26 +544,29 @@ public class ItemController {
 	 */
 	public static PotionEffectType matchPotionEffect(String name){
 		name = name.toLowerCase();
-		if(name.toLowerCase().contains("regen")) return PotionEffectType.REGENERATION;
-		if(name.toLowerCase().contains("poison")) return PotionEffectType.POISON;
-		if(name.toLowerCase().contains("strength")) return PotionEffectType.INCREASE_DAMAGE;
-		if(name.toLowerCase().contains("weak")) return PotionEffectType.WEAKNESS;
-		if(name.toLowerCase().contains("heal")) return PotionEffectType.HEAL;
-		if(name.toLowerCase().contains("harm")) return PotionEffectType.HARM;
-		if(name.toLowerCase().contains("speed") || name.toLowerCase().contains("swift")) return PotionEffectType.SPEED;
-		if(name.toLowerCase().contains("slow")) return PotionEffectType.SLOW;
-		if(name.toLowerCase().contains("haste")) return PotionEffectType.FAST_DIGGING;
-		if(name.toLowerCase().contains("fat")) return PotionEffectType.SLOW_DIGGING;
-		if(name.toLowerCase().contains("hung")) return PotionEffectType.HUNGER;
-		if(name.toLowerCase().contains("resist")) return PotionEffectType.DAMAGE_RESISTANCE;
-		if(name.toLowerCase().contains("blind")) return PotionEffectType.BLINDNESS;
-		if(name.toLowerCase().contains("confus") || name.toLowerCase().contains("naus")) return PotionEffectType.CONFUSION;
-		if(name.toLowerCase().contains("fire")) return PotionEffectType.FIRE_RESISTANCE;
-		if(name.toLowerCase().contains("jump")) return PotionEffectType.JUMP;
-		if(name.toLowerCase().contains("water") || name.toLowerCase().contains("aqua")) return PotionEffectType.WATER_BREATHING;
-		if(name.toLowerCase().contains("invis")) return PotionEffectType.INVISIBILITY;
-		if(name.toLowerCase().contains("night")) return PotionEffectType.NIGHT_VISION;
-		if(name.toLowerCase().contains("wither")) return PotionEffectType.WITHER;
+		if(name.contains("regen")) return PotionEffectType.REGENERATION;
+		if(name.contains("poison")) return PotionEffectType.POISON;
+		if(name.contains("strength")) return PotionEffectType.INCREASE_DAMAGE;
+		if(name.contains("weak")) return PotionEffectType.WEAKNESS;
+		if(name.contains("abs")) return PotionEffectType.ABSORPTION;
+		if(name.contains("health")) return PotionEffectType.HEALTH_BOOST;
+		if(name.contains("sat")) return PotionEffectType.SATURATION;
+		if(name.contains("heal")) return PotionEffectType.HEAL;
+		if(name.contains("harm")) return PotionEffectType.HARM;
+		if(name.contains("speed") || name.toLowerCase().contains("swift")) return PotionEffectType.SPEED;
+		if(name.contains("slow")) return PotionEffectType.SLOW;
+		if(name.contains("haste")) return PotionEffectType.FAST_DIGGING;
+		if(name.contains("fat")) return PotionEffectType.SLOW_DIGGING;
+		if(name.contains("hung")) return PotionEffectType.HUNGER;
+		if(name.contains("resist")) return PotionEffectType.DAMAGE_RESISTANCE;
+		if(name.contains("blind")) return PotionEffectType.BLINDNESS;
+		if(name.contains("confus") || name.toLowerCase().contains("naus")) return PotionEffectType.CONFUSION;
+		if(name.contains("fire")) return PotionEffectType.FIRE_RESISTANCE;
+		if(name.contains("jump")) return PotionEffectType.JUMP;
+		if(name.contains("water") || name.toLowerCase().contains("aqua")) return PotionEffectType.WATER_BREATHING;
+		if(name.contains("invis")) return PotionEffectType.INVISIBILITY;
+		if(name.contains("night")) return PotionEffectType.NIGHT_VISION;
+		if(name.contains("wither")) return PotionEffectType.WITHER;
 		return null;
 	}
 
