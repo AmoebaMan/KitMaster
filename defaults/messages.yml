@@ -1,0 +1,44 @@
+##
+## List of messages for KitMaster to draw on when performing kit operations.  Use chat codes with the ampersand ('&').
+##
+## IMPORTANT: YAML is OCD about characters.  If you want to start a line with a macro (like %kit% or %player%), you
+## MUST bookend the line with single quotes.  If you do this, any single quote within the line must become TWO single
+## quotes (not a double quote).
+##
+
+prefix: &o
+take_kit:
+    perms:
+        fail_sign: 'You can''t take %kit% from signs'
+        fail_cmd: 'You can''t take %kit% by command'
+        fail_all: 'You can''t take %kit%'
+        fail_parent_sign: 'You can''t take %parent% kits from signs'
+        fail_parent_cmd: 'You can''t take %parent% kits by command'
+        fail_parent_all: 'You can''t take %parent% kits'
+    timeout:
+        fail_generic: 'You need to wait %time% before taking %kit% again'
+        fail_parent: 'You need to wait %time% before taking a %parent% kit again'
+        fail_su_generic: 'You can only take %kit% once'
+        fail_su_parent: 'You can only take a %kit% once'
+    econ:
+        fail_cash: 'You need %amount% %currency% to take %kit%'
+    misc:
+        fail_restrict: 'You''ve taken a kit that doesn''t allow other kits'
+    success:
+        generic: 'You''ve taken %kit%'
+        given:
+            giver: '%player% has been given %kit%'
+            receiver: 'You''ve been given %kit%'
+make_sign:
+    fail_badkit: 'That kit does not exist'
+    fail_perms: 'You don''t have permission to place kit selection signs'
+    success: 'Placed selection sign for %kit%'
+break_sign:
+    fail_perms: 'You don''t have permission to break kit selection signs'
+    success: 'Removed selection sign'
+update:
+    fail_meta: 'KitMaster - failed to check for updates due to bad code, contact the developer immediately'
+    fail_connect: 'KitMaster - failed to connect to BukkitDev while trying to check for updates'
+    fail_download: 'KitMaster - failed to download an update from BukkitDev'
+    success: 'KitMaster - downloaded update from BukkitDev'
+    update_available: 'KitMaster - an update is available on BukkitDev'

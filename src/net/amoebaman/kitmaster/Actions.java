@@ -8,12 +8,12 @@ import net.amoebaman.kitmaster.enums.GiveKitResult;
 import net.amoebaman.kitmaster.enums.PermsResult;
 import net.amoebaman.kitmaster.handlers.HistoryHandler;
 import net.amoebaman.kitmaster.handlers.KitHandler;
+import net.amoebaman.kitmaster.handlers.MessageHandler;
 import net.amoebaman.kitmaster.handlers.TimeStampHandler;
 import net.amoebaman.kitmaster.objects.Kit;
 import net.amoebaman.kitmaster.utilities.ClearKitsEvent;
 import net.amoebaman.kitmaster.utilities.GiveKitEvent;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 
@@ -61,32 +61,32 @@ public class Actions {
 			switch(perms){
 				case COMMAND_ONLY:
 					if(context == GiveKitContext.SIGN_TAKEN){
-						player.sendMessage(ChatColor.ITALIC + "You can't take the " + kit.name + " kit from signs");
+						player.sendMessage(MessageHandler.getMessage("take_kit.perms.fail_sign", kit));
 						return GiveKitResult.FAIL_NO_PERMS;
 					}
 					break;
 				case SIGN_ONLY:
 					if(context == GiveKitContext.COMMAND_TAKEN){
-						player.sendMessage(ChatColor.ITALIC + "You can't take the " + kit.name + " kit by command");
+						player.sendMessage(MessageHandler.getMessage("take_kit.perms.fail_cmd", kit));
 						return GiveKitResult.FAIL_NO_PERMS;
 					}
 					break;
 				case INHERIT_COMMAND_ONLY:
 					if(context == GiveKitContext.SIGN_TAKEN){
-						player.sendMessage(ChatColor.ITALIC + "You can't take " + kit.getParent().name + " kits from signs");
+						player.sendMessage(MessageHandler.getMessage("take_kit.perms.fail_parent_sign", kit));
 						return GiveKitResult.FAIL_NO_PERMS;
 					}
 				case INHERIT_SIGN_ONLY:
 					if(context == GiveKitContext.COMMAND_TAKEN){
-						player.sendMessage(ChatColor.ITALIC + "You can't take " + kit.getParent().name + " kits by command");
+						player.sendMessage(MessageHandler.getMessage("take_kit.perms.fail_parent_cmd", kit));
 						return GiveKitResult.FAIL_NO_PERMS;
 					}
 					break;
 				case NONE:
-					player.sendMessage(ChatColor.ITALIC + "You can't take the " + kit.name + " kit");
+					player.sendMessage(MessageHandler.getMessage("take_kit.perms.fail_all", kit));
 					return GiveKitResult.FAIL_NO_PERMS;
 				case INHERIT_NONE:
-					player.sendMessage(ChatColor.ITALIC + "You can't take " + kit.getParent().name + " kits");
+					player.sendMessage(MessageHandler.getMessage("take_kit.perms.fail_parent_all", kit));
 					return GiveKitResult.FAIL_NO_PERMS;
 				default:
 			}
@@ -110,10 +110,10 @@ public class Actions {
 				}
 				switch(TimeStampHandler.timeoutCheck(player, parentKit)){
 					case FAIL_TIMEOUT:
-						player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutRemaining(player, parentKit) + " before using a " + parentKit.name + " kit");
+						player.sendMessage(MessageHandler.getMessage("take_kit.timeout.fail_parent", kit).replace("%time%", TimeStampHandler.timeoutRemaining(player, parentKit)));
 						return GiveKitResult.FAIL_TIMEOUT;
 					case FAIL_SINGLE_USE:
-						player.sendMessage(ChatColor.ITALIC + "You can only use a " + parentKit.name + " kit once");
+						player.sendMessage(MessageHandler.getMessage("take_kit.timeout.fail_su_parent", kit));
 						return GiveKitResult.FAIL_SINGLE_USE;
 					default: }
 			}
@@ -128,10 +128,10 @@ public class Actions {
 			}
 			switch(TimeStampHandler.timeoutCheck(player, kit)){
 				case FAIL_TIMEOUT:
-					player.sendMessage(ChatColor.ITALIC + "You need to wait " + TimeStampHandler.timeoutRemaining(player, kit) + " before using the " + kit.name + " kit");
+					player.sendMessage(MessageHandler.getMessage("take_kit.timeout.fail_generic", kit).replace("%time%", TimeStampHandler.timeoutRemaining(player, kit)));
 					return GiveKitResult.FAIL_TIMEOUT;
 				case FAIL_SINGLE_USE:
-					player.sendMessage(ChatColor.ITALIC + "You can only use the " + kit.name + " kit once");
+					player.sendMessage(MessageHandler.getMessage("take_kit.timeout.fail_su_generic", kit));
 					return GiveKitResult.FAIL_SINGLE_USE;
 				default: }
 		}
@@ -141,7 +141,7 @@ public class Actions {
 		 */
 		if(KitMaster.getEcon() != null)
 			if(KitMaster.getEcon().getBalance(player.getName()) < kit.doubleAttribute(Attribute.COST) && !player.hasPermission("kitmaster.nocharge") && !player.hasPermission("kitmaster.nocharge." + kit.name)){
-				player.sendMessage(ChatColor.ITALIC + "You need " + kit.doubleAttribute(Attribute.COST) + " " + KitMaster.getEcon().currencyNameSingular() + " to take the " + kit.name + " kit");
+				player.sendMessage(MessageHandler.getMessage("take_kit.econ.fail_cash", kit).replace("%amount%", "" + kit.doubleAttribute(Attribute.COST)).replace("%currency%", KitMaster.getEcon().currencyNamePlural()));
 				return GiveKitResult.FAIL_COST;
 			}
 		/*
@@ -151,7 +151,7 @@ public class Actions {
 			KitMaster.logger().info("Checking history: " + HistoryHandler.getHistory(player));
 		for(Kit other : HistoryHandler.getHistory(player))
 			if(other.booleanAttribute(Attribute.RESTRICT_KITS)){
-				player.sendMessage(ChatColor.ITALIC + "You've already taken a kit that doesn't allow you to take further kits");
+				player.sendMessage(MessageHandler.getMessage("take_kit.misc.fail_restrict"));
 				return GiveKitResult.FAIL_RESTRICTED;
 			}
 		/*
@@ -209,9 +209,9 @@ public class Actions {
 		 * Notify the player of their good fortune
 		 */
 		if(context == GiveKitContext.COMMAND_TAKEN || context == GiveKitContext.SIGN_TAKEN)
-			player.sendMessage(ChatColor.ITALIC + kit.name + " kit taken");
+			player.sendMessage(MessageHandler.getMessage("take_kit.success.generic", kit));
 		if(context == GiveKitContext.COMMAND_GIVEN || context == GiveKitContext.PLUGIN_GIVEN || context == GiveKitContext.PLUGIN_GIVEN_OVERRIDE)
-			player.sendMessage(ChatColor.ITALIC + "You were given the " + kit.name + " kit");
+			player.sendMessage(MessageHandler.getMessage("take_kit.success.given.receiver", kit));
 		/*
 		 * Return the success of the mission
 		 */

@@ -29,6 +29,7 @@ import net.amoebaman.kitmaster.handlers.FireworkEffectHandler;
 import net.amoebaman.kitmaster.handlers.FireworkHandler;
 import net.amoebaman.kitmaster.handlers.HistoryHandler;
 import net.amoebaman.kitmaster.handlers.KitHandler;
+import net.amoebaman.kitmaster.handlers.MessageHandler;
 import net.amoebaman.kitmaster.handlers.SignHandler;
 import net.amoebaman.kitmaster.handlers.TimeStampHandler;
 import net.amoebaman.kitmaster.objects.Kit;
@@ -50,7 +51,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 	public static final String MAIN_DIR = "plugins/KitMaster";
 	public static final String KITS_DIR = MAIN_DIR + "/kits";
 	public static final String DATA_DIR = MAIN_DIR + "/data";
-	private static File CONFIG_FILE, KITS_FILE, CUSTOM_DATA_FILE;
+	private static File CONFIG_FILE, KITS_FILE, CUSTOM_DATA_FILE, MESSAGES_FILE;
 	private static File SIGNS_FILE, TIMESTAMPS_FILE, HISTORY_FILE;
 	
 	private static boolean VAULT_ENABLED;
@@ -75,6 +76,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 		CONFIG_FILE = getConfigFile("config");
 		CUSTOM_DATA_FILE = getConfigFile("custom-data");
 		KITS_FILE = getConfigFile("kits");
+		MESSAGES_FILE = getConfigFile("messages");
 		SIGNS_FILE = getConfigFile("data/signs");
 		TIMESTAMPS_FILE = getConfigFile("data/timestamps");
 		HISTORY_FILE = getConfigFile("data/history");
@@ -167,6 +169,14 @@ public class KitMaster extends JavaPlugin implements Listener{
 		}	
 		catch (Exception e) {
 			logger().severe("Error while loading kits");
+			e.printStackTrace();
+		}
+		
+		try{
+			MessageHandler.yaml = YamlConfiguration.loadConfiguration(MESSAGES_FILE);
+		}
+		catch(Exception e){
+			logger().severe("Error while loading messages");
 			e.printStackTrace();
 		}
 	}

@@ -10,6 +10,7 @@ import net.amoebaman.kitmaster.enums.GiveKitContext;
 import net.amoebaman.kitmaster.enums.GiveKitResult;
 import net.amoebaman.kitmaster.handlers.HistoryHandler;
 import net.amoebaman.kitmaster.handlers.KitHandler;
+import net.amoebaman.kitmaster.handlers.MessageHandler;
 import net.amoebaman.kitmaster.handlers.SignHandler;
 import net.amoebaman.kitmaster.handlers.TimeStampHandler;
 import net.amoebaman.kitmaster.objects.Kit;
@@ -63,12 +64,12 @@ public class KitMasterEventHandler implements Listener{
 		if(event.getLine(0).equalsIgnoreCase("kit")){
 			if(!player.hasPermission("kitmaster.createsign")){
 				block.breakNaturally();
-				player.sendMessage(ChatColor.ITALIC + "You do not have permission to create kit selection signs");
+				player.sendMessage(MessageHandler.getMessage("make_sign.fail_perms"));
 				return;
 			}
 			if(!KitHandler.isKit(event.getLine(1))){
 				block.breakNaturally();
-				player.sendMessage(ChatColor.ITALIC + "That kit does not exist");
+				player.sendMessage(MessageHandler.getMessage("make_sign.fail_badkit"));
 				return;
 			}
 			Kit kit = KitHandler.getKit(event.getLine(1));
@@ -77,7 +78,7 @@ public class KitMasterEventHandler implements Listener{
 			event.setLine(1, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_2")).replace("%kit%", kit.name));
 			event.setLine(2, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_3")).replace("%kit%", kit.name));
 			event.setLine(3, ChatColor.translateAlternateColorCodes('&', KitMaster.config().getString("kitSelectionSignText.line_4")).replace("%kit%", kit.name));
-			player.sendMessage(ChatColor.ITALIC + "Kit select sign registered");
+			player.sendMessage(MessageHandler.getMessage("make_sign.success", kit));
 		}
 	}
 	
@@ -87,11 +88,11 @@ public class KitMasterEventHandler implements Listener{
 			Player player = event.getPlayer();
 			if(!player.hasPermission("kitmaster.createsign")){
 				event.setCancelled(true);
-				player.sendMessage(ChatColor.ITALIC + "You do not have permission to break kit selection signs");
+				player.sendMessage(MessageHandler.getMessage("break_sign.fail_perms"));
 				return;
 			}
 			SignHandler.removeKitSign(event.getBlock().getLocation());
-			event.getPlayer().sendMessage(ChatColor.ITALIC + "Kit select sign unregistered");
+			event.getPlayer().sendMessage(MessageHandler.getMessage("break_sign.success"));
 		}
 	}
 	
@@ -166,15 +167,15 @@ public class KitMasterEventHandler implements Listener{
 			switch(KitMaster.getUpdate().getResult()){
 				case FAIL_BADID:
 				case FAIL_NOVERSION:
-					player.sendMessage(ChatColor.ITALIC + "KitMaster: Failed to check for updates due to bad code, contact the developer immediately"); break;
+					player.sendMessage(MessageHandler.getMessage("update.fail_meta")); break;
 				case FAIL_DBO:
-					player.sendMessage(ChatColor.ITALIC + "KitMaster: Failed to connect to BukkitDev while trying to check for updates"); break;
+					player.sendMessage(MessageHandler.getMessage("update.fail_connect")); break;
 				case FAIL_DOWNLOAD:
-					player.sendMessage(ChatColor.ITALIC + "KitMaster: Failed to download an update from BukkitDev"); break;
+					player.sendMessage(MessageHandler.getMessage("update.fail_download")); break;
 				case SUCCESS:
-					player.sendMessage(ChatColor.ITALIC + ""); break;
+					player.sendMessage(MessageHandler.getMessage("update.success")); break;
 				case UPDATE_AVAILABLE:
-					player.sendMessage(ChatColor.ITALIC + "KitMaster: Version " + KitMaster.getUpdate().getLatestGameVersion().replace("v", "") + " is available on BukkitDev, you currently have version " + KitMaster.plugin().getDescription().getVersion()); break;
+					player.sendMessage(MessageHandler.getMessage("update.update_available")); break;
 				default: }
 		}
 	}
