@@ -4,7 +4,7 @@
 clearKits:
 
   # Whether kits should be cleared when the player dies
-  onDeath: true'
+  onDeath: true
   
   # Whether kits should be cleared when the player leaves the server
   onDisconnect: false
