@@ -509,9 +509,21 @@ public class Updater {
 	 * @return true if Updater should consider the remote version an update, false if not.
 	 */
 	public boolean shouldUpdate(String localVersion, String remoteVersion) {
-		return !localVersion.equalsIgnoreCase(remoteVersion);
+		String[] localSplit = localVersion.split("\\."), remoteSplit = remoteVersion.split("\\.");
+		try{
+			for(int i = 0; i < localSplit.length && i < remoteSplit.length; i++){
+				if(Integer.parseInt(remoteSplit[i]) > Integer.parseInt(localSplit[i]))
+					return true;
+				else if(Integer.parseInt(remoteSplit[i]) < Integer.parseInt(localSplit[i]))
+					return false;
+			}
+			return remoteSplit.length > localSplit.length;
+		}
+		catch(NumberFormatException nfe){
+			return false;
+		}
 	}
-
+	
 	/**
 	 * Evaluate whether the version number is marked showing that it should not be updated by this program.
 	 *
