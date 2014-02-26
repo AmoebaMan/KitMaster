@@ -29,7 +29,7 @@ public class SignHandler{
 	}
 	
 	public static Kit getKitSign(Location loc){
-		String locStr = S_Loc.stringSave(loc);
+		String locStr = S_Loc.stringSave(loc, false);
 		if(KitMaster.isSQLRunning()){
 			ResultSet set = KitMaster.getSQL().executeQuery(SQLQueries.GET_SIGN_AT.replace(SQLQueries.LOCATION_MACRO, locStr));
 			return KitHandler.getKit(KitMaster.getSQL().getFirstResult(set, "kit", String.class));
@@ -40,16 +40,16 @@ public class SignHandler{
 	
 	public static void saveKitSign(Kit kit, Location loc){
 		if(KitMaster.isSQLRunning())
-			KitMaster.getSQL().executeCommand(SQLQueries.SET_SIGN_AT.replace(SQLQueries.LOCATION_MACRO, S_Loc.stringSave(loc)).replace(SQLQueries.KIT_MACRO, kit.name));
+			KitMaster.getSQL().executeCommand(SQLQueries.SET_SIGN_AT.replace(SQLQueries.LOCATION_MACRO, S_Loc.stringSave(loc, false)).replace(SQLQueries.KIT_MACRO, kit.name));
 		else
-			yamlConfig.set(S_Loc.stringSave(loc), kit.name);
+			yamlConfig.set(S_Loc.stringSave(loc, false), kit.name);
 	}
 	
 	public static void removeKitSign(Location loc){
 		if(KitMaster.isSQLRunning())
-			KitMaster.getSQL().executeCommand(SQLQueries.REMOVE_SIGN_AT.replace(SQLQueries.LOCATION_MACRO, S_Loc.stringSave(loc)));
+			KitMaster.getSQL().executeCommand(SQLQueries.REMOVE_SIGN_AT.replace(SQLQueries.LOCATION_MACRO, S_Loc.stringSave(loc, false)));
 			else
-				yamlConfig.set(S_Loc.stringSave(loc), null);
+				yamlConfig.set(S_Loc.stringSave(loc, false), null);
 	}
 	
 	public static boolean isKitSign(Location loc){
