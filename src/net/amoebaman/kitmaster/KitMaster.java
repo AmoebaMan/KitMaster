@@ -7,19 +7,6 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginLogger;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-
 import net.amoebaman.kitmaster.enums.Attribute;
 import net.amoebaman.kitmaster.enums.ClearKitsContext;
 import net.amoebaman.kitmaster.handlers.BookHandler;
@@ -35,15 +22,28 @@ import net.amoebaman.kitmaster.handlers.TimeStampHandler;
 import net.amoebaman.kitmaster.objects.Kit;
 import net.amoebaman.kitmaster.sql.SQLHandler;
 import net.amoebaman.kitmaster.sql.SQLQueries;
-import net.amoebaman.kitmaster.utilities.Metrics;
-import net.amoebaman.kitmaster.utilities.Updater;
-import net.amoebaman.kitmaster.utilities.Updater.UpdateType;
+import net.amoebaman.utils.Updater;
+import net.amoebaman.utils.Updater.UpdateType;
+import net.amoebaman.utils.MetricsLite;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginLogger;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+
 //TODO Javadoc for EVERYTHING
 
-public class KitMaster extends JavaPlugin implements Listener{
+public class KitMaster extends JavaPlugin implements Listener {
 	
 	private static int TASK_ID;
 	
@@ -61,14 +61,13 @@ public class KitMaster extends JavaPlugin implements Listener{
 	private static boolean UPDATE_ENABLED;
 	private static Updater UPDATE;
 	
-	private static Metrics METRICS;
+	private static MetricsLite METRICS;
 	
 	public final static boolean DEBUG_PERMS = false;
 	public final static boolean DEBUG_KITS = false;
 	
-	
 	@Override
-	public void onEnable(){
+	public void onEnable() {
 		new File(MAIN_DIR).mkdirs();
 		new File(KITS_DIR).mkdirs();
 		new File(DATA_DIR).mkdirs();
@@ -81,15 +80,15 @@ public class KitMaster extends JavaPlugin implements Listener{
 		TIMESTAMPS_FILE = getConfigFile("data/timestamps");
 		HISTORY_FILE = getConfigFile("data/history");
 		
-		try{
+		try {
 			reloadKits();
 			
-			if(getConfig().getBoolean("mysql.use-mysql"))
+			if (getConfig().getBoolean("mysql.use-mysql"))
 				SQL = new SQLHandler(getConfig().getString("mysql.url", "localhost"), getConfig().getString("mysql.username", "root"), getConfig().getString("mysql.password", "raglfragl"));
 			
-			if(isSQLRunning())
+			if (isSQLRunning())
 				logger().info("Will retreive data from MySQL server as needed");
-			else{
+			else {
 				logger().info("Loading data from flat files...");
 				SignHandler.load(SIGNS_FILE);
 				logger().info("Loaded kit selection sign locations from " + SIGNS_FILE.getPath());
@@ -99,7 +98,9 @@ public class KitMaster extends JavaPlugin implements Listener{
 				logger().info("Loaded player kit history from " + HISTORY_FILE.getPath());
 			}
 		}
-		catch(Exception e){e.printStackTrace();}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		runUpdater();
 		startMetrics();
@@ -107,27 +108,30 @@ public class KitMaster extends JavaPlugin implements Listener{
 		
 		KitMasterEventHandler.init(this);
 		KitMasterCommandHandler.init(this);
-//		TASK_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new InfiniteEffects(), 15, 15);
+		// TASK_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new
+		// InfiniteEffects(), 15, 15);
 	}
 	
 	@Override
 	public void onDisable() {
 		Bukkit.getScheduler().cancelTask(TASK_ID);
-		if(getConfig().getBoolean("clearKits.onDisable", true))
-			for(OfflinePlayer player : HistoryHandler.getPlayers())
-				if(player instanceof Player)
+		if (getConfig().getBoolean("clearKits.onDisable", true))
+			for (OfflinePlayer player : HistoryHandler.getPlayers())
+				if (player instanceof Player)
 					Actions.clearAll((Player) player, true, ClearKitsContext.PLUGIN_DISABLE);
-		if(!isSQLRunning()){
-			try{
+		if (!isSQLRunning()) {
+			try {
 				SignHandler.save(SIGNS_FILE);
 				TimeStampHandler.save(TIMESTAMPS_FILE);
 				HistoryHandler.save(HISTORY_FILE);
 			}
-			catch(Exception e){ e.printStackTrace(); }
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	public static void reloadKits(){
+	public static void reloadKits() {
 		
 		try {
 			plugin().getConfig().load(CONFIG_FILE);
@@ -140,7 +144,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 			e.printStackTrace();
 		}
 		
-		try{
+		try {
 			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(CUSTOM_DATA_FILE);
 			
 			BookHandler.yaml = yaml.isConfigurationSection("books") ? yaml.getConfigurationSection("books") : yaml.createSection("books");
@@ -151,71 +155,84 @@ public class KitMaster extends JavaPlugin implements Listener{
 			
 			logger().info("Loaded custom data from " + CUSTOM_DATA_FILE.getPath());
 		}
-		catch(Exception e){
+		catch (Exception e) {
 			logger().severe("Error while loading custom data from " + CUSTOM_DATA_FILE.getPath());
 			e.printStackTrace();
 		}
 		
-		try{
+		try {
 			KitHandler.loadKits(KITS_FILE);
 			logger().info("Loaded all kit files from " + KITS_FILE.getPath());
 			
 			KitHandler.loadKits(new File(KITS_DIR));
 			logger().info("Loaded all kit files from " + KITS_DIR);
 			
-			if(isSQLRunning())
-				for(Kit kit : KitHandler.getKits())
+			if (isSQLRunning())
+				for (Kit kit : KitHandler.getKits())
 					getSQL().executeCommand(SQLQueries.ADD_KIT_TO_TIMESTAMP_TABLE.replace(SQLQueries.KIT_MACRO, kit.name));
-		}	
+		}
 		catch (Exception e) {
 			logger().severe("Error while loading kits");
 			e.printStackTrace();
 		}
 		
-		try{
+		try {
 			MessageHandler.yaml = YamlConfiguration.loadConfiguration(MESSAGES_FILE);
 		}
-		catch(Exception e){
+		catch (Exception e) {
 			logger().severe("Error while loading messages");
 			e.printStackTrace();
 		}
 	}
 	
-	public static void saveCustomData(){
+	public static void saveCustomData() {
 		YamlConfiguration yaml = new YamlConfiguration();
 		yaml.createSection("books", BookHandler.yaml.getValues(true));
 		yaml.createSection("items", CustomItemHandler.yaml.getValues(true));
 		yaml.createSection("potions", CustomPotionHandler.yaml.getValues(true));
 		yaml.createSection("bursts", FireworkEffectHandler.yaml.getValues(true));
 		yaml.createSection("fireworks", FireworkHandler.yaml.getValues(true));
-		try{
+		try {
 			yaml.save(CUSTOM_DATA_FILE);
 		}
-		catch(Exception e){
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static Plugin plugin(){ return Bukkit.getPluginManager().getPlugin("KitMaster"); }
-	public static FileConfiguration config(){ return plugin().getConfig(); }
-	public static PluginLogger logger(){ return new PluginLogger(plugin()); }
+	public static Plugin plugin() {
+		return Bukkit.getPluginManager().getPlugin("KitMaster");
+	}
 	
-	public static boolean isSQLRunning(){ return SQL != null && SQL.isConnected(); }
-	public static SQLHandler getSQL(){ return SQL; }
+	public static FileConfiguration config() {
+		return plugin().getConfig();
+	}
 	
-	private File getConfigFile(String name){
-		try{
+	public static PluginLogger logger() {
+		return new PluginLogger(plugin());
+	}
+	
+	public static boolean isSQLRunning() {
+		return SQL != null && SQL.isConnected();
+	}
+	
+	public static SQLHandler getSQL() {
+		return SQL;
+	}
+	
+	private File getConfigFile(String name) {
+		try {
 			File file = new File(plugin().getDataFolder().getPath() + File.separator + name + ".yml");
-			if(!file.exists()){
+			if (!file.exists()) {
 				plugin().getLogger().info("plugins/KitMaster/" + name + ".yml was not found");
 				plugin().getLogger().info("Writing new file with default contents");
 				file.createNewFile();
 				file.setWritable(true);
 				InputStream preset = KitMaster.class.getResourceAsStream("/defaults/" + name + ".yml");
-				if(preset != null){
+				if (preset != null) {
 					BufferedReader reader = new BufferedReader(new InputStreamReader(preset));
 					BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-					while(reader.ready()){
+					while (reader.ready()) {
 						writer.write(reader.readLine());
 						writer.newLine();
 					}
@@ -225,20 +242,20 @@ public class KitMaster extends JavaPlugin implements Listener{
 			}
 			return file;
 		}
-		catch(Exception e){
+		catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 	
-	private void runUpdater(){
+	private void runUpdater() {
 		UPDATE_ENABLED = getConfig().getBoolean("update.checkForUpdate");
-		if(UPDATE_ENABLED){
-			try{
+		if (UPDATE_ENABLED) {
+			try {
 				getLogger().info("Checking for updates...");
 				UpdateType type = getConfig().getBoolean("update.autoInstallUpdate") ? UpdateType.DEFAULT : UpdateType.NO_DOWNLOAD;
 				UPDATE = new Updater(this, 48658, this.getFile(), type, true);
-				switch(UPDATE.getResult()){
+				switch (UPDATE.getResult()) {
 					case FAIL_BADID:
 					case FAIL_NOVERSION:
 						getLogger().severe("Failed to check for updates due to bad code.  Contact the developer: " + UPDATE.getResult().name());
@@ -252,59 +269,74 @@ public class KitMaster extends JavaPlugin implements Listener{
 					case UPDATE_AVAILABLE:
 						getLogger().warning("An update is available for download on BukkitDev.");
 						break;
-					default: }
+					default:
+				}
 			}
-			catch(Exception e){
+			catch (Exception e) {
 				getLogger().severe("Error occurred while trying to update");
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	public static boolean isUpdateEnabled(){ return UPDATE_ENABLED; }
-	public static Updater getUpdate(){ return UPDATE; }
-	
-	private void startMetrics(){
-		try{
-			METRICS = new Metrics(this);
-			METRICS.start();
-		}
-		catch(Exception e){ e.printStackTrace(); }
+	public static boolean isUpdateEnabled() {
+		return UPDATE_ENABLED;
 	}
 	
-	private void hookVault(){
+	public static Updater getUpdate() {
+		return UPDATE;
+	}
+	
+	private void startMetrics() {
+		try {
+			METRICS = new MetricsLite(this);
+			METRICS.start();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void hookVault() {
 		VAULT_ENABLED = Bukkit.getPluginManager().isPluginEnabled("Vault");
-		if(VAULT_ENABLED){
+		if (VAULT_ENABLED) {
 			RegisteredServiceProvider<Permission> tempPerm = Bukkit.getServicesManager().getRegistration(Permission.class);
-			if(tempPerm != null){
+			if (tempPerm != null) {
 				PERMISSIONS = tempPerm.getProvider();
-				if(PERMISSIONS != null)
+				if (PERMISSIONS != null)
 					logger().info("Hooked into Permissions manager: " + PERMISSIONS.getName());
 			}
 			RegisteredServiceProvider<Economy> tempEcon = Bukkit.getServicesManager().getRegistration(Economy.class);
-			if(tempEcon != null){
+			if (tempEcon != null) {
 				ECONOMY = tempEcon.getProvider();
-				if(ECONOMY != null)
+				if (ECONOMY != null)
 					logger().info("Hooked into Economy manager: " + ECONOMY.getName());
 			}
 		}
 	}
 	
-	public static boolean isVaultEnabled(){ return VAULT_ENABLED; }
-	public static Permission getPerms(){ return PERMISSIONS; }
-	public static Economy getEcon(){ return ECONOMY; }
+	public static boolean isVaultEnabled() {
+		return VAULT_ENABLED;
+	}
+	
+	public static Permission getPerms() {
+		return PERMISSIONS;
+	}
+	
+	public static Economy getEcon() {
+		return ECONOMY;
+	}
 	
 	@SuppressWarnings("unused")
-    private static class InfiniteEffects implements Runnable{
+	private static class InfiniteEffects implements Runnable {
 		public void run() {
-			for(World world : Bukkit.getWorlds())
-				for(Player player : world.getPlayers())
-					for(Kit kit : HistoryHandler.getHistory(player))
-						if(kit != null && kit.booleanAttribute(Attribute.INFINITE_EFFECTS))
-							for(PotionEffect effect : kit.effects)
+			for (World world : Bukkit.getWorlds())
+				for (Player player : world.getPlayers())
+					for (Kit kit : HistoryHandler.getHistory(player))
+						if (kit != null && kit.booleanAttribute(Attribute.INFINITE_EFFECTS))
+							for (PotionEffect effect : kit.effects)
 								player.addPotionEffect(effect, true);
 		}
 	}
-	
 	
 }

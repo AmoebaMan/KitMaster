@@ -38,36 +38,35 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
-
-public class KitMasterEventHandler implements Listener{
+public class KitMasterEventHandler implements Listener {
 	
-	protected static void init(KitMaster plugin){
+	protected static void init(KitMaster plugin) {
 		Bukkit.getPluginManager().registerEvents(new KitMasterEventHandler(), plugin);
 	}
 	
 	@EventHandler
-	public void kitSelectionFromSigns(PlayerInteractEvent event){
-		if(event.getAction() == Action.LEFT_CLICK_BLOCK){
+	public void kitSelectionFromSigns(PlayerInteractEvent event) {
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			Kit kit = SignHandler.getKitSign(event.getClickedBlock().getLocation());
-			if(kit != null){
+			if (kit != null) {
 				GiveKitResult result = Actions.giveKit(event.getPlayer(), kit, GiveKitContext.SIGN_TAKEN);
-				if(KitMaster.DEBUG_KITS)
+				if (KitMaster.DEBUG_KITS)
 					KitMaster.logger().info("Result: " + result.name());
 			}
 		}
 	}
 	
 	@EventHandler
-	public void createKitSelectionSigns(SignChangeEvent event){
+	public void createKitSelectionSigns(SignChangeEvent event) {
 		Player player = event.getPlayer();
 		Block block = event.getBlock();
-		if(event.getLine(0).equalsIgnoreCase("kit")){
-			if(!player.hasPermission("kitmaster.createsign")){
+		if (event.getLine(0).equalsIgnoreCase("kit")) {
+			if (!player.hasPermission("kitmaster.createsign")) {
 				block.breakNaturally();
 				player.sendMessage(MessageHandler.getMessage("make_sign.fail_perms"));
 				return;
 			}
-			if(!KitHandler.isKit(event.getLine(1))){
+			if (!KitHandler.isKit(event.getLine(1))) {
 				block.breakNaturally();
 				player.sendMessage(MessageHandler.getMessage("make_sign.fail_badkit"));
 				return;
@@ -83,10 +82,10 @@ public class KitMasterEventHandler implements Listener{
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void breakKitSelectionSigns(BlockBreakEvent event){
-		if(!event.isCancelled() && SignHandler.isKitSign(event.getBlock().getLocation())){
+	public void breakKitSelectionSigns(BlockBreakEvent event) {
+		if (!event.isCancelled() && SignHandler.isKitSign(event.getBlock().getLocation())) {
 			Player player = event.getPlayer();
-			if(!player.hasPermission("kitmaster.createsign")){
+			if (!player.hasPermission("kitmaster.createsign")) {
 				event.setCancelled(true);
 				player.sendMessage(MessageHandler.getMessage("break_sign.fail_perms"));
 				return;
@@ -97,48 +96,51 @@ public class KitMasterEventHandler implements Listener{
 	}
 	
 	@EventHandler
-	public void giveKitsOnRespawn(PlayerRespawnEvent event){
+	public void giveKitsOnRespawn(PlayerRespawnEvent event) {
 		final Player player = event.getPlayer();
 		Kit respawnKit = null;
-		for(Kit kit : KitHandler.getKits())
-			if(player.isPermissionSet("kitmaster.respawn." + kit.name) && player.hasPermission("kitmaster.respawn." + kit.name)){
+		for (Kit kit : KitHandler.getKits())
+			if (player.isPermissionSet("kitmaster.respawn." + kit.name) && player.hasPermission("kitmaster.respawn." + kit.name)) {
 				respawnKit = kit.applyParentAttributes();
 				break;
 			}
-		if(respawnKit != null){
+		if (respawnKit != null) {
 			final Kit fRespawnKit = respawnKit.clone();
-			Bukkit.getScheduler().scheduleSyncDelayedTask(KitMaster.plugin(), new Runnable(){ public void run(){
-				Actions.giveKit(player, fRespawnKit, GiveKitContext.PLUGIN_GIVEN_OVERRIDE);
-			}});
+			Bukkit.getScheduler().scheduleSyncDelayedTask(KitMaster.plugin(), new Runnable() {
+				public void run() {
+					Actions.giveKit(player, fRespawnKit, GiveKitContext.PLUGIN_GIVEN_OVERRIDE);
+				}
+			});
 		}
 	}
 	
 	@EventHandler
-	public void clearKitsWhenPlayerDies(PlayerDeathEvent event){
-		for(Kit kit : KitHandler.getKits())
-			if(kit.booleanAttribute(Attribute.SINGLE_USE_LIFE)){
+	public void clearKitsWhenPlayerDies(PlayerDeathEvent event) {
+		for (Kit kit : KitHandler.getKits())
+			if (kit.booleanAttribute(Attribute.SINGLE_USE_LIFE)) {
 				TimeStampHandler.clearTimeStamp(event.getEntity(), kit);
-				if(kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT))
+				if (kit.booleanAttribute(Attribute.GLOBAL_TIMEOUT))
 					TimeStampHandler.clearTimeStamp(null, kit);
 			}
-		if(KitMaster.config().getBoolean("clearKits.onDeath", true))
+		if (KitMaster.config().getBoolean("clearKits.onDeath", true))
 			Actions.clearAll(event.getEntity(), true, ClearKitsContext.PLAYER_DEATH);
 	}
 	
 	@EventHandler
-	public void removeItemDropsOnDeath(PlayerDeathEvent event){
-		for(Kit kit : HistoryHandler.getHistory(event.getEntity()))
+	public void removeItemDropsOnDeath(PlayerDeathEvent event) {
+		for (Kit kit : HistoryHandler.getHistory(event.getEntity()))
 			/*
 			 * If the player has a kit that clears death drops
 			 */
-			if(kit.booleanAttribute(Attribute.RESTRICT_DEATH_DROPS)){
+			if (kit.booleanAttribute(Attribute.RESTRICT_DEATH_DROPS)) {
 				List<ItemStack> toRemove = new ArrayList<ItemStack>();
 				/*
-				 * Only look for similarity between drops and kit items, not quantity
+				 * Only look for similarity between drops and kit items, not
+				 * quantity
 				 */
-				for(ItemStack drop : event.getDrops())
-					for(ItemStack item : kit.items)
-						if(ItemController.areSimilar(drop, item)){
+				for (ItemStack drop : event.getDrops())
+					for (ItemStack item : kit.items)
+						if (ItemController.areSimilar(drop, item)) {
 							toRemove.add(drop);
 							break;
 						}
@@ -150,95 +152,101 @@ public class KitMasterEventHandler implements Listener{
 	}
 	
 	@EventHandler
-	public void clearKitsWhenPlayerQuits(PlayerQuitEvent event){
-		if(KitMaster.config().getBoolean("clearKits.onDisconnect", true))
+	public void clearKitsWhenPlayerQuits(PlayerQuitEvent event) {
+		if (KitMaster.config().getBoolean("clearKits.onDisconnect", true))
 			Actions.clearAll(event.getPlayer(), true, ClearKitsContext.PLAYER_DISCONNECT);
 	}
 	
 	@EventHandler
-	public void clearKitsWhenPlayerIsKicked(PlayerKickEvent event){
+	public void clearKitsWhenPlayerIsKicked(PlayerKickEvent event) {
 		clearKitsWhenPlayerQuits(new PlayerQuitEvent(event.getPlayer(), "simulated"));
 	}
 	
 	@EventHandler
-	public void sendUpdateMessages(PlayerJoinEvent event){
+	public void sendUpdateMessages(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		if(player.hasPermission("kitmaster.*") && KitMaster.isUpdateEnabled()){
-			switch(KitMaster.getUpdate().getResult()){
+		if (player.hasPermission("kitmaster.*") && KitMaster.isUpdateEnabled()) {
+			switch (KitMaster.getUpdate().getResult()) {
 				case FAIL_BADID:
 				case FAIL_NOVERSION:
-					player.sendMessage(MessageHandler.getMessage("update.fail_meta")); break;
+					player.sendMessage(MessageHandler.getMessage("update.fail_meta"));
+					break;
 				case FAIL_DBO:
-					player.sendMessage(MessageHandler.getMessage("update.fail_connect")); break;
+					player.sendMessage(MessageHandler.getMessage("update.fail_connect"));
+					break;
 				case FAIL_DOWNLOAD:
-					player.sendMessage(MessageHandler.getMessage("update.fail_download")); break;
+					player.sendMessage(MessageHandler.getMessage("update.fail_download"));
+					break;
 				case SUCCESS:
-					player.sendMessage(MessageHandler.getMessage("update.success")); break;
+					player.sendMessage(MessageHandler.getMessage("update.success"));
+					break;
 				case UPDATE_AVAILABLE:
-					player.sendMessage(MessageHandler.getMessage("update.update_available")); break;
-				default: }
+					player.sendMessage(MessageHandler.getMessage("update.update_available"));
+					break;
+				default:
+			}
 		}
 	}
 	
 	@EventHandler
-	public void optionalShortcutKitCommands(PlayerCommandPreprocessEvent event){
-		if(KitMaster.config().getBoolean("shortcutKitCommands")){
+	public void optionalShortcutKitCommands(PlayerCommandPreprocessEvent event) {
+		if (KitMaster.config().getBoolean("shortcutKitCommands")) {
 			Kit target = KitHandler.getKit(event.getMessage().replace("/", ""));
-			if(target != null && target.name.equalsIgnoreCase(event.getMessage().replace("/", "")))
-				event.setMessage((event.getMessage().contains("/") ? "/" : "" ) + "kit " + target.name);
+			if (target != null && target.name.equalsIgnoreCase(event.getMessage().replace("/", "")))
+				event.setMessage((event.getMessage().contains("/") ? "/" : "") + "kit " + target.name);
 		}
 	}
 	
 	@EventHandler
-	public void restrictArmorRemoval(InventoryClickEvent event){
+	public void restrictArmorRemoval(InventoryClickEvent event) {
 		/*
 		 * If an armor slot was clicked
 		 */
-		if(event.getSlotType() == SlotType.ARMOR)
-			for(Kit kit : HistoryHandler.getHistory((Player) event.getWhoClicked()))
+		if (event.getSlotType() == SlotType.ARMOR)
+			for (Kit kit : HistoryHandler.getHistory((Player) event.getWhoClicked()))
 				/*
 				 * If the player has a kit that restricts armor
 				 */
-				if(kit.booleanAttribute(Attribute.RESTRICT_ARMOR))
-					for(ItemStack item : kit.items)
+				if (kit.booleanAttribute(Attribute.RESTRICT_ARMOR))
+					for (ItemStack item : kit.items)
 						/*
 						 * If that kit contains the armor being removed
 						 */
-						if(ItemController.areSimilar(item, event.getCurrentItem()))
+						if (ItemController.areSimilar(item, event.getCurrentItem()))
 							event.setCancelled(true);
 	}
 	
 	@EventHandler
-	public void restrictItemDrops(PlayerDropItemEvent event){
-		for(Kit kit : HistoryHandler.getHistory(event.getPlayer()))
+	public void restrictItemDrops(PlayerDropItemEvent event) {
+		for (Kit kit : HistoryHandler.getHistory(event.getPlayer()))
 			/*
 			 * If the player has a kit that restricts drops
 			 */
-			if(kit.booleanAttribute(Attribute.RESTRICT_DROPS))
-				for(ItemStack item : kit.items)
+			if (kit.booleanAttribute(Attribute.RESTRICT_DROPS))
+				for (ItemStack item : kit.items)
 					/*
 					 * If that kit contains the item being dropped
 					 */
-					if(ItemController.areSimilar(item, event.getItemDrop().getItemStack()))
+					if (ItemController.areSimilar(item, event.getItemDrop().getItemStack()))
 						event.setCancelled(true);
 	}
 	
 	@EventHandler
-	public void restrictItemPickups(PlayerPickupItemEvent event){
-		for(Kit kit : HistoryHandler.getHistory(event.getPlayer()))
+	public void restrictItemPickups(PlayerPickupItemEvent event) {
+		for (Kit kit : HistoryHandler.getHistory(event.getPlayer()))
 			/*
 			 * If the player has a kit that restricts pickups
 			 */
-			if(kit.booleanAttribute(Attribute.RESTRICT_PICKUPS)){
+			if (kit.booleanAttribute(Attribute.RESTRICT_PICKUPS)) {
 				/*
 				 * By default cancel it
 				 */
 				event.setCancelled(true);
-				for(ItemStack item : kit.items)
+				for (ItemStack item : kit.items)
 					/*
 					 * If the kit contains that item, allow it
 					 */
-					if(item != null && ItemController.areSimilar(item, event.getItem().getItemStack())){
+					if (item != null && ItemController.areSimilar(item, event.getItem().getItemStack())) {
 						event.setCancelled(false);
 						return;
 					}
