@@ -22,9 +22,9 @@ import net.amoebaman.kitmaster.handlers.TimeStampHandler;
 import net.amoebaman.kitmaster.objects.Kit;
 import net.amoebaman.kitmaster.sql.SQLHandler;
 import net.amoebaman.kitmaster.sql.SQLQueries;
-import net.amoebaman.utils.Updater;
-import net.amoebaman.utils.Updater.UpdateType;
-import net.amoebaman.utils.MetricsLite;
+import net.amoebaman.utils.plugin.MetricsLite;
+import net.amoebaman.utils.plugin.Updater;
+import net.amoebaman.utils.plugin.Updater.UpdateType;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
