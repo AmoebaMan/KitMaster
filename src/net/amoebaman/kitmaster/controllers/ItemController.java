@@ -107,7 +107,7 @@ public class ItemController {
 	public static Enchant parseEnchantment(String str) {
 		str = str.toLowerCase();
 		String[] split = str.split(":");
-		Enchantment enc = Enchantment.getByName(split[0]);
+		Enchantment enc = Enchantment.getByName(split[0].toUpperCase());
 		if(enc == null)
 			enc = matchEnchantment(split[0]);
 		if(enc == null)
@@ -481,28 +481,28 @@ public class ItemController {
 	 */
 	public static Enchantment matchEnchantment(String name){
 		name = name.toLowerCase();
-		if(name.toLowerCase().contains("fire") && name.toLowerCase().contains("prot")) return Enchantment.PROTECTION_FIRE;
-		if((name.toLowerCase().contains("exp") || name.toLowerCase().contains("blast")) && name.toLowerCase().contains("prot")) return Enchantment.PROTECTION_EXPLOSIONS;
-		if((name.toLowerCase().contains("arrow") || name.toLowerCase().contains("proj")) && name.toLowerCase().contains("prot")) return Enchantment.PROTECTION_PROJECTILE;
-		if(name.toLowerCase().contains("prot")) return Enchantment.PROTECTION_ENVIRONMENTAL;
-		if(name.toLowerCase().contains("fall")) return Enchantment.PROTECTION_FALL;
-		if(name.toLowerCase().contains("respiration")) return Enchantment.OXYGEN;
-		if(name.toLowerCase().contains("aqua")) return Enchantment.WATER_WORKER;
-		if(name.toLowerCase().contains("sharp")) return Enchantment.DAMAGE_ALL;
-		if(name.toLowerCase().contains("smite")) return Enchantment.DAMAGE_UNDEAD;
-		if(name.toLowerCase().contains("arth")) return Enchantment.DAMAGE_ARTHROPODS;
-		if(name.toLowerCase().contains("knockback")) return Enchantment.KNOCKBACK;
-		if(name.toLowerCase().contains("fire")) return Enchantment.FIRE_ASPECT;
-		if(name.toLowerCase().contains("loot")) return Enchantment.LOOT_BONUS_MOBS;
-		if(name.toLowerCase().contains("power")) return Enchantment.ARROW_DAMAGE;
-		if(name.toLowerCase().contains("punch")) return Enchantment.ARROW_KNOCKBACK;
-		if(name.toLowerCase().contains("flame")) return Enchantment.ARROW_FIRE;
-		if(name.toLowerCase().contains("infin")) return Enchantment.ARROW_INFINITE; 
-		if(name.toLowerCase().contains("dig") || name.toLowerCase().contains("eff")) return Enchantment.DIG_SPEED;
-		if(name.toLowerCase().contains("dura") || name.toLowerCase().contains("break")) return Enchantment.DURABILITY;
-		if(name.toLowerCase().contains("silk")) return Enchantment.SILK_TOUCH;
-		if(name.toLowerCase().contains("fort")) return Enchantment.LOOT_BONUS_BLOCKS;
-		if(name.toLowerCase().contains("thorn")) return Enchantment.THORNS;
+		if(name.contains("fire") && name.toLowerCase().contains("prot")) return Enchantment.PROTECTION_FIRE;
+		if((name.contains("exp") || name.toLowerCase().contains("blast")) && name.toLowerCase().contains("prot")) return Enchantment.PROTECTION_EXPLOSIONS;
+		if((name.contains("arrow") || name.toLowerCase().contains("proj")) && name.toLowerCase().contains("prot")) return Enchantment.PROTECTION_PROJECTILE;
+		if(name.contains("prot")) return Enchantment.PROTECTION_ENVIRONMENTAL;
+		if(name.contains("fall")) return Enchantment.PROTECTION_FALL;
+		if(name.contains("respiration")) return Enchantment.OXYGEN;
+		if(name.contains("aqua")) return Enchantment.WATER_WORKER;
+		if(name.contains("sharp")) return Enchantment.DAMAGE_ALL;
+		if(name.contains("smite")) return Enchantment.DAMAGE_UNDEAD;
+		if(name.contains("arth")) return Enchantment.DAMAGE_ARTHROPODS;
+		if(name.contains("knockback")) return Enchantment.KNOCKBACK;
+		if(name.contains("fire")) return Enchantment.FIRE_ASPECT;
+		if(name.contains("loot")) return Enchantment.LOOT_BONUS_MOBS;
+		if(name.contains("power")) return Enchantment.ARROW_DAMAGE;
+		if(name.contains("punch")) return Enchantment.ARROW_KNOCKBACK;
+		if(name.contains("flame")) return Enchantment.ARROW_FIRE;
+		if(name.contains("infin")) return Enchantment.ARROW_INFINITE; 
+		if(name.contains("dig") || name.toLowerCase().contains("eff")) return Enchantment.DIG_SPEED;
+		if(name.contains("dura") || name.toLowerCase().contains("break")) return Enchantment.DURABILITY;
+		if(name.contains("silk")) return Enchantment.SILK_TOUCH;
+		if(name.contains("fort")) return Enchantment.LOOT_BONUS_BLOCKS;
+		if(name.contains("thorn")) return Enchantment.THORNS;
 		return null;
 	}
 	
