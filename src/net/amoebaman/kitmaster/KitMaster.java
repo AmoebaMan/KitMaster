@@ -108,13 +108,13 @@ public class KitMaster extends JavaPlugin implements Listener {
 		
 		KitMasterEventHandler.init(this);
 		KitMasterCommandHandler.init(this);
-		// TASK_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new
-		// InfiniteEffects(), 15, 15);
+		TASK_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new InfiniteEffects(), 15, 15);
 	}
 	
 	@Override
 	public void onDisable() {
 		Bukkit.getScheduler().cancelTask(TASK_ID);
+		logger().info("Purged " + SignHandler.purgeAbsentees() + " absent kit signs");
 		if (getConfig().getBoolean("clearKits.onDisable", true))
 			for (OfflinePlayer player : HistoryHandler.getPlayers())
 				if (player instanceof Player)
@@ -327,7 +327,6 @@ public class KitMaster extends JavaPlugin implements Listener {
 		return ECONOMY;
 	}
 	
-	@SuppressWarnings("unused")
 	private static class InfiniteEffects implements Runnable {
 		public void run() {
 			for (World world : Bukkit.getWorlds())
