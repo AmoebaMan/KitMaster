@@ -105,6 +105,7 @@ public class KitMaster extends JavaPlugin implements Listener {
 		runUpdater();
 		startMetrics();
 		hookVault();
+		logger().info("Purged " + SignHandler.repairSigns() + " absent kit signs");
 		
 		KitMasterEventHandler.init(this);
 		KitMasterCommandHandler.init(this);
@@ -114,7 +115,6 @@ public class KitMaster extends JavaPlugin implements Listener {
 	@Override
 	public void onDisable() {
 		Bukkit.getScheduler().cancelTask(TASK_ID);
-		logger().info("Purged " + SignHandler.repairSigns() + " absent kit signs");
 		if (getConfig().getBoolean("clearKits.onDisable", true))
 			for (OfflinePlayer player : HistoryHandler.getPlayers())
 				if (player instanceof Player)

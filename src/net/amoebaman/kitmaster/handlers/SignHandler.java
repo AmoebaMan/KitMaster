@@ -66,8 +66,6 @@ public class SignHandler{
 						KitMaster.getSQL().executeCommand(SQLQueries.REMOVE_SIGN_AT.replace(SQLQueries.LOCATION_MACRO, set.getString("location")));
 						count++;
 					}
-					if(S_Loc.stringSave(loc, false, false).equals(S_Loc.stringSave(loc, true, false)))
-						KitMaster.getSQL().executeCommand(SQLQueries.SET_SIGN_AT.replace(SQLQueries.LOCATION_MACRO, S_Loc.stringSave(loc, true, false).replace(SQLQueries.KIT_MACRO, set.getString("kit"))), true);
 				}
 			}
 			catch(Exception e){ e.printStackTrace(); }
