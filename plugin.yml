@@ -1,7 +1,7 @@
 main: net.amoebaman.kitmaster.KitMaster
 
 name: KitMaster
-version: 1.4.2
+version: 1.4.3
 author: AmoebaMan
 website: www.amoebaman.net
 description: The complete short-term kit plugin
