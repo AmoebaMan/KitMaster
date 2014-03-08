@@ -61,7 +61,7 @@ public class SQLQueries {
 	
 	/** SQL command to get all sign locations */
 	public static final String GET_ALL_SIGNS =
-			"SELECT location FROM signs";
+			"SELECT * FROM signs";
 	
 	/** SQL command to link a kit to a sign at a location */
 	public static final String SET_SIGN_AT = 

@@ -55,7 +55,7 @@ public class SignHandler{
 		return getKitSign(loc) != null;
 	}
 	
-	public static int purgeAbsentees(){
+	public static int repairSigns(){
 		int count = 0;
 		if(KitMaster.isSQLRunning()){
 			ResultSet set = KitMaster.getSQL().executeQuery(SQLQueries.GET_ALL_SIGNS);
@@ -63,9 +63,11 @@ public class SignHandler{
 				while(set.next()){
 					Location loc = S_Loc.stringLoad(set.getString("location"));
 					if(!loc.getBlock().getType().name().contains("SIGN")){
-						KitMaster.getSQL().executeCommand(SQLQueries.REMOVE_SIGN_AT.replace(SQLQueries.LOCATION_MACRO, S_Loc.stringSave(loc, false, false)));
+						KitMaster.getSQL().executeCommand(SQLQueries.REMOVE_SIGN_AT.replace(SQLQueries.LOCATION_MACRO, set.getString("location")));
 						count++;
 					}
+					if(S_Loc.stringSave(loc, false, false).equals(S_Loc.stringSave(loc, true, false)))
+						KitMaster.getSQL().executeCommand(SQLQueries.SET_SIGN_AT.replace(SQLQueries.LOCATION_MACRO, S_Loc.stringSave(loc, true, false).replace(SQLQueries.KIT_MACRO, set.getString("kit"))), true);
 				}
 			}
 			catch(Exception e){ e.printStackTrace(); }

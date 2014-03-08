@@ -114,7 +114,7 @@ public class KitMaster extends JavaPlugin implements Listener {
 	@Override
 	public void onDisable() {
 		Bukkit.getScheduler().cancelTask(TASK_ID);
-		logger().info("Purged " + SignHandler.purgeAbsentees() + " absent kit signs");
+		logger().info("Purged " + SignHandler.repairSigns() + " absent kit signs");
 		if (getConfig().getBoolean("clearKits.onDisable", true))
 			for (OfflinePlayer player : HistoryHandler.getPlayers())
 				if (player instanceof Player)
