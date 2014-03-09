@@ -68,6 +68,7 @@ public class KitMaster extends JavaPlugin implements Listener {
 	
 	@Override
 	public void onEnable() {
+		
 		new File(MAIN_DIR).mkdirs();
 		new File(KITS_DIR).mkdirs();
 		new File(DATA_DIR).mkdirs();

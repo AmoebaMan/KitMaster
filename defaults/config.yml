@@ -72,4 +72,11 @@ mysql:
   
   # If using the SQL database option, enter the password to connect with
   password: raglfragl
-  
+
+# If true, KitMaster will check kit signs by their text and push data to the behind-the-scenes storage if it finds an unlinked kit sign
+# This is slower than the behind-the-scenes link, so only use it if you need to re-link signs for some reason
+# For this to work your kit sign format must have at least one line which is nothing but the name of the kit and color/formatting codes
+fix-signs-mode: false
+
+# Used by KitMaster to update your config when necessary (don't screw with this)
+config-version: 1.4.3

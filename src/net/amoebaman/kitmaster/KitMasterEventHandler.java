@@ -14,10 +14,13 @@ import net.amoebaman.kitmaster.handlers.MessageHandler;
 import net.amoebaman.kitmaster.handlers.SignHandler;
 import net.amoebaman.kitmaster.handlers.TimeStampHandler;
 import net.amoebaman.kitmaster.objects.Kit;
+import net.amoebaman.kitmaster.sql.SQLQueries;
+import net.amoebaman.utils.S_Loc;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -52,6 +55,23 @@ public class KitMasterEventHandler implements Listener {
 				GiveKitResult result = Actions.giveKit(event.getPlayer(), kit, GiveKitContext.SIGN_TAKEN);
 				if (KitMaster.DEBUG_KITS)
 					KitMaster.logger().info("Result: " + result.name());
+			}
+			else if(event.getClickedBlock().getState() instanceof Sign && KitMaster.plugin().getConfig().getBoolean("fix-signs-mode", false)){
+				for(int i = 0; i < 4; i++){
+					String format = ChatColor.translateAlternateColorCodes('&', KitMaster.plugin().getConfig().getString("kitSelectionSignText.line_" + (i+1), ""));
+					String text = ChatColor.translateAlternateColorCodes('&', ((Sign) event.getClickedBlock().getState()).getLine(i));
+					if(ChatColor.stripColor(format).equals("%kit%"))
+						kit = KitHandler.getKit(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', text)));
+					else if(!format.equals(text))
+						return;
+				}
+				if(kit != null){
+					if(KitMaster.isSQLRunning()){
+						String loc = S_Loc.stringSave(event.getClickedBlock().getLocation(), true, false);
+						KitMaster.getSQL().executeCommand(SQLQueries.SET_SIGN_AT.replaceAll(SQLQueries.LOCATION_MACRO, loc).replace(SQLQueries.KIT_MACRO, kit.name));
+					}
+					event.getPlayer().sendMessage(MessageHandler.getPrefix() + "Repaired kit selection sign for " + kit.name + " at " + S_Loc.stringSave(event.getClickedBlock().getLocation(), true, false));
+				}
 			}
 		}
 	}
