@@ -1,32 +1,6 @@
 package net.amoebaman.kitmaster;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import net.amoebaman.kitmaster.enums.Attribute;
-import net.amoebaman.kitmaster.enums.ClearKitsContext;
-import net.amoebaman.kitmaster.handlers.BookHandler;
-import net.amoebaman.kitmaster.handlers.CustomItemHandler;
-import net.amoebaman.kitmaster.handlers.CustomPotionHandler;
-import net.amoebaman.kitmaster.handlers.FireworkEffectHandler;
-import net.amoebaman.kitmaster.handlers.FireworkHandler;
-import net.amoebaman.kitmaster.handlers.HistoryHandler;
-import net.amoebaman.kitmaster.handlers.KitHandler;
-import net.amoebaman.kitmaster.handlers.MessageHandler;
-import net.amoebaman.kitmaster.handlers.SignHandler;
-import net.amoebaman.kitmaster.handlers.TimeStampHandler;
-import net.amoebaman.kitmaster.objects.Kit;
-import net.amoebaman.kitmaster.sql.SQLHandler;
-import net.amoebaman.kitmaster.sql.SQLQueries;
-import net.amoebaman.utils.plugin.MetricsLite;
-import net.amoebaman.utils.plugin.Updater;
-import net.amoebaman.utils.plugin.Updater.UpdateType;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -40,6 +14,20 @@ import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
+
+import net.amoebaman.kitmaster.enums.Attribute;
+import net.amoebaman.kitmaster.enums.ClearKitsContext;
+import net.amoebaman.kitmaster.handlers.*;
+import net.amoebaman.kitmaster.objects.Kit;
+import net.amoebaman.kitmaster.sql.SQLHandler;
+import net.amoebaman.kitmaster.sql.SQLQueries;
+import net.amoebaman.utils.GenUtil;
+import net.amoebaman.utils.plugin.MetricsLite;
+import net.amoebaman.utils.plugin.Updater;
+import net.amoebaman.utils.plugin.Updater.UpdateType;
+
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 
 //TODO Javadoc for EVERYTHING
 
@@ -73,13 +61,13 @@ public class KitMaster extends JavaPlugin implements Listener {
 		new File(KITS_DIR).mkdirs();
 		new File(DATA_DIR).mkdirs();
 		
-		CONFIG_FILE = getConfigFile("config");
-		CUSTOM_DATA_FILE = getConfigFile("custom-data");
-		KITS_FILE = getConfigFile("kits");
-		MESSAGES_FILE = getConfigFile("messages");
-		SIGNS_FILE = getConfigFile("data/signs");
-		TIMESTAMPS_FILE = getConfigFile("data/timestamps");
-		HISTORY_FILE = getConfigFile("data/history");
+		CONFIG_FILE = GenUtil.getConfigFile(this, "config");
+		CUSTOM_DATA_FILE = GenUtil.getConfigFile(this, "custom-data");
+		KITS_FILE = GenUtil.getConfigFile(this, "kits");
+		MESSAGES_FILE = GenUtil.getConfigFile(this, "messages");
+		SIGNS_FILE = GenUtil.getConfigFile(this, "data/signs");
+		TIMESTAMPS_FILE = GenUtil.getConfigFile(this, "data/timestamps");
+		HISTORY_FILE = GenUtil.getConfigFile(this, "data/history");
 		
 		try {
 			reloadKits();
@@ -110,7 +98,7 @@ public class KitMaster extends JavaPlugin implements Listener {
 		
 		KitMasterEventHandler.init(this);
 		KitMasterCommandHandler.init(this);
-		TASK_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new InfiniteEffects(), 15, 15);
+//		TASK_ID = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new InfiniteEffects(), 15, 15);
 	}
 	
 	@Override
@@ -221,34 +209,6 @@ public class KitMaster extends JavaPlugin implements Listener {
 		return SQL;
 	}
 	
-	private File getConfigFile(String name) {
-		try {
-			File file = new File(plugin().getDataFolder().getPath() + File.separator + name + ".yml");
-			if (!file.exists()) {
-				plugin().getLogger().info("plugins/KitMaster/" + name + ".yml was not found");
-				plugin().getLogger().info("Writing new file with default contents");
-				file.createNewFile();
-				file.setWritable(true);
-				InputStream preset = KitMaster.class.getResourceAsStream("/defaults/" + name + ".yml");
-				if (preset != null) {
-					BufferedReader reader = new BufferedReader(new InputStreamReader(preset));
-					BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-					while (reader.ready()) {
-						writer.write(reader.readLine());
-						writer.newLine();
-					}
-					reader.close();
-					writer.close();
-				}
-			}
-			return file;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
 	private void runUpdater() {
 		UPDATE_ENABLED = getConfig().getBoolean("update.checkForUpdate");
 		if (UPDATE_ENABLED) {
@@ -328,7 +288,8 @@ public class KitMaster extends JavaPlugin implements Listener {
 		return ECONOMY;
 	}
 	
-	private static class InfiniteEffects implements Runnable {
+	@SuppressWarnings("unused")
+    private static class InfiniteEffects implements Runnable {
 		public void run() {
 			for (World world : Bukkit.getWorlds())
 				for (Player player : world.getPlayers())
