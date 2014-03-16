@@ -21,6 +21,7 @@ public class SQLHandler {
 		try{
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection("jdbc:mysql://" + url + "/", username, password);
+			connection.setClientInfo("autoReconnect", "true");
 		}
 		catch(Exception e){ e.printStackTrace(); }
 		
