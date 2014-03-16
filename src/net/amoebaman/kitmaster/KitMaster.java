@@ -298,7 +298,7 @@ public class KitMaster extends JavaPlugin implements Listener{
 						if(kit != null && kit.booleanAttribute(Attribute.INFINITE_EFFECTS))
 							for(PotionEffect effect : kit.effects)
 								for(PotionEffect actual : player.getActivePotionEffects())
-									if(actual.getAmplifier() < effect.getAmplifier())
+									if(effect.getType().equals(actual.getType()) && actual.getAmplifier() < effect.getAmplifier())
 										player.addPotionEffect(effect, true);
 		}
 		
