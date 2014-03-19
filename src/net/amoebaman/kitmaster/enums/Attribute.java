@@ -120,7 +120,12 @@ public enum Attribute{
 	/**
 	 * The Heroes skills that this kit will make available when taken
 	 */
-	HEROES_SKILLS(AttributeType.STRING_ARRAY, "heroes.skills", new String[0])
+	HEROES_SKILLS(AttributeType.STRING_ARRAY, "heroes.skills", new String[0]),
+	
+	/**
+	 * The Heroes binds that this kit will register when taken
+	 */
+	HEROES_BINDS(AttributeType.STRING_ARRAY, "heroes.binds", new String[0]),
 	
 	;
 
