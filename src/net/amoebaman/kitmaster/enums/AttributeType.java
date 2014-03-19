@@ -1,9 +1,11 @@
 package net.amoebaman.kitmaster.enums;
 
+import java.util.List;
+
 public enum AttributeType {
 
 	STRING(String.class),
-	STRING_ARRAY(String[].class),
+	STRING_LIST(List.class),
 	INTEGER(Integer.class),
 	DOUBLE(Double.class),
 	BOOLEAN(Boolean.class),
