@@ -111,6 +111,17 @@ public enum Attribute{
 	 * An identifier string used exclusively by third-party plugins to identify kits by means other than their names
 	 */
 	IDENTIFIER(AttributeType.STRING, "identifier", ""),
+	
+	/**
+	 * The Heroes class that this kit will assign when taken
+	 */
+	HEROES_CLASS(AttributeType.STRING, "heroes.class", ""),
+	
+	/**
+	 * The Heroes skills that this kit will make available when taken
+	 */
+	HEROES_SKILLS(AttributeType.STRING_ARRAY, "heroes.skills", new String[0])
+	
 	;
 
 	/**
