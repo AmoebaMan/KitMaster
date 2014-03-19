@@ -140,6 +140,11 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 	public String stringAttribute(Attribute type){ return (String) getAttribute(type); }
 
 	/**
+	 * Retrives the value of an attribute as a string array.  See getAttribute(Attribute)
+	 */
+	public String[] stringArrayAttribute(Attribute type){ return ((List<String>) getAttribute(type)).toArray(new String[0]); }
+	
+	/**
 	 * Defines/redefines the value of an attribute for this kit.  If newValue does not match type's enumerated class type, the operation will fail.
 	 * @param type The attribute type to set
 	 * @param newValue The new value for the attribute

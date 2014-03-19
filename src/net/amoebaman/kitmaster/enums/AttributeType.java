@@ -3,6 +3,7 @@ package net.amoebaman.kitmaster.enums;
 public enum AttributeType {
 
 	STRING(String.class),
+	STRING_ARRAY(String[].class),
 	INTEGER(Integer.class),
 	DOUBLE(Double.class),
 	BOOLEAN(Boolean.class),
