@@ -9,6 +9,7 @@ import net.amoebaman.kitmaster.controllers.ItemController;
 import net.amoebaman.kitmaster.enums.Attribute;
 import net.amoebaman.kitmaster.handlers.KitHandler;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -143,6 +144,11 @@ public class Kit implements Cloneable, ConfigurationSerializable{
 	 * Retrives the value of an attribute as a string array.  See getAttribute(Attribute)
 	 */
 	public List<String> stringListAttribute(Attribute type){ return (List<String>) getAttribute(type); }
+	
+	/**
+	 * Retrieves the value of an attribute as a configuration section.  See getAttribute(Attribute)
+	 */
+	public ConfigurationSection sectionAttribute(Attribute type){ return (ConfigurationSection) getAttribute(type); }
 	
 	/**
 	 * Defines/redefines the value of an attribute for this kit.  If newValue does not match type's enumerated class type, the operation will fail.

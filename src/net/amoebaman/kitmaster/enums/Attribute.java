@@ -2,6 +2,8 @@ package net.amoebaman.kitmaster.enums;
 
 import java.util.ArrayList;
 
+import org.bukkit.configuration.MemoryConfiguration;
+
 public enum Attribute{
 
 	/**
@@ -122,7 +124,7 @@ public enum Attribute{
 	/**
 	 * The Heroes skills that this kit will make available when taken
 	 */
-	HEROES_SKILLS(AttributeType.STRING_LIST, "heroes.skills", new ArrayList<String>()),
+	HEROES_SKILLS(AttributeType.SECTION, "heroes.skills", new MemoryConfiguration()),
 	
 	/**
 	 * The Heroes binds that this kit will register when taken

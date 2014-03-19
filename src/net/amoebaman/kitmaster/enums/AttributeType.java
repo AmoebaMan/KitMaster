@@ -2,6 +2,8 @@ package net.amoebaman.kitmaster.enums;
 
 import java.util.List;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 public enum AttributeType {
 
 	STRING(String.class),
@@ -9,6 +11,7 @@ public enum AttributeType {
 	INTEGER(Integer.class),
 	DOUBLE(Double.class),
 	BOOLEAN(Boolean.class),
+	SECTION(ConfigurationSection.class),
 	;
 	
 	public final Class<?> clazz;
