@@ -1,11 +1,21 @@
 package net.amoebaman.kitmaster;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.classes.HeroClass;
+
 import net.amoebaman.kitmaster.controllers.InventoryController;
-import net.amoebaman.kitmaster.enums.Attribute;
-import net.amoebaman.kitmaster.enums.ClearKitsContext;
-import net.amoebaman.kitmaster.enums.GiveKitContext;
-import net.amoebaman.kitmaster.enums.GiveKitResult;
-import net.amoebaman.kitmaster.enums.PermsResult;
+import net.amoebaman.kitmaster.controllers.ItemController;
+import net.amoebaman.kitmaster.enums.*;
 import net.amoebaman.kitmaster.handlers.HistoryHandler;
 import net.amoebaman.kitmaster.handlers.KitHandler;
 import net.amoebaman.kitmaster.handlers.MessageHandler;
@@ -13,9 +23,6 @@ import net.amoebaman.kitmaster.handlers.TimeStampHandler;
 import net.amoebaman.kitmaster.objects.Kit;
 import net.amoebaman.kitmaster.utilities.ClearKitsEvent;
 import net.amoebaman.kitmaster.utilities.GiveKitEvent;
-
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
 
 public class Actions {
 	
@@ -31,10 +38,10 @@ public class Actions {
 	public static GiveKitResult giveKit(Player player, Kit kit, boolean override){
 		return giveKit(player, kit, override ? GiveKitContext.PLUGIN_GIVEN_OVERRIDE : GiveKitContext.PLUGIN_GIVEN);
 	}
-
-	public static boolean debugNextGiveKit = false;
 	
-	public static GiveKitResult giveKit(Player player, Kit kit, GiveKitContext context){
+	protected static boolean debugNextGiveKit = false;
+	
+	protected static GiveKitResult giveKit(Player player, Kit kit, GiveKitContext context){
 		boolean debug = debugNextGiveKit;
 		debugNextGiveKit = false;
 		
@@ -200,6 +207,40 @@ public class Actions {
 			KitMaster.getEcon().bankDeposit(player.getName(), kit.doubleAttribute(Attribute.CASH));
 		}
 		/*
+		 * Grant Heroes tie-ins
+		 */
+		HeroClass heroClass = Heroes.getInstance().getClassManager().getClass(kit.stringAttribute(Attribute.HEROES_CLASS));
+		Map<String, ConfigurationSection> heroSkills = new HashMap<String, ConfigurationSection>();
+		for(String key : kit.sectionAttribute(Attribute.HEROES_SKILLS).getKeys(false)){
+			try{
+				heroSkills.put(key, kit.sectionAttribute(Attribute.HEROES_SKILLS).getConfigurationSection(key));
+			}
+			catch(Exception e){ e.printStackTrace(); }
+		}
+		Map<Material, String[]> heroBinds = new HashMap<Material, String[]>();
+		for(String bind : kit.stringListAttribute(Attribute.HEROES_BINDS)){
+			String[] split = bind.split(":");
+			String[] skills = new String[split.length - 1];
+			for(int i = 0; i < skills.length; i++)
+				skills[i] = split[i + 1];
+			try{
+				ItemStack type = ItemController.getBaseStack(split[0]);
+				if(type != null)
+					heroBinds.put(type.getType(), skills);
+			}
+			catch(Exception e){ e.printStackTrace(); }
+		}
+		
+		Hero hero = Heroes.getInstance().getCharacterManager().getHero(player);
+		if(heroClass != null)
+			hero.setHeroClass(heroClass, false);
+		for(String skill : heroSkills.keySet())
+			hero.addSkill(skill, heroSkills.get(skill));
+		for(Material bind : heroBinds.keySet())
+			hero.bind(bind, heroBinds.get(bind));
+		
+		
+		/*
 		 * Record that this kit was taken
 		 * Stamp the time, and add the kit to the player's history
 		 */
@@ -242,7 +283,7 @@ public class Actions {
 		}
 	}
 	
- 	protected static void clearAll(Player player, boolean callEvent, ClearKitsContext context){
+	protected static void clearAll(Player player, boolean callEvent, ClearKitsContext context){
 		ClearKitsEvent event = new ClearKitsEvent(player, context);
 		if(callEvent)
 			event.callEvent();
@@ -253,12 +294,14 @@ public class Actions {
 				clearEffects(player, false, context);
 			if(event.clearsPermissions())
 				clearPermissions(player, false, context);
+			if(event.clearsHeroes())
+				clearHeroes(player, false, context);
 		}
 		HistoryHandler.resetHistory(player);
 	}
 	
 	private static void clearInventory(Player player, boolean callEvent, ClearKitsContext context){
-		ClearKitsEvent event = new ClearKitsEvent(player, true, false, false, context);
+		ClearKitsEvent event = new ClearKitsEvent(player, true, false, false, false, context);
 		if(callEvent)
 			event.callEvent();
 		if(!event.isCancelled() && event.clearsInventory()){
@@ -268,7 +311,7 @@ public class Actions {
 	}
 	
 	private static void clearEffects(Player player, boolean callEvent, ClearKitsContext context){
-		ClearKitsEvent event = new ClearKitsEvent(player, false, true, false, context);
+		ClearKitsEvent event = new ClearKitsEvent(player, false, true, false, false, context);
 		if(callEvent)
 			event.callEvent();
 		if(!event.isCancelled() && event.clearsEffects()){
@@ -278,7 +321,7 @@ public class Actions {
 	}
 	
 	private static void clearPermissions(Player player, boolean callEvent, ClearKitsContext context){
-		ClearKitsEvent event = new ClearKitsEvent(player, false, false, true, context);
+		ClearKitsEvent event = new ClearKitsEvent(player, false, false, true, false, context);
 		if(callEvent)
 			event.callEvent();
 		if(!event.isCancelled() && event.clearsPermissions()){
@@ -286,6 +329,19 @@ public class Actions {
 				for(Kit last : HistoryHandler.getHistory(player))
 					for(String node : last.permissions)
 						KitMaster.getPerms().playerRemove(player, node);
+		}
+	}
+	
+	private static void clearHeroes(Player player, boolean callEvent, ClearKitsContext context){
+		ClearKitsEvent event = new ClearKitsEvent(player, false, false, false, true, context);
+		if(callEvent)
+			event.callEvent();
+		if(!event.isCancelled() && event.clearsHeroes()){
+			Hero hero = Heroes.getInstance().getCharacterManager().getHero(player);
+			hero.setHeroClass(Heroes.getInstance().getClassManager().getDefaultClass(), false);
+			for(Kit last : HistoryHandler.getHistory(player))
+				for(String skill : last.sectionAttribute(Attribute.HEROES_SKILLS).getKeys(false))
+					hero.removeSkill(skill);
 		}
 	}
 	
