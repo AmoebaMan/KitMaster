@@ -296,10 +296,14 @@ public class KitMaster extends JavaPlugin implements Listener{
 				for(Player player : world.getPlayers())
 					for(Kit kit : HistoryHandler.getHistory(player))
 						if(kit != null && kit.booleanAttribute(Attribute.INFINITE_EFFECTS))
-							for(PotionEffect effect : kit.effects)
+							for(PotionEffect effect : kit.effects){
+								boolean needsRefresh = true;
 								for(PotionEffect actual : player.getActivePotionEffects())
-									if(effect.getType().equals(actual.getType()) && actual.getAmplifier() < effect.getAmplifier())
-										player.addPotionEffect(effect, true);
+									if(effect.getType().equals(actual.getType()) && actual.getAmplifier() >= effect.getAmplifier())
+										needsRefresh = false;
+								if(needsRefresh)
+									player.addPotionEffect(effect, true);
+							}
 		}
 		
 	}
