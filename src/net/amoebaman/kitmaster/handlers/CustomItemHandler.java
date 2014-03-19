@@ -45,11 +45,11 @@ public class CustomItemHandler {
 		ItemStack stack = ItemController.parseItem(section.getString("item"));
 		ItemMeta meta = stack.getItemMeta();
 		if(section.getString("name") != null)
-			meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', section.getString("name", null)));
+			meta.setDisplayName(ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', section.getString("name", null)));
 		if(section.getStringList("lore") != null){
 			List<String> lore = new ArrayList<String>();
 			for(String line : section.getStringList("lore"))
-				lore.add(ChatColor.translateAlternateColorCodes('&', line));
+				lore.add(ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', line));
 			meta.setLore(lore);
 		}
 		stack.setItemMeta(meta);
