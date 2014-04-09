@@ -5,7 +5,7 @@ version: 1.4.3
 author: AmoebaMan
 website: www.amoebaman.net
 description: The complete short-term kit plugin
-softdepend: [Vault]
+softdepend: [Vault, Utils]
 
 commands:
 
