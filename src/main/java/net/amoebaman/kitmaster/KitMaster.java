@@ -15,6 +15,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 
+import com.herocraftonline.heroes.Heroes;
+
 import net.amoebaman.kitmaster.enums.Attribute;
 import net.amoebaman.kitmaster.enums.ClearKitsContext;
 import net.amoebaman.kitmaster.handlers.*;
@@ -49,8 +51,9 @@ public class KitMaster extends JavaPlugin implements Listener{
 	
 	private static boolean UPDATE_ENABLED;
 	private static Updater UPDATE;
-	
 	private static MetricsLite METRICS;
+	
+	public static Heroes HEROES;
 	
 	public final static boolean DEBUG_PERMS = false;
 	public final static boolean DEBUG_KITS = false;
@@ -96,6 +99,8 @@ public class KitMaster extends JavaPlugin implements Listener{
 		startMetrics();
 		hookVault();
 		logger().info("Purged " + SignHandler.repairSigns() + " absent kit signs");
+		
+		HEROES = (Heroes) Bukkit.getPluginManager().getPlugin("Heroes");
 		
 		KitMasterEventHandler.init(this);
 		KitMasterCommandHandler.init(this);

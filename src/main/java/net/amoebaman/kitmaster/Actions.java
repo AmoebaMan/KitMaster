@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
-import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.classes.HeroClass;
 
@@ -209,7 +208,7 @@ public class Actions {
 		/*
 		 * Grant Heroes tie-ins
 		 */
-		HeroClass heroClass = Heroes.getInstance().getClassManager().getClass(kit.stringAttribute(Attribute.HEROES_CLASS));
+		HeroClass heroClass = KitMaster.HEROES.getClassManager().getClass(kit.stringAttribute(Attribute.HEROES_CLASS));
 		Map<String, ConfigurationSection> heroSkills = new HashMap<String, ConfigurationSection>();
 		for(String key : kit.sectionAttribute(Attribute.HEROES_SKILLS).getKeys(false)){
 			try{
@@ -231,7 +230,7 @@ public class Actions {
 			catch(Exception e){ e.printStackTrace(); }
 		}
 		
-		Hero hero = Heroes.getInstance().getCharacterManager().getHero(player);
+		Hero hero = KitMaster.HEROES.getCharacterManager().getHero(player);
 		if(heroClass != null)
 			hero.setHeroClass(heroClass, false);
 		for(String skill : heroSkills.keySet())
@@ -337,8 +336,8 @@ public class Actions {
 		if(callEvent)
 			event.callEvent();
 		if(!event.isCancelled() && event.clearsHeroes()){
-			Hero hero = Heroes.getInstance().getCharacterManager().getHero(player);
-			hero.setHeroClass(Heroes.getInstance().getClassManager().getDefaultClass(), false);
+			Hero hero = KitMaster.HEROES.getCharacterManager().getHero(player);
+			hero.setHeroClass(KitMaster.HEROES.getClassManager().getDefaultClass(), false);
 			for(Kit last : HistoryHandler.getHistory(player))
 				for(String skill : last.sectionAttribute(Attribute.HEROES_SKILLS).getKeys(false))
 					hero.removeSkill(skill);
