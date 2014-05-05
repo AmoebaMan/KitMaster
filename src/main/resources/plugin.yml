@@ -5,7 +5,7 @@ version: 1.4.3
 author: AmoebaMan
 website: www.amoebaman.net
 description: The complete short-term kit plugin
-softdepend: [Vault, Utils]
+softdepend: [Vault]
 
 commands:
 
@@ -28,29 +28,29 @@ commands:
   reloadkits:
     description: Reloads kits from kits.yml
     usage: /reloadkits
-    
+
   itemmeta:
     aliases: [meta, metadata]
     description: Base for various item metadata manipulation commands
     usage: /itemmeta ...
-    
+
 ##  editkit:
 ##    aliases: [kitedit, kedit, editk]
 ##    description: Base for various kit editing commands
 ##    usage: /editkit ...
 ##    permission: kitmaster.edit
 ##    permission-message: You don't have permission to edit kits
-    
+
   inventory-kit:
     aliases: [inventorykit, inv-kit, invkit]
     description: Forms a basic kit using the contents of the player's inventory
     usage: /inventory-kit <name>
-    
+
   kitdebug:
     description: Prints debugging info for the next kit selection to the console
 
 permissions:
-
+    
   kitmaster.*:
     description: Gives access to all SuperKits permissions
     children:
@@ -94,4 +94,3 @@ permissions:
   kitmaster.edit:
     description: Allows the player to edit kits
     default: op
-    
