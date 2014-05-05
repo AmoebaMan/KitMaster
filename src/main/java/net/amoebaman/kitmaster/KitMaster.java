@@ -15,16 +15,16 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 
+import net.amoebaman.amoebautils.AmoebaUtils;
+import net.amoebaman.amoebautils.plugin.MetricsLite;
+import net.amoebaman.amoebautils.plugin.Updater;
+import net.amoebaman.amoebautils.plugin.Updater.UpdateType;
 import net.amoebaman.kitmaster.enums.Attribute;
 import net.amoebaman.kitmaster.enums.ClearKitsContext;
 import net.amoebaman.kitmaster.handlers.*;
 import net.amoebaman.kitmaster.objects.Kit;
 import net.amoebaman.kitmaster.sql.SQLHandler;
 import net.amoebaman.kitmaster.sql.SQLQueries;
-import net.amoebaman.utils.GenUtil;
-import net.amoebaman.utils.plugin.MetricsLite;
-import net.amoebaman.utils.plugin.Updater;
-import net.amoebaman.utils.plugin.Updater.UpdateType;
 
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -62,13 +62,13 @@ public class KitMaster extends JavaPlugin implements Listener{
 		new File(KITS_DIR).mkdirs();
 		new File(DATA_DIR).mkdirs();
 		
-		CONFIG_FILE = GenUtil.getConfigFile(this, "config");
-		CUSTOM_DATA_FILE = GenUtil.getConfigFile(this, "custom-data");
-		KITS_FILE = GenUtil.getConfigFile(this, "kits");
-		MESSAGES_FILE = GenUtil.getConfigFile(this, "messages");
-		SIGNS_FILE = GenUtil.getConfigFile(this, "data/signs");
-		TIMESTAMPS_FILE = GenUtil.getConfigFile(this, "data/timestamps");
-		HISTORY_FILE = GenUtil.getConfigFile(this, "data/history");
+		CONFIG_FILE = AmoebaUtils.getConfigFile(this, "config");
+		CUSTOM_DATA_FILE = AmoebaUtils.getConfigFile(this, "custom-data");
+		KITS_FILE = AmoebaUtils.getConfigFile(this, "kits");
+		MESSAGES_FILE = AmoebaUtils.getConfigFile(this, "messages");
+		SIGNS_FILE = AmoebaUtils.getConfigFile(this, "data/signs");
+		TIMESTAMPS_FILE = AmoebaUtils.getConfigFile(this, "data/timestamps");
+		HISTORY_FILE = AmoebaUtils.getConfigFile(this, "data/history");
 		
 		try{
 			reloadKits();

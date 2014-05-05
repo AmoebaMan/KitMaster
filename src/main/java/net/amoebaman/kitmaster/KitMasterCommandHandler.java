@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import net.amoebaman.amoebautils.CommandController;
+import net.amoebaman.amoebautils.CommandController.CommandHandler;
 import net.amoebaman.kitmaster.controllers.ItemController;
 import net.amoebaman.kitmaster.enums.Attribute;
 import net.amoebaman.kitmaster.enums.GenericResult;
@@ -16,8 +18,6 @@ import net.amoebaman.kitmaster.handlers.FireworkHandler;
 import net.amoebaman.kitmaster.handlers.KitHandler;
 import net.amoebaman.kitmaster.handlers.MessageHandler;
 import net.amoebaman.kitmaster.objects.Kit;
-import net.amoebaman.utils.CommandController;
-import net.amoebaman.utils.CommandController.CommandHandler;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

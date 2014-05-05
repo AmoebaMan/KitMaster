@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 
+import net.amoebaman.amoebautils.S_Loc;
 import net.amoebaman.kitmaster.KitMaster;
 import net.amoebaman.kitmaster.objects.Kit;
 import net.amoebaman.kitmaster.sql.SQLQueries;
-import net.amoebaman.utils.S_Loc;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;

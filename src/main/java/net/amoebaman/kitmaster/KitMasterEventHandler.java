@@ -3,6 +3,7 @@ package net.amoebaman.kitmaster;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.amoebaman.amoebautils.S_Loc;
 import net.amoebaman.kitmaster.controllers.ItemController;
 import net.amoebaman.kitmaster.enums.Attribute;
 import net.amoebaman.kitmaster.enums.ClearKitsContext;
@@ -15,7 +16,6 @@ import net.amoebaman.kitmaster.handlers.SignHandler;
 import net.amoebaman.kitmaster.handlers.TimeStampHandler;
 import net.amoebaman.kitmaster.objects.Kit;
 import net.amoebaman.kitmaster.sql.SQLQueries;
-import net.amoebaman.utils.S_Loc;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

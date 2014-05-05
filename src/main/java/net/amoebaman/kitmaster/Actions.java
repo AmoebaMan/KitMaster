@@ -196,8 +196,8 @@ public class Actions {
 		 * Don't perform this operation if the economy handle is not enabled, or if the player has  an override permission
 		 */
 		if(KitMaster.getEcon() != null && !player.hasPermission("kitmaster.nocharge") && !player.hasPermission("kitmaster.nocharge." + kit.name)){
-			KitMaster.getEcon().bankWithdraw(player.getName(), kit.doubleAttribute(Attribute.COST));
-			KitMaster.getEcon().bankDeposit(player.getName(), kit.doubleAttribute(Attribute.CASH));
+			KitMaster.getEcon().withdrawPlayer(player.getName(), kit.doubleAttribute(Attribute.COST));
+			KitMaster.getEcon().depositPlayer(player.getName(), kit.doubleAttribute(Attribute.CASH));
 		}
 		/*
 		 * Record that this kit was taken
