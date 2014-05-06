@@ -13,8 +13,8 @@
 						<url>http://repo.bukkit.org/content/groups/public/</url>
 				</repository>
 				<repository>
-						<id>heroes-repo</id>
-						<url>http://nexus.theyeticave.net/content/repositories/releases/</url>
+						<id>vault-repo</id>
+						<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
 				</repository>
 				<repository>
 						<id>amoeba-repo</id>
@@ -23,21 +23,22 @@
 		</repositories>
 
 		<dependencies>
-				<dependency>
-						<groupId>org.bukkit</groupId>
-						<artifactId>bukkit</artifactId>
-						<version>1.7.8-R0.1-SNAPSHOT</version>
-				</dependency>
+                <dependency>
+                        <groupId>org.bukkit</groupId>
+                        <artifactId>bukkit</artifactId>
+                        <version>1.7.8-R0.1-SNAPSHOT</version>
+                        <scope>provided</scope>
+                </dependency>
 				<dependency>
 						<groupId>net.milkbowl.vault</groupId>
 						<artifactId>Vault</artifactId>
 						<version>1.2.31</version>
 				</dependency>
-				<dependency>
-						<groupId>net.amoebaman</groupId>
-						<artifactId>amoebautils</artifactId>
-						<version>1.1</version>
-				</dependency>
+                <dependency>
+                        <groupId>net.amoebaman</groupId>
+                        <artifactId>amoebautils</artifactId>
+                        <version>1.1</version>
+                </dependency>
 		</dependencies>
 
 		<distributionManagement>
@@ -78,11 +79,11 @@
 														<relocations>
 																<relocation>
 																		<pattern>net.amoebaman.amoebautils</pattern>
-																		<shadedPattern>shaded.net.amoebaman.amoebautils</shadedPattern>
+																		<shadedPattern>net.amoebaman.kitmaster.amoebautils</shadedPattern>
 																</relocation>
 																<relocation>
-																        <pattern>net.milkbowl.vault</pattern>
-																        <shadedPattern>shaded.net.milkbowl.vault</shadedPattern>
+																		<pattern>net.milkbowl.vault</pattern>
+																		<shadedPattern>net.amoebaman.kitmaster.net.milkbowl.vault</shadedPattern>
 																</relocation>
 														</relocations>
 												</configuration>
