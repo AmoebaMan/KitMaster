@@ -75,6 +75,16 @@
 																		<exclude>org.bukkit:*</exclude>
 																</excludes>
 														</artifactSet>
+														<relocations>
+																<relocation>
+																		<pattern>net.amoebaman.amoebautils</pattern>
+																		<shadedPattern>shaded.net.amoebaman.amoebautils</shadedPattern>
+																</relocation>
+																<relocation>
+																        <pattern>net.milkbowl.vault</pattern>
+																        <shadedPattern>shaded.net.milkbowl.vault</shadedPattern>
+																</relocation>
+														</relocations>
 												</configuration>
 										</execution>
 								</executions>
