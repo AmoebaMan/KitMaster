@@ -73,18 +73,14 @@
 												<configuration>
                                                         <minimizeJar>true</minimizeJar>
 														<artifactSet>
-																<excludes>
-																		<exclude>org.bukkit:*</exclude>
-																</excludes>
+																<includes>
+																		<exclude>net.amoebaman:*</exclude>
+																</includes>
 														</artifactSet>
 														<relocations>
 																<relocation>
 																		<pattern>net.amoebaman.amoebautils</pattern>
 																		<shadedPattern>net.amoebaman.kitmaster.amoebautils</shadedPattern>
-																</relocation>
-																<relocation>
-																		<pattern>net.milkbowl.vault</pattern>
-																		<shadedPattern>net.amoebaman.kitmaster.net.milkbowl.vault</shadedPattern>
 																</relocation>
 														</relocations>
 												</configuration>
